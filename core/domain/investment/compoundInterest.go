@@ -1,6 +1,6 @@
 package investment
 
-import valueobjects "kaduhod/fin_v3/internal/core/domain/valueObjects"
+import valueobjects "kaduhod/fin_v3/core/domain/valueObjects"
 
 
 type CompoundInterest interface {

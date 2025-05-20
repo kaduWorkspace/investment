@@ -1,7 +1,7 @@
 package infra_investment
 
 import (
-	valueobjects "kaduhod/fin_v3/internal/core/domain/valueObjects"
+	valueobjects "kaduhod/fin_v3/core/domain/valueObjects"
 )
 
 type CompoundInterestDecimal struct {}
