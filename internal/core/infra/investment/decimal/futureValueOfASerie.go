@@ -1,7 +1,6 @@
-package currency
+package infra_investment
 
 import (
-	"fmt"
 	valueobjects "kaduhod/fin_v3/internal/core/domain/valueObjects"
 )
 
@@ -18,7 +17,6 @@ func (self FutureValueOfASerieDecimal) Calculate(contribuition, taxDecimal, peri
         growthFactorPerMonthlyTax = one.Add(monthlyTax).Multiply(growthFactorPerMonthlyTax)
     }
     result := contribuition.Multiply(growthFactorPerMonthlyTax)
-    fmt.Println("Result", result)
     return result.GetAmount()
 }
 func (self FutureValueOfASerieDecimal) monthlyTax(tax valueobjects.Money) valueobjects.Money {

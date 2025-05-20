@@ -1,4 +1,4 @@
-package currency
+package infra_investment
 
 import (
 	valueobjects "kaduhod/fin_v3/internal/core/domain/valueObjects"

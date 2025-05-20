@@ -1,4 +1,4 @@
-package currency
+package infra_investment
 
 import (
 	"testing"
