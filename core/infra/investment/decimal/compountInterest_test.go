@@ -58,7 +58,7 @@ func TestCompoundInterestDecimal_Calculate(t *testing.T) {
 			periods := tt.periods
 
 			got := cp.Calculate(initial, tax, periods)
-			if !almostEqual(got, tt.want, 0.01) {
+			if !almostEqual(got.GetAmount(), tt.want, 0.01) {
 				t.Errorf("Calculate() = %v, want %v", got, tt.want)
 			}
 		})
