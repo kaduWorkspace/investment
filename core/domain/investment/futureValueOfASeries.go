@@ -33,5 +33,6 @@ type FutureValueOfASeries interface {
     Calculate(contribuition, taxDecimal valueobjects.Money, firstDay bool, periods int) float64
     monthlyTax(tax valueobjects.Money) valueobjects.Money
     CalculateTrackingPeriods(initialValue, contribuition, taxDecimal valueobjects.Money, firstDay bool, initialDate time.Time, periods int) (valueobjects.Money, []PeriodTracker)
+    PredictConstribuiton(finalValue, periods, taxDecimal valueobjects.Money)
 }
 
