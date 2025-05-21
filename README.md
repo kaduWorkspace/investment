@@ -1,83 +1,54 @@
-# 💸 Investment API
+# Simulador de Investimento JC
 
-A lightweight and extensible backend service for managing investment accounts and their events (deposits, withdrawals, transfers, and more). Built with Go.
+Este projeto é uma aplicação web que simula investimentos financeiros com base em uma taxa de juros. A taxa padrão utilizada é a Selic, atualizada automaticamente via API do Banco Central.
 
----
+## Como Usar
 
-## 🚀 Features
+1. **Acesse a aplicação**: Abra o simulador no seu navegador.
+2. **Preencha os campos**:
+   - **Dinheiro em caixa hoje**: Insira o valor inicial que você possui para investir.
+   - **Valor Aporte Mensal**: Insira o valor que você pretende aportar mensalmente.
+   - **Valor Taxa Anual**: A taxa de juros anual. Por padrão, a taxa Selic é utilizada, mas você pode alterá-la manualmente.
+   - **Data do resgate**: Selecione o período de tempo para o resgate do investimento (6 meses, 1 ano, 5 anos, 10 anos, 20 anos).
 
-- Create and manage investment accounts
-- Register different types of account events (e.g. deposits, withdrawals)
-- Track account balances over time
-- RESTful API with clean JSON responses
-- Fully tested core logic
+3. **Simule**: Clique no botão "Simular" para ver os resultados.
 
----
+## Parâmetros do Simulador
 
-## 📦 Requirements
+- **Dinheiro em caixa hoje**: Valor inicial do investimento.
+- **Valor Aporte Mensal**: Valor que será investido mensalmente.
+- **Valor Taxa Anual**: Taxa de juros anual. A taxa Selic é usada por padrão.
+- **Data do resgate**: Período de tempo para o resgate do investimento.
 
-- Go 1.21+
-- Make (for running dev/test commands)
+## Resultados
 
----
+Após a simulação, você verá os seguintes resultados:
 
-## 🛠️ Running Locally
+- **Rentabilidade**: Valor total do rendimento do investimento.
+- **Investido**: Valor total investido ao longo do período.
+- **Valor inicial**: Valor inicial do investimento.
+- **Aumento de Caixa**: Porcentagem de aumento do valor inicial.
+- **Juros Rendido**: Valor total dos juros rendidos.
+- **Valor final**: Valor total acumulado ao final do período.
 
-```bash
-# Clone the repo
-git clone https://github.com/kaduWorkspace/investment.git
-cd investment
+## Visualização Adicional
 
-# Run the API
-make run
-```
+### Tabela de Rendimentos
+A aplicação disponibiliza uma tabela detalhada que mostra o rendimento do investimento ao longo do tempo. A tabela inclui:
 
-The server should be running at: [http://localhost:8080](http://localhost:8080)
+- **Mês**: O mês e ano correspondente ao rendimento.
+- **Aporte**: O valor aportado no mês.
+- **Juros**: O valor dos juros rendidos no mês.
+- **Valor Acumulado**: O valor total acumulado até o final do mês.
 
----
+### Gráfico de Rentabilidade
+Além da tabela, você pode visualizar a rentabilidade do investimento em um gráfico interativo. O gráfico mostra a evolução do valor acumulado ao longo do tempo, permitindo uma análise visual do desempenho do investimento.
 
-## 🧪 Running Tests
+## Contato
 
-```bash
-make test
-```
+Para dúvidas ou sugestões, entre em contato:
 
-All core business logic is tested, including account creation, event handling, and balance tracking.
-
----
-
-## 📬 API Endpoints (WIP)
-
-| Method | Endpoint         | Description                  |
-|--------|------------------|------------------------------|
-| POST   | `/accounts`      | Create a new account         |
-| GET    | `/accounts/:id`  | Get account by ID            |
-| POST   | `/events`        | Register a new event         |
-| GET    | `/balance/:id`   | Get current account balance  |
-
-> You can use tools like Postman or cURL to interact with the API.
-
----
-
-## 📁 Project Structure
-
-| Folder         | Description                      |
-|----------------|----------------------------------|
-| `cmd/api`      | API setup and HTTP routing       |
-| `core/domain`  | Business entities and interfaces |
-| `core/usecase` | Application logic                |
-| `core/service` | Concrete service implementations |
-| `tests`        | Unit tests                       |
-
----
-
-## 👨‍💻 Author
-
-Developed by [@kaduWorkspace](https://github.com/kaduWorkspace)
-
----
-
-## 📝 License
-
-This project is open-source and available under the [MIT License](LICENSE).
+- [GitHub](https://github.com/KaduHod)
+- [LinkedIn](https://www.linkedin.com/in/carlosjrribas98/)
+- [Email](mailto:carlosjr.ribas@gmail.com)
 
