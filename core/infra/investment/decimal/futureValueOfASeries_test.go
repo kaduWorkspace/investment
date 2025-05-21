@@ -2,6 +2,7 @@ package infra_investment
 
 import (
 	"testing"
+	"time"
 )
 
 func TestFutureValueOfASerieDecimal_Calculate(t *testing.T) {
@@ -55,8 +56,8 @@ func TestFutureValueOfASerieDecimal_Calculate(t *testing.T) {
 		},
 	}
 
-	fv := FutureValueOfASerieDecimal{}
 
+	fv := FutureValueOfASerieDecimal{}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			contribution := NewDecimalMoney(tt.contributionAmount)
@@ -69,4 +70,46 @@ func TestFutureValueOfASerieDecimal_Calculate(t *testing.T) {
 			}
 		})
 	}
+    testsWithInitialValue := []struct {
+		name                  string
+		interestRateDecimal   float64
+		periods               float64
+		contributionAmount    float64
+		contributionOnFirstDay bool
+        initialValue          float64
+		want                  float64
+	}{
+		{
+			name:                  "loop_with initial value end period",
+			interestRateDecimal:   0.12,
+			periods:               12,
+			contributionOnFirstDay: true,
+			want:            2062.84,
+			initialValue:          500.00,
+		},
+		{
+			name:                  "loop_with initial value start period",
+			interestRateDecimal:   0.12,
+			periods:               12,
+			contributionOnFirstDay: true,
+			want:            2535.62,
+			initialValue:          300.00,
+		},
+    }
+    cp := CompoundInterestDecimal{}
+    today := time.Now()
+    for _, tt := range testsWithInitialValue {
+		t.Run(tt.name, func(t *testing.T) {
+			contribution := NewDecimalMoney(tt.contributionAmount)
+			tax := NewDecimalMoney(tt.interestRateDecimal)
+			periods := NewDecimalMoney(tt.periods)
+            initialValue := NewDecimalMoney(tt.initialValue)
+            futureValue, _ := fv.CalculateTrackingPeriods(initialValue, contribution, tax, periods, tt.contributionOnFirstDay, today)
+            compoundInterest := cp.Calculate(initialValue, tax, periods)
+            result := futureValue.GetAmount() + compoundInterest
+            if almostEqual(result, tt.want, 0.0000000000001) && result != tt.want {
+				t.Errorf("Calculate() = %v, want %v", result, tt.want)
+            }
+		})
+    }
 }

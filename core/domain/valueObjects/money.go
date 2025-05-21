@@ -8,4 +8,5 @@ type Money interface {
     Equals(Money) bool
     Pow(Money) Money
     GetAmount() float64
+    Formatted() string
 }
