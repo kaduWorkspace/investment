@@ -10,7 +10,7 @@ func (self CompoundInterestDecimal) Calculate(initialValue, taxDecimal, periods 
     twelve := NewDecimalMoney(12.0)
     taxOverTwelve := taxDecimal.Divide(twelve)
     onePlusTax := one.Add(taxOverTwelve)
-    powOnePlusTax := onePlusTax.Pow(twelve)
+    powOnePlusTax := onePlusTax.Pow(periods)
     multipliedValue := initialValue.Multiply(powOnePlusTax)
     return multipliedValue.GetAmount()
 }
