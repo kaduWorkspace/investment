@@ -10,10 +10,10 @@ type FutureValueOfASerieDecimal struct {
 
 }
 
-func (self FutureValueOfASerieDecimal) Calculate(contribuition, taxDecimal, periods valueobjects.Money, firstDay bool) float64 {
+func (self FutureValueOfASerieDecimal) Calculate(contribuition, taxDecimal valueobjects.Money, firstDay bool, periods int) float64 {
     one := NewDecimalMoney(1.0)
     monthlyTax := self.monthlyTax(taxDecimal)
-    growthFactor := one.Add(monthlyTax).Pow(periods).Subtract(one)
+    growthFactor := one.Add(monthlyTax).Pow(NewDecimalMoney(float64(periods))).Subtract(one)
     growthFactorPerMonthlyTax := growthFactor.Divide(monthlyTax)
     if firstDay {
         growthFactorPerMonthlyTax = one.Add(monthlyTax).Multiply(growthFactorPerMonthlyTax)
@@ -25,12 +25,12 @@ func (self FutureValueOfASerieDecimal) monthlyTax(tax valueobjects.Money) valueo
     twelve := NewDecimalMoney(12.0)
     return tax.Divide(twelve)
 }
-func (self FutureValueOfASerieDecimal) CalculateTrackingPeriods(initialValue, contribuition, taxDecimal, periods valueobjects.Money, firstDay bool, initialDate time.Time) (valueobjects.Money ,[]investment.PeriodTracker) {
+func (self FutureValueOfASerieDecimal) CalculateTrackingPeriods(initialValue, contribuition, taxDecimal valueobjects.Money, firstDay bool, initialDate time.Time, periods int) (valueobjects.Money ,[]investment.PeriodTracker) {
     monthlyTax := self.monthlyTax(taxDecimal)
     accrued := initialValue
     counter := 0
     periodsTracker := []investment.PeriodTracker{}
-    for counter < int(periods.GetAmount()) {
+    for counter < periods {
         if firstDay {
             accrued = accrued.Add(contribuition)
         }

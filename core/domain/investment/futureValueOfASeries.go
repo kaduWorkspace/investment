@@ -30,8 +30,8 @@ func GetDateFormated(date time.Time) string {
     return date.Format("02/01/2006")
 }
 type FutureValueOfASeries interface {
-    Calculate(contribuition, taxDecimal, periods valueobjects.Money, firstDay bool) float64
+    Calculate(contribuition, taxDecimal valueobjects.Money, firstDay bool, periods int) float64
     monthlyTax(tax valueobjects.Money) valueobjects.Money
-    CalculateTrackingPeriods(initialValue, contribuition, taxDecimal, periods valueobjects.Money, firstDay bool, initialDate time.Time) (valueobjects.Money, []PeriodTracker)
+    CalculateTrackingPeriods(initialValue, contribuition, taxDecimal valueobjects.Money, firstDay bool, initialDate time.Time, periods int) (valueobjects.Money, []PeriodTracker)
 }
 

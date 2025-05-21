@@ -9,7 +9,7 @@ func TestFutureValueOfASerieDecimal_Calculate(t *testing.T) {
 	tests := []struct {
 		name                  string
 		interestRateDecimal   float64
-		periods               float64
+		periods               int
 		contributionAmount    float64
 		contributionOnFirstDay bool
 		want                  float64
@@ -62,9 +62,9 @@ func TestFutureValueOfASerieDecimal_Calculate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			contribution := NewDecimalMoney(tt.contributionAmount)
 			tax := NewDecimalMoney(tt.interestRateDecimal)
-			periods := NewDecimalMoney(tt.periods)
+			periods := tt.periods
 
-			got := fv.Calculate(contribution, tax, periods, tt.contributionOnFirstDay)
+			got := fv.Calculate(contribution, tax, tt.contributionOnFirstDay, periods)
 			if almostEqual(got, tt.want, 0.0000000000001) && got != tt.want {
 				t.Errorf("Calculate() = %v, want %v", got, tt.want)
 			}
@@ -73,7 +73,7 @@ func TestFutureValueOfASerieDecimal_Calculate(t *testing.T) {
     testsWithInitialValue := []struct {
 		name                  string
 		interestRateDecimal   float64
-		periods               float64
+		periods               int
 		contributionAmount    float64
 		contributionOnFirstDay bool
         initialValue          float64
@@ -102,9 +102,9 @@ func TestFutureValueOfASerieDecimal_Calculate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			contribution := NewDecimalMoney(tt.contributionAmount)
 			tax := NewDecimalMoney(tt.interestRateDecimal)
-			periods := NewDecimalMoney(tt.periods)
+			periods := tt.periods
             initialValue := NewDecimalMoney(tt.initialValue)
-            futureValue, _ := fv.CalculateTrackingPeriods(initialValue, contribution, tax, periods, tt.contributionOnFirstDay, today)
+            futureValue, _ := fv.CalculateTrackingPeriods(initialValue, contribution, tax, tt.contributionOnFirstDay, today, periods)
             compoundInterest := cp.Calculate(initialValue, tax, periods)
             result := futureValue.GetAmount() + compoundInterest
             if almostEqual(result, tt.want, 0.0000000000001) && result != tt.want {

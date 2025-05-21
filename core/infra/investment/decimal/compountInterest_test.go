@@ -10,7 +10,7 @@ func TestCompoundInterestDecimal_Calculate(t *testing.T) {
 		name         string
 		initialValue float64
 		tax          float64
-		periods      float64
+		periods      int
 		want         float64
 	}{
 
@@ -55,7 +55,7 @@ func TestCompoundInterestDecimal_Calculate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			initial := NewDecimalMoney(tt.initialValue)
 			tax := NewDecimalMoney(tt.tax)
-			periods := NewDecimalMoney(tt.periods)
+			periods := tt.periods
 
 			got := cp.Calculate(initial, tax, periods)
 			if !almostEqual(got, tt.want, 0.01) {
