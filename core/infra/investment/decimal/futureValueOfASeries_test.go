@@ -170,7 +170,7 @@ func TestFutureValueOfASerieDecimal_PredictConstribuiton(t *testing.T) {
             } else {
                 initialValue = NewDecimalMoney(0)
             }
-            got := fv.PredictConstribuiton(finalValue, tax, initialValue, tt.contributionOnFirstDay, tt.periods)
+            got := fv.PredictContribution(finalValue, tax, initialValue, tt.contributionOnFirstDay, tt.periods)
             if !almostEqual(got.GetAmount(), tt.want, 0.01) {
                 t.Logf(`
                 Test Case: %s
