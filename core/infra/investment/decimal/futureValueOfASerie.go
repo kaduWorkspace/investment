@@ -45,3 +45,28 @@ func (self FutureValueOfASerieDecimal) CalculateTrackingPeriods(initialValue, co
     futureValue := accrued
     return futureValue, periodsTracker
 }
+func (self FutureValueOfASerieDecimal) PredictConstribuiton(finalValue, taxDecimal, initialValue valueobjects.Money, contribuitionOnFirstDay bool, periods int) (valueobjects.Money) {
+    //fmt.Println("Parameters: finalValue:", finalValue, "taxDecimal:", taxDecimal, "initialValue:", initialValue, "contribuitionOnFirstDay:", contribuitionOnFirstDay, "periods:", periods)
+    taxByMonths := self.monthlyTax(taxDecimal)
+    //fmt.Println("taxByMonths:", taxByMonths)
+
+    one := NewDecimalMoney(1.0)
+    //fmt.Println("one:", one)
+
+    growthFactor := one.Add(taxByMonths).Pow(NewDecimalMoney(float64(periods))).Subtract(one).Divide(taxByMonths)
+    //fmt.Println("initial growthFactor:", growthFactor)
+
+    if contribuitionOnFirstDay {
+        growthFactor = growthFactor.Multiply(one.Add(taxByMonths))
+        //fmt.Println("adjusted growthFactor (contribuitionOnFirstDay):", growthFactor)
+    }
+    if initialValue.GetAmount() > 0.0 {
+        cp := CompoundInterestDecimal{}
+        finalValue = finalValue.Subtract(cp.Calculate(initialValue, taxDecimal, periods))
+        //fmt.Println("finalValue after initialValue adjustment:", finalValue)
+    }
+
+    result := finalValue.Divide(growthFactor)
+    //fmt.Println("final result:", result)
+    return result
+}
