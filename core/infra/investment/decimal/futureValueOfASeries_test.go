@@ -66,7 +66,7 @@ func TestFutureValueOfASerieDecimal_Calculate(t *testing.T) {
             periods := tt.periods
 
             got := fv.Calculate(contribution, tax, tt.contributionOnFirstDay, periods)
-            if almostEqual(got, tt.want, 0.0000000000001) && got != tt.want {
+            if almostEqual(got.GetAmount(), tt.want, 0.0000000000001) && got.GetAmount() != tt.want {
                 t.Errorf("Calculate() = %v, want %v", got, tt.want)
             }
         })

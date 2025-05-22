@@ -10,7 +10,7 @@ type FutureValueOfASerieDecimal struct {
 
 }
 
-func (self FutureValueOfASerieDecimal) Calculate(contribuition, taxDecimal valueobjects.Money, firstDay bool, periods int) float64 {
+func (self FutureValueOfASerieDecimal) Calculate(contribuition, taxDecimal valueobjects.Money, firstDay bool, periods int) valueobjects.Money {
     one := NewDecimalMoney(1.0)
     monthlyTax := self.monthlyTax(taxDecimal)
     growthFactor := one.Add(monthlyTax).Pow(NewDecimalMoney(float64(periods))).Subtract(one)
@@ -19,7 +19,7 @@ func (self FutureValueOfASerieDecimal) Calculate(contribuition, taxDecimal value
         growthFactorPerMonthlyTax = one.Add(monthlyTax).Multiply(growthFactorPerMonthlyTax)
     }
     result := contribuition.Multiply(growthFactorPerMonthlyTax)
-    return result.GetAmount()
+    return result
 }
 func (self FutureValueOfASerieDecimal) monthlyTax(tax valueobjects.Money) valueobjects.Money {
     twelve := NewDecimalMoney(12.0)
