@@ -1,5 +1,4 @@
-package http
-
+package http_dto
 import "time"
 
 type InvestmentInput struct {
