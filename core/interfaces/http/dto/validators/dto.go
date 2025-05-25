@@ -94,7 +94,7 @@ type CoumpoundInterestInput struct {
     HttpInput
     Periods int `json:"periods" form:"periods" validate:"required,gte=1,number"`
     TaxDecimal float64 `json:"tax_decimal" form:"tax_decimal" validate:"required,gt=0,number"`
-    InitialValue float64 `json:"initial_value" form:"initial_value" validate:"required,gt=1,number"`
+    InitialValue float64 `json:"initial_value" form:"initial_value" validate:"required,gte=1,number"`
 }
 
 type FutureValueOfASeriesInput struct {

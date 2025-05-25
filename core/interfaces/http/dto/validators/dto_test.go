@@ -43,13 +43,13 @@ func TestCoumpoundInterestInput_Validate(t *testing.T) {
                 enMessages := tt.input.FormatValidationError(err, "en")
                 for key, value := range tt.messagesEn{
                     if enMessages[key] != value {
-                        t.Errorf("%s: wrong massege, want: %s", enMessages[key] ,value)
+                        t.Errorf("%s[%s]: wrong massege, want: %s", enMessages[key], key, value)
                     }
                 }
                 ptMessages := tt.input.FormatValidationError(err, "pt")
                 for key, value := range tt.messagesPt{
                     if ptMessages[key] != value {
-                        t.Errorf("%s: wrong massege, want: %s", ptMessages[key], value)
+                        t.Errorf("%s[%s]: wrong massege, want: %s", ptMessages[key], key, value)
                     }
                 }
             }
@@ -80,7 +80,7 @@ func TestFutureValueOfASeriesInput_Validate(t *testing.T) {
                 FirstDay: true, Contribution: 0,
             },
             wantErr: true,
-            messagesPt: map[string]string{"Contribution":"deve ser maior [0]"},
+            messagesPt: map[string]string{"Contribution":"deve ser maior que [0]"},
             messagesEn: map[string]string{"Contribution":"must be greater than [0]"},
         },
     }
@@ -95,13 +95,13 @@ func TestFutureValueOfASeriesInput_Validate(t *testing.T) {
                 enMessages := tt.input.FormatValidationError(err, "en")
                 for key, value := range tt.messagesEn{
                     if enMessages[key] != value {
-                        t.Errorf("%s: wrong massege, want: %s", enMessages[key] ,value)
+                        t.Errorf("%s[%s]: wrong massege, want: %s", enMessages[key], key,value)
                     }
                 }
                 ptMessages := tt.input.FormatValidationError(err, "pt")
                 for key, value := range tt.messagesPt{
                     if ptMessages[key] != value {
-                        t.Errorf("%s: wrong massege, want: %s", ptMessages[key], value)
+                        t.Errorf("%s[%s]: wrong massege, want: %s", ptMessages[key], key, value)
                     }
                 }
             }
@@ -151,13 +151,13 @@ func TestPredictContributionFVSInput_Validate(t *testing.T) {
                 enMessages := tt.input.FormatValidationError(err, "en")
                 for key, value := range tt.messagesEn{
                     if enMessages[key] != value {
-                        t.Errorf("%s: wrong massege, want: %s", enMessages[key] ,value)
+                        t.Errorf("%s[%s]: wrong massege, want: %s", enMessages[key], key ,value)
                     }
                 }
                 ptMessages := tt.input.FormatValidationError(err, "pt")
                 for key, value := range tt.messagesPt{
                     if ptMessages[key] != value {
-                        t.Errorf("%s: wrong massege, want: %s", ptMessages[key], value)
+                        t.Errorf("%s[%s]: wrong massege, want: %s", enMessages[key], key ,value)
                     }
                 }
             }
