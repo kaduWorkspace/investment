@@ -29,11 +29,8 @@ func TestCoumpoundInterestInput_Validate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err, validationErrors := tt.input.Validate(tt.input)
-            if err != nil {
-                t.Errorf("%s: error on function", tt.name)
-            }
-			if tt.wantErr && validationErrors == nil{
+			err := tt.input.Validate(tt.input)
+			if tt.wantErr && err == nil{
                 t.Errorf("%s: error expected", tt.name)
 			}
 		})
@@ -66,11 +63,8 @@ func TestFutureValueOfASeriesInput_Validate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err, validationErrors := tt.input.Validate(tt.input)
-            if err != nil {
-                t.Errorf("%s: error on function", tt.name)
-            }
-			if tt.wantErr && validationErrors == nil{
+			err := tt.input.Validate(tt.input)
+			if tt.wantErr && err == nil{
                 t.Errorf("%s: error expected", tt.name)
 			}
 		})
@@ -107,14 +101,10 @@ func TestPredictContributionFVSInput_Validate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err, validationErrors := tt.input.Validate(tt.input)
-            if err != nil {
-                t.Errorf("%s: error on function", tt.name)
-            }
-			if tt.wantErr && validationErrors == nil{
+			err := tt.input.Validate(tt.input)
+			if tt.wantErr && err == nil{
                 t.Errorf("%s: error expected", tt.name)
 			}
 		})
 	}
 }
-

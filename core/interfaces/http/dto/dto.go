@@ -8,44 +8,80 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 type HttpInput struct {}
-func (i HttpInput) FormatValidationErrorToPortuguese(err error) string {
-    var validationMessages = map[string]string{
-        "required":  "campo obrigatório",
-        "gte":       "deve ser maior ou igual a 0",  // More specific message for TaxDecimal
-        "number":    "deve ser um número válido",
-        "boolean":      "deve ser verdadeiro ou falso",
-        "datetime":  "deve ser uma data/hora válida",
-        "gtfield":   "deve ser maior que o valor de referência",
+func (i HttpInput) FormatValidationError(err error, language string) map[string]string {
+    var validationMessages = map[string]map[string]string{
+        "required": {
+            "pt": "campo obrigatório",
+            "en": "required field",
+        },
+        "gte": {
+            "pt": "deve ser maior ou igual a 0",
+            "en": "must be greater than or equal to 0",
+        },
+        "number": {
+            "pt": "deve ser um número válido",
+            "en": "must be a valid number",
+        },
+        "boolean": {
+            "pt": "deve ser verdadeiro ou falso",
+            "en": "must be true or false",
+        },
+        "datetime": {
+            "pt": "deve ser uma data/hora válida",
+            "en": "must be a valid date/time",
+        },
+        "gtfield": {
+            "pt": "deve ser maior que o valor de referência",
+            "en": "must be greater than reference value",
+        },
     }
-	var validationErrors validator.ValidationErrors
-	if errors.As(err, &validationErrors) {
-		for _, e := range validationErrors {
-			field := e.Field()
-			tag := e.Tag()
-			if msg, exists := validationMessages[tag]; exists {
-				return fmt.Sprintf("%s: %s", field, msg)
-			}
-			return fmt.Sprintf("%s: validação falhou para '%s'", field, tag)
-		}
-	}
-	return "dados da requisição inválidos"
+
+    result := make(map[string]string)
+    var validationErrors validator.ValidationErrors
+    if errors.As(err, &validationErrors) {
+        for _, e := range validationErrors {
+            field := e.Field()
+            tag := e.Tag()
+            fmt.Println(field, tag, "[DEBUG]")
+            if messages, exists := validationMessages[tag]; exists {
+                if msg, langExists := messages[language]; langExists {
+                    result[field] = msg
+                    continue
+                }
+            }
+            if language == "pt" {
+                result[field] = fmt.Sprintf("validação falhou para '%s'", tag)
+            } else {
+                result[field] = fmt.Sprintf("validation failed for '%s'", tag)
+            }
+        }
+    }
+
+    if len(result) == 0 {
+        if language == "pt" {
+            result["_error"] = "dados da requisição inválidos"
+        } else {
+            result["_error"] = "invalid request data"
+        }
+    }
+    return result
 }
 
-func (I HttpInput) Validate(dto interface{}) (error, interface{}) {
+func (I HttpInput) Validate(dto interface{}) (error) {
     validate := validator.New(validator.WithPrivateFieldValidation())
     err := validate.Struct(dto)
-    if err != nil {
-        return nil, err
+    if err == nil {
+        return nil
     }
     var invalidValidationError *validator.InvalidValidationError
     if errors.As(err, &invalidValidationError) {
-        return err, nil
+        return err
     }
     var validatonErrors validator.ValidationErrors
     if errors.As(err, &validatonErrors) {
-        return err, nil
+        return err
     }
-    return err, nil
+    return err
 }
 
 type CoumpoundInterestInput struct {
