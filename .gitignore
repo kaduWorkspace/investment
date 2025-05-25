@@ -1,2 +1,21 @@
 bin
 go.mod
+# Binaries e diretórios temporários do Air
+/tmp
+/tmp-air-*
+*.exe
+*.out
+*.test
+
+# Arquivo binário gerado pelo Air
+tmp/
+tmp-air-*
+
+# Arquivos temporários de build do Go
+*.log
+*.tmp
+
+# Diretórios comuns a Go
+/vendor/
+/bin/
+/dist/
