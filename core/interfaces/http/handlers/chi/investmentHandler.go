@@ -79,7 +79,6 @@ func (h *InvestmentHandlerChi) CompoundInterestApi(w http.ResponseWriter, r *htt
     }
     err, cpInput := struct_utils.FromJson[validators_dto.CoumpoundInterestInput](b)
     if err != nil {
-        fmt.Println("Aquiii")
         h.BadRequestResponse(err, w)
         return
     }

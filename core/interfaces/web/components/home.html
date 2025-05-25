@@ -1,0 +1,172 @@
+{{ define "home" }}
+<div class="max-w-4xl mx-auto mt-8">
+    <!-- Seção de introdução -->
+    <div class="card p-8 rounded-xl mb-8 animate-fade-in">
+        <div class="flex flex-col md:flex-row items-center gap-6">
+            <div class="md:w-1/3 text-center">
+                <i class="fas fa-chart-line text-6xl text-teal-400 mb-4"></i>
+            </div>
+            <div class="md:w-2/3">
+                <h2 class="text-2xl font-bold text-white mb-4">Simule seu investimento com precisão matemática</h2>
+                <p class="text-gray-300 mb-4">
+                Nosso simulador utiliza cálculos financeiros avançados com precisão de 16 casas decimais para projetar o rendimento do seu CDB, considerando:
+                </p>
+                <ul class="list-disc pl-5 text-gray-300 space-y-2">
+                    <li>Valor inicial investido</li>
+                    <li>Aportes mensais regulares</li>
+                    <li>Taxa de juros anual (baseada na Selic ou personalizada)</li>
+                    <li>Período de investimento</li>
+                    <li>Cálculo de aporte necessário para valor alvo</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Como usar -->
+    <div class="grid md:grid-cols-3 gap-6 mb-8">
+        <div class="card p-6 rounded-xl animate-fade-in">
+            <div class="text-teal-400 text-2xl mb-3">
+                <i class="fas fa-sliders-h"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-2">1. Configure</h3>
+            <p class="text-gray-400">
+            Insira os valores iniciais, aportes mensais e período desejado. Nossa calculadora já vem pré-configurada com a taxa Selic atual.
+            </p>
+        </div>
+
+        <div class="card p-6 rounded-xl animate-fade-in">
+            <div class="text-teal-400 text-2xl mb-3">
+                <i class="fas fa-calculator"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-2">2. Calcule</h3>
+            <p class="text-gray-400">
+            Clique em "Simular" e nosso sistema fará os cálculos com precisão matemática rigorosa usando a fórmula de valor futuro.
+            </p>
+        </div>
+
+        <div class="card p-6 rounded-xl animate-fade-in">
+            <div class="text-teal-400 text-2xl mb-3">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-2">3. Analise</h3>
+            <p class="text-gray-400">
+            Visualize os resultados em tabelas detalhadas e gráficos interativos que mostram a evolução do seu investimento.
+            </p>
+        </div>
+    </div>
+    <!-- Destaques técnicos -->
+    <div class="card p-8 rounded-xl mb-8 animate-fade-in">
+        <h2 class="text-2xl font-bold text-white mb-6 text-center">Precisão Matemática</h2>
+
+        <p class="text-gray-300 mb-6 leading-relaxed">
+            Não tenho background em exatas, sou apenas um curioso desenvolvendo uma aplicaçãoem seu tempo livre. Desde já aviso que é importante validar as simulações feitas na plataforma com um profissional.
+        </p>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold text-teal-400 mb-3 flex items-center">
+                    <i class="fas fa-square-root-alt mr-2"></i> Fórmula do Valor Futuro
+                </h3>
+                <div class="bg-gray-800 p-4 rounded-lg mb-4">
+                    <!-- Bloco de imagem para fórmula -->
+                    <div class="flex justify-center my-4">
+                        <img src="public/images/formula-fv.png" alt="Fórmula do Valor Futuro" class="max-w-full rounded-md shadow-lg border border-teal-400/20">
+                    </div>
+
+                    <p>Onde:</p>
+                    <ul>
+                        <li>r = Taxa de juros anual</li>
+                        <li>n = Número de meses</li>
+                        <li>pmt = Valor do aporte mensal</li>
+                        <li>p = Valor inicial</li>
+                    </ul>
+                </div>
+                <a class="text-teal-300 text-sm text-blue" target="_blank" href="https://www.thecalculatorsite.com/finance/calculators/compoundinterestcalculator.php">Referência</a>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-semibold text-teal-400 mb-3 flex items-center">
+                    <i class="fas fa-microscope mr-2"></i> Alta Precisão
+                </h3>
+                <ul class="space-y-3 text-gray-300">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-teal-400 mt-1 mr-2"></i>
+                        <span>Cálculos com 16 dígitos de precisão</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-teal-400 mt-1 mr-2"></i>
+                        <span>Implementação em Go com /shopspring/decimal para exatidão</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-teal-400 mt-1 mr-2"></i>
+                        <span>Arredondamento apenas na exibição dos resultados</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mb-8">
+        <a hx-get="/simulador" hx-target="main" hx-swap="innerHTML" class="cursor-pointer inline-flex items-center justify-center rounded-lg mx-1 px-6 py-3 font-medium hover:bg-teal-400/10 hover:text-teal-400 transition-all duration-300 shadow-md border border-teal-400/30">
+            <i class="fas fa-play mr-2"></i>
+            Começar Simulação
+        </a>
+    </div>
+    <!-- Nova seção: Cálculo de aporte necessário -->
+    <div class="card p-8 rounded-xl mb-8 animate-fade-in">
+        <h2 class="text-2xl font-bold text-white mb-6 text-center">Calculadora de Aportes para Valor Alvo</h2>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold text-teal-400 mb-3 flex items-center">
+                    <i class="fas fa-bullseye mr-2"></i> Fórmula do Aporte Necessário
+                </h3>
+                <div class="bg-gray-800 p-4 rounded-lg mb-4">
+                    <!-- Bloco de imagem para fórmula de aporte necessário -->
+                    <div class="flex justify-center my-4">
+                        <img src="public/images/formula-aportes.png" alt="Fórmula do Aporte Necessário" class="max-w-full rounded-md shadow-lg border border-teal-400/20">
+                    </div>
+
+                    <p>Onde:</p>
+                    <ul>
+                        <li>r = Taxa de juros anual</li>
+                        <li>n = Número de meses</li>
+                        <li>pmt = Valor do aporte mensal</li>
+                        <li>p = Valor inicial</li>
+                        <li>cp = Fórmula de juros composto</li>
+                        <li>fv = Fórmula de valor futuro com júros composto e aportes mensais</li>
+                        <li>ValorAlvo = Valor monetário que se deseja atingir</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-semibold text-teal-400 mb-3 flex items-center">
+                    <i class="fas fa-magic mr-2"></i> Como Funciona
+                </h3>
+                <ul class="space-y-3 text-gray-300">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-teal-400 mt-1 mr-2"></i>
+                        <span>Defina um valor monetário alvo que deseja atingir</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-teal-400 mt-1 mr-2"></i>
+                        <span>Informe valor inicial, taxa de juros e período</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-teal-400 mt-1 mr-2"></i>
+                        <span>Nossa calculadora determinará o valor mensal necessário</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-teal-400 mt-1 mr-2"></i>
+                        <span>Planeje seus investimentos com objetivos financeiros claros</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mb-8">
+        <a hx-get="/predict" hx-target="main" hx-swap="innerHTML" class="cursor-pointer inline-flex items-center justify-center rounded-lg mx-1 px-6 py-3 font-medium hover:bg-teal-400/10 hover:text-teal-400 transition-all duration-300 shadow-md border border-teal-400/30">
+            <i class="fas fa-play mr-2"></i>
+            Começar Simulação de aporte
+        </a>
+    </div>
+</div>
+{{ end }}

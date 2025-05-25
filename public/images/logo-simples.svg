@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="200" height="200" fill="none">
+  <!-- Pilha de moedas com efeito de sombra -->
+  <circle cx="60" cy="85" r="12" fill="#e0e0e0" stroke="#737373" stroke-width="1" />
+  <circle cx="60" cy="67" r="12" fill="#c7c7c7" stroke="#5a5a5a" stroke-width="1" />
+  <circle cx="60" cy="49" r="12" fill="#a3a3a3" stroke="#3e3e3e" stroke-width="1" />
+
+  <!-- Seta apontando para cima com gradiente -->
+  <defs>
+    <linearGradient id="arrowGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#cccccc"/>
+    </linearGradient>
+  </defs>
+  <path d="M60 30 L78 55 H68 V85 H52 V55 H42 L60 30 Z" fill="url(#arrowGradient)" stroke="#ffffff" stroke-width="1" />
+
+  <!-- Símbolo de dólar no centro -->
+  <text x="60" y="60" font-size="24" font-weight="bold" text-anchor="middle" fill="#737373">$</text>
+</svg>
+

@@ -1,0 +1,36 @@
+{{ define "footer" }}
+<!-- Footer com Contato -->
+<footer class="bg-gray-900 text-gray-300 pt-8 pb-6 mt-auto">
+    <div class="container mx-auto px-6">
+        <div class="grid md:grid-cols-2 gap-8 mb-8">
+            <div>
+                <div class="flex items-center mb-4">
+                    <img src="/public/images/logo-simples.svg" alt="Logo" class="w-10 h-10 mr-3">
+                    <h3 class="text-xl font-bold text-white">Simular Investimento <span class="text-teal-400">JC</span></h3>
+                </div>
+                <p class="text-gray-400 mb-4">Ferramentas de simulação financeira para ajudar no planejamento do seu futuro.</p>
+            </div>
+
+            <div id="contato">
+                <h3 class="text-lg font-semibold mb-4 text-white">Entre em contato</h3>
+                <div class="flex space-x-4 mb-4">
+                    <a href="https://github.com/KaduHod" target="_blank" class="bg-gray-800 hover:bg-gray-700 p-2 rounded-full transition-colors">
+                        <i class="fab fa-github text-lg"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/carlosjrribas98/" target="_blank" class="bg-gray-800 hover:bg-gray-700 p-2 rounded-full transition-colors">
+                        <i class="fab fa-linkedin-in text-lg"></i>
+                    </a>
+                    <a href="mailto:carlosjr.ribas@gmail.com" class="bg-gray-800 hover:bg-gray-700 p-2 rounded-full transition-colors">
+                        <i class="fas fa-envelope text-lg"></i>
+                    </a>
+                </div>
+                <p class="text-gray-400 text-sm">carlosjr.ribas@gmail.com</p>
+            </div>
+        </div>
+
+        <div class="pt-6 border-t border-gray-800 text-center text-sm text-gray-500">
+            <p>&copy; 2025 Simular Investimento JC. Todos os direitos reservados.</p>
+        </div>
+    </div>
+</footer>
+{{ end }}
