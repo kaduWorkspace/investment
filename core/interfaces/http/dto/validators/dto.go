@@ -1,4 +1,4 @@
-package http_dto
+package validators_dto
 
 import (
 	"errors"
