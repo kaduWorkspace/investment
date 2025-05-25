@@ -31,8 +31,8 @@ func (i HttpInput) FormatValidationError(err error, language string) map[string]
             "en": "must be a valid date/time",
         },
         "gtfield": {
-            "pt": "deve ser maior que o valor de referência",
-            "en": "must be greater than reference value",
+            "pt": "deve ser maior que",
+            "en": "must be greater than",
         },
     }
 

@@ -129,8 +129,8 @@ func TestPredictContributionFVSInput_Validate(t *testing.T) {
                 ContributionOnFirstDay: true,
             },
             wantErr: true,
-            messagesEn: map[string]string{"FinalValue":"must be greater than reference value [InitialValue]"},
-            messagesPt: map[string]string{"FinalValue":"deve ser maior que o valor de referência [InitialValue]"},
+            messagesEn: map[string]string{"FinalValue":"must be greater than [InitialValue]"},
+            messagesPt: map[string]string{"FinalValue":"deve ser maior que [InitialValue]"},
         },
     }
 
