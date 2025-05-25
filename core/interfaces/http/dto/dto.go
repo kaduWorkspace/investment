@@ -42,9 +42,11 @@ func (i HttpInput) FormatValidationError(err error, language string) map[string]
         for _, e := range validationErrors {
             field := e.Field()
             tag := e.Tag()
-            fmt.Println(field, tag, "[DEBUG]")
             if messages, exists := validationMessages[tag]; exists {
                 if msg, langExists := messages[language]; langExists {
+                    if tag == "gtfield" {
+                        msg = fmt.Sprintf("%s [%s]", msg, e.Param())
+                    }
                     result[field] = msg
                     continue
                 }
