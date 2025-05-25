@@ -2,6 +2,7 @@ package interface_chi
 
 import (
 	domain_http "kaduhod/fin_v3/core/domain/http"
+	auth_std "kaduhod/fin_v3/core/infra/auth/std"
 	infra_investment "kaduhod/fin_v3/core/infra/investment/decimal"
 	"net/http"
 
@@ -32,6 +33,7 @@ func (s *ServerChi) Setup() {
         w.Write([]byte("ok"))
     })
     r.Route("/api/investments", func(r chi.Router) {
+        r.Use(auth_std.AuthTokenMiddleware)
         r.Post("/compound-interest", investmentHandler.CompoundInterestApi)
         r.Post("/future-value-of-a-series-simple", investmentHandler.FutureValueOfASeriesApi)
         r.Post("/future-value-of-a-series", investmentHandler.FutureValueOfASeriesWithTrackingApi)
