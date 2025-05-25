@@ -1,0 +1,39 @@
+{{ define "header" }}
+<header class="fixed top-0 left-0 w-full bg-opacity-90 bg-gray-900 mb-2 z-50 shadow-md transition-all duration-300">
+    <div class="container mx-auto flex-col sm:flex-row flex justify-between items-center px-4 sm:px-6 py-4">
+        <div class="flex items-center">
+            <img src="/public/images/logo-simples.svg" alt="Logo" class="w-8 h-8 sm:w-10 sm:h-10 mr-2 sm:mr-3">
+            <div>
+                <h1 class="text-lg sm:text-xl font-bold text-white">Simular Investimento</h1>
+                <span class="px-2 py-0.5 bg-teal-400 text-gray-900 text-xs font-semibold rounded-full shadow-sm">BETA</span>
+            </div>
+        </div>
+        <nav class="flex md:hidden space-x-3 md:space-x-6 items-center">
+            <div id="htmx-indicator-header" class="htmx-indicator flex items-center space-x-1 text-xs text-teal-400 opacity-0 transition-opacity duration-300">
+                <svg class="animate-spin -ml-1 mr-1 h-3 w-3 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+            <!-- Rest of your navigation links remain the same -->
+            <a hx-get="/home"
+               hx-target="main"
+               hx-swap="innerHTML"
+               hx-indicator="#htmx-indicator-header"
+               class="nav-link text-sm md:text-base text-gray-300 cursor-pointer hover:text-teal-400 transition-colors duration-300">Home</a>
+
+            <a hx-get="/simulador"
+               hx-target="main"
+               hx-swap="innerHTML"
+               hx-indicator="#htmx-indicator-header"
+               class="nav-link text-sm md:text-base cursor-pointer text-gray-300 hover:text-teal-400 transition-colors duration-300">Simular</a>
+
+            <a hx-get="/predict"
+               hx-target="main"
+               hx-swap="innerHTML"
+               hx-indicator="#htmx-indicator-header"
+               class="nav-link text-sm md:text-base cursor-pointer text-gray-300 hover:text-teal-400 transition-colors duration-300">Previsão</a>
+        </nav>
+    </div>
+</header>
+{{ end }}

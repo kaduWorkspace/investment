@@ -1,10 +1,13 @@
 package interface_chi
 
 import (
+	"fmt"
 	domain_http "kaduhod/fin_v3/core/domain/http"
 	auth_std "kaduhod/fin_v3/core/infra/auth/std"
 	infra_investment "kaduhod/fin_v3/core/infra/investment/decimal"
+	"kaduhod/fin_v3/core/interfaces/web/renderer"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -26,9 +29,15 @@ func (s *ServerChi) Setup() {
         CompoundInterestService: compoundInterestServiceDecimal,
         FutureValueOfASeriesService: futureValueOfASeriesServiceDecimal,
     }
+    rootDir, _ := os.Getwd()
+    rndr, err := renderer.NewRenderer(rootDir+"/core/interfaces/web/components", rootDir+"/core/interfaces/web/pages")
+    if err != nil {
+        panic(err)
+    }
     r := chi.NewRouter()
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
+    r.Handle("/public/*", http.StripPrefix("/public/" ,http.FileServer(http.Dir(rootDir + "/public"))))
     r.Get("/health-check", func(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("ok"))
     })
@@ -42,6 +51,11 @@ func (s *ServerChi) Setup() {
     r.Route("/web/investments", func(r chi.Router) {
         r.Post("/compound-interest", investmentHandler.CompoundInterest)
         r.Post("/future-value-of-a-series", investmentHandler.FutureValueOfASeries)
+    })
+    r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+        if err := rndr.Render(w, "base", nil); err != nil {
+            w.WriteHeader(500)
+        }
     })
     s.handler = r
 }
