@@ -1,21 +1,22 @@
 package interface_chi
 
 import (
-	"kaduhod/fin_v3/core/domain/http"
+	domain_http "kaduhod/fin_v3/core/domain/http"
 	infra_investment "kaduhod/fin_v3/core/infra/investment/decimal"
-	net_http "net/http"
+	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 type ServerChi struct {
-    handler net_http.Handler
+    handler http.Handler
 }
-func NewServer() http.Server {
+func NewServer() domain_http.Server {
     return &ServerChi{}
 }
+
 func (s *ServerChi) Start(port string) {
-    net_http.ListenAndServe(port, s.handler)
+    http.ListenAndServe(port, s.handler)
 }
 func (s *ServerChi) Setup() {
     compoundInterestServiceDecimal := infra_investment.CompoundInterestDecimal{}
@@ -27,7 +28,7 @@ func (s *ServerChi) Setup() {
     r := chi.NewRouter()
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
-    r.Get("/health-check", func(w net_http.ResponseWriter, r *net_http.Request) {
+    r.Get("/health-check", func(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("✅"))
     })
     r.Route("/api/investments", func(r chi.Router) {
