@@ -1,6 +1,7 @@
 package validators_dto
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -90,11 +91,17 @@ func (I HttpInput) Validate(dto interface{}) (error) {
     return err
 }
 
+func (I HttpInput) FromJson(b []byte) (error, any) {
+    var dto interface{}
+    err := json.Unmarshal(b, &dto)
+    return err, dto
+}
+
 type CoumpoundInterestInput struct {
     HttpInput
     Periods int `json:"periods" form:"periods" validate:"required,gte=1,number"`
     TaxDecimal float64 `json:"tax_decimal" form:"tax_decimal" validate:"required,gt=0,number"`
-    InitialValue float64 `json:"initial_value" form:"initial_value" validate:"required,gte=1,number"`
+    InitialValue float64 `json:"initial_value" form:"initial_value" validate:"number,required,gte=1"`
 }
 
 type FutureValueOfASeriesInput struct {
