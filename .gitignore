@@ -1,4 +1,6 @@
 bin
+.secrets
+.env*
 go.mod
 # Binaries e diretórios temporários do Air
 /tmp

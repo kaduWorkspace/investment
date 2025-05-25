@@ -12,7 +12,6 @@ type PeriodTracker struct {
     InterestFormated string `json:"interest"`
     AccruedFormated string `json:"accrued"`
     DateFormated string `json:"date"`
-    Acumulated string `json:"acumulated"`
 }
 func NewPeriodTracker(accrued valueobjects.Money, period int, interest valueobjects.Money, initialDate time.Time) PeriodTracker {
     return PeriodTracker{
@@ -22,7 +21,6 @@ func NewPeriodTracker(accrued valueobjects.Money, period int, interest valueobje
         Date: initialDate,
         InterestFormated: interest.Formatted(),
         AccruedFormated: accrued.Formatted(),
-        Acumulated: accrued.Formatted(),
         DateFormated: GetDateFormated(initialDate.AddDate(0, period, 0)),
     }
 }
