@@ -1,7 +1,7 @@
 package validators_dto
 
 import (
-    "testing"
+	"testing"
 )
 
 func TestCoumpoundInterestInput_Validate(t *testing.T) {
@@ -21,8 +21,15 @@ func TestCoumpoundInterestInput_Validate(t *testing.T) {
             name:    "missing initial value",
             input:   CoumpoundInterestInput{Periods: 12, TaxDecimal: 0.5},
             wantErr: true,
-            messagesPt: map[string]string{"TaxDecimal":"deve ser maior ou igual a 0"},
-            messagesEn: map[string]string{"TaxDecimal":"must be greater than or equal to 0"},
+            messagesPt: map[string]string{"InitialValue":"campo obrigatório"},
+            messagesEn: map[string]string{"InitialValue":"required field"},
+        },
+        {
+            name:    "Required tax decimal",
+            input:   CoumpoundInterestInput{Periods: 12, TaxDecimal: 0, InitialValue: 1},
+            wantErr: true,
+            messagesPt: map[string]string{"TaxDecimal":"campo obrigatório"},
+            messagesEn: map[string]string{"TaxDecimal":"required field"},
         },
     }
 
@@ -73,8 +80,8 @@ func TestFutureValueOfASeriesInput_Validate(t *testing.T) {
                 FirstDay: true, Contribution: 0,
             },
             wantErr: true,
-            messagesPt: map[string]string{"Contribution":"deve ser maior ou igual a 0"},
-            messagesEn: map[string]string{"Contribution":"must be greater than or equal to 0"},
+            messagesPt: map[string]string{"Contribution":"deve ser maior [0]"},
+            messagesEn: map[string]string{"Contribution":"must be greater than [0]"},
         },
     }
 
