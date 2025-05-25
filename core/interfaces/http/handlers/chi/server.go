@@ -29,11 +29,13 @@ func (s *ServerChi) Setup() {
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
     r.Get("/health-check", func(w http.ResponseWriter, r *http.Request) {
-        w.Write([]byte("✅"))
+        w.Write([]byte("ok"))
     })
     r.Route("/api/investments", func(r chi.Router) {
         r.Post("/compound-interest", investmentHandler.CompoundInterestApi)
-        r.Post("/future-value-of-a-series", investmentHandler.FutureValueOfASeriesApi)
+        r.Post("/future-value-of-a-series-simple", investmentHandler.FutureValueOfASeriesApi)
+        r.Post("/future-value-of-a-series", investmentHandler.FutureValueOfASeriesWithTrackingApi)
+        r.Post("/future-value-of-a-series/predict-contribution", investmentHandler.PredictFV)
     })
     r.Route("/web/investments", func(r chi.Router) {
         r.Post("/compound-interest", investmentHandler.CompoundInterest)

@@ -76,6 +76,10 @@ func (i HttpInput) FormatValidationError(err error, language string) map[string]
 
 func (I HttpInput) Validate(dto interface{}) (error) {
     validate := validator.New(validator.WithPrivateFieldValidation())
+    validate.RegisterValidation("datetime", func(fl validator.FieldLevel) bool {
+        _, err := time.Parse("02/01/2006", fl.Field().String())
+        return err == nil
+    })
     err := validate.Struct(dto)
     if err == nil {
         return nil
@@ -119,7 +123,7 @@ type FutureValueOfASeriesWithPeriodsInput struct {
     FirstDay bool `json:"first_day" form:"first_day" validate:"boolean"`
     Contribution float64 `json:"contribution" form:"contribution" validate:"gt=0,number"`
     InitialValue float64 `json:"initial_value" form:"initial_value" validate:"gte=1,number"`
-    InitialDate time.Time `json:"initial_date" form:"initial_date" validate:"required,datetime"`
+    InitialDate string `json:"initial_date" form:"initial_date" validate:"required,datetime"`
 }
 
 type PredictContributionFVSInput struct {
@@ -127,7 +131,7 @@ type PredictContributionFVSInput struct {
     Periods int `json:"periods" form:"periods" validate:"required,gte=1,number"`
     TaxDecimal float64 `json:"tax_decimal" form:"tax_decimal" validate:"required,gt=0,number"`
     FinalValue float64 `json:"final_value" form:"final_value" validate:"required,gte=1,gtfield=InitialValue,number"`
-    InitialValue float64 `json:"initial_value" form:"initial_value" validate:"required,gte=1,number"`
-    ContributionOnFirstDay bool `json:"contribution_on_first_day" form:"contribution_on_first_day" validate:"required,boolean"`
+    InitialValue float64 `json:"initial_value" form:"initial_value" validate:"gte=0,number"`
+    ContributionOnFirstDay bool `json:"first_day" form:"contribution_on_first_day" validate:"required,boolean"`
 }
 

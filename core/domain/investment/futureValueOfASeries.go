@@ -5,13 +5,13 @@ import (
 	"time"
 )
 type PeriodTracker struct {
-    Accrued valueobjects.Money `json:"accrued"`
+    Accrued valueobjects.Money `json:"-"`
     Period  int `json:"period"`
-    Interest valueobjects.Money `json:"interest"`
-    Date time.Time `json:"date"`
-    InterestFormated string `json:"interest_formated"`
-    AccruedFormated string `json:"accrued_formated"`
-    DateFormated string `json:"date_formated"`
+    Interest valueobjects.Money `json:"-"`
+    Date time.Time `json:"-"`
+    InterestFormated string `json:"interest"`
+    AccruedFormated string `json:"accrued"`
+    DateFormated string `json:"date"`
     Acumulated string `json:"acumulated"`
 }
 func NewPeriodTracker(accrued valueobjects.Money, period int, interest valueobjects.Money, initialDate time.Time) PeriodTracker {
