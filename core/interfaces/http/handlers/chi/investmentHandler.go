@@ -208,7 +208,7 @@ func (h *InvestmentHandlerChi) FutureValueOfASeriesPredictForm(w http.ResponseWr
         "csrf": "1234546",
         "taxa_selic": "14.75",
     }
-    if err := h.Renderer.Render(w, "fv_form_result_wrapper", data); err != nil {
+    if err := h.Renderer.Render(w, "fv_predict_form_result_wrapper", data); err != nil {
         fmt.Println(err)
     }
 }

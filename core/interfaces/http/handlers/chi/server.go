@@ -50,7 +50,7 @@ func (s *ServerChi) Setup() {
     })
     r.Route("/web/investments", func(r chi.Router) {
         r.Get("/fv", investmentHandler.FutureValueOfASeriesForm)
-        r.Get("/fv/predict", investmentHandler.FutureValueOfASeriesForm)
+        r.Get("/fv/predict", investmentHandler.FutureValueOfASeriesPredictForm)
         r.Post("/compound-interest", investmentHandler.CompoundInterest)
         r.Post("/future-value-of-a-series", investmentHandler.FutureValueOfASeries)
     })
