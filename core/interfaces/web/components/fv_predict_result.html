@@ -1,0 +1,40 @@
+{{ define "predict_result" }}
+<div id="resultados_container" class="flex flex-col justify-center items-center mb-4 w-full">
+    <div class="flex flex-col w-5/6">
+        <div id="predictionInfo" class="flex flex-col w-full justify-around">
+            <div class="card rounded-lg shadow-md p-6 mb-4">
+                <h2 class="text-xl font-bold text-white mb-4">Resultado da Previsão</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-neutral-900/50 rounded-lg p-3">
+                        <div class="flex items-center justify-between">
+                            <p class="text-gray-400 text-sm">Valor Final Desejado</p>
+                            <p class="text-white text-lg font-medium">R$ {{ .valor_final }}</p>
+                        </div>
+                    </div>
+                    <div class="bg-neutral-900/50 rounded-lg p-3">
+                        <div class="flex items-center justify-between">
+                            <p class="text-gray-400 text-sm">Valor Inicial</p>
+                            <p class="text-white text-lg font-medium">R$ {{ .valor_inicial }}</p>
+                        </div>
+                    </div>
+                    <div class="bg-green-700 hover:bg-green-600 transition-all duration-300  rounded-lg p-3 col-span-1 md:col-span-2">
+                        <div class="flex items-center justify-between">
+                            <p class="text-white text-sm">Aporte Mensal Necessário</p>
+                            <p class="text-lg font-bold text-white">R$ {{ .aporte_necessario }}</p>
+                        </div>
+                    </div>
+                </div>            </div>
+
+            <div class="mt-4 p-3 card bg-yellow-800/50 text-white rounded-lg shadow-md w-full flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <p class="text-sm">
+                <strong class="text-yellow-300">Atenção:</strong> Este cálculo assume contribuições regulares e uma taxa de retorno constante. Resultados reais podem variar devido a flutuações de mercado.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}

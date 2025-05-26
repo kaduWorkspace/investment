@@ -8,6 +8,7 @@ import (
 	"kaduhod/fin_v3/core/domain/investment"
 	infra_investment "kaduhod/fin_v3/core/infra/investment/decimal"
 	validators_dto "kaduhod/fin_v3/core/interfaces/http/dto/validators"
+	"kaduhod/fin_v3/core/interfaces/web/renderer"
 	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
 	"net/http"
 	"time"
@@ -15,6 +16,7 @@ import (
 type InvestmentHandlerChi struct {
     CompoundInterestService investment.CompoundInterest
     FutureValueOfASeriesService investment.FutureValueOfASeries
+    Renderer *renderer.Renderer
 }
 func (h InvestmentHandlerChi) BadRequestResponse(err error, w http.ResponseWriter) {
     fmt.Println(err)
@@ -191,6 +193,24 @@ func (h *InvestmentHandlerChi) FutureValueOfASeriesWithTrackingApi(w http.Respon
     return
 }
 func (h *InvestmentHandlerChi) CompoundInterest(w http.ResponseWriter, r *http.Request) {
+}
+func (h *InvestmentHandlerChi) FutureValueOfASeriesForm(w http.ResponseWriter, r *http.Request) {
+    data := map[string]any{
+        "csrf": "1234546",
+        "taxa_selic": "14.75",
+    }
+    if err := h.Renderer.Render(w, "fv_form_result_wrapper", data); err != nil {
+        fmt.Println(err)
+    }
+}
+func (h *InvestmentHandlerChi) FutureValueOfASeriesPredictForm(w http.ResponseWriter, r *http.Request) {
+    data := map[string]any{
+        "csrf": "1234546",
+        "taxa_selic": "14.75",
+    }
+    if err := h.Renderer.Render(w, "fv_form_result_wrapper", data); err != nil {
+        fmt.Println(err)
+    }
 }
 func (h *InvestmentHandlerChi) FutureValueOfASeries(w http.ResponseWriter, r *http.Request) {
 }

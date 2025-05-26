@@ -1,0 +1,88 @@
+{{ define "fv_result" }}
+<div id="resultados_container" class="flex flex-col justify-center items-center mb-4 w-full">
+    <div class="flex flex-col w-5/6">
+        <div class="flex flex-col sm:flex-row w-full mb-2 justify-center">
+            <div class="flex flex-col m-1 sm:w-2/4 w-full">
+                <!-- <label for="periodo" class="text-gray-400 text-sm mb-1">
+                    Escolha o Período
+                    </label>
+                    <select id="resultado-opcoes" data-ignore_input="1" class="bg-neutral-900 rounded-lg shadow-md p-3 text-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-300">
+                    <option value="geral">Resultado Geral</option>
+                    <option value="dias">Rentabilidade por dias</option>
+                    <option value="meses">Rentabilidade por meses</option>
+                    <option value="semestres">Rentabilidade por semestres</option>
+                    <option value="anos">Rentabilidade por anos</option>
+                    </select>-->
+            </div>
+        </div>
+
+        <div id="resultadoGeralInfo" class="flex flex-col w-full justify-around">
+            {{ template "fv_result_data" . }}
+            {{if .tabela_json }}
+            <div id="grafico_wrapper_botao" class="flex mt-4 flex-col justify-center items-center w-full">
+                <button id="botao_ativar_grafico" type="submit" class="flex my-1 items-center animate-fade-in justify-center rounded-lg w-5/6 mx-1 card py-3 px-4 font-medium hover:bg-teal-400/10 hover:text-teal-400 transition-all duration-300 shadow-md border border-teal-400/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 6h6m-6-12h6" />
+                    </svg>
+                    Vizualizar Gráfico
+                </button>
+            </div>
+            {{end}}
+        </div>
+        {{if .tabela }}
+        <div class="w-full sm:w-5/6 mx-auto mt-6 animate-fade-in">
+            <!-- Título da tabela -->
+            <h2 class="text-2xl font-bold text-white text-center mb-4">
+                Visualização em tabela
+            </h2>
+
+            <!-- Tabela -->
+            <div class="overflow-x-auto rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <table class="w-full card rounded-lg text-gray-200">
+                    <!-- Cabeçalho da tabela -->
+                    <thead class="bg-gray-800">
+                        <tr>
+                            <th class="p-3 text-left text-sm font-medium text-teal-400">Mês</th>
+                            <th class="p-3 text-left text-sm font-medium text-teal-400">Aporte</th>
+                            <th class="p-3 text-left text-sm font-medium text-teal-400">Juros</th>
+                            <th class="p-3 text-left text-sm font-medium text-teal-400">Valor Acumulado</th>
+                        </tr>
+                    </thead>
+                    <!-- Corpo da tabela -->
+                    <tbody>
+                        <tr class="border-b border-gray-700 hover:bg-gray-800 transition-all duration-300">
+                            <td class="p-3 text-sm">0</td>
+                            <td class="p-3 text-sm">R$ 0,0</td>
+                            <td class="p-3 text-sm">R$ 0,0</td>
+                            <td class="p-3 text-sm">R$ {{ .valor_inicial }}</td>
+                        </tr>
+                        {{ range $chave, $valor := .tabela }}
+                        <tr class="border-b border-gray-700 hover:bg-gray-800 transition-all duration-300">
+                            <td class="p-3 text-sm">{{ $valor.DataMesAno }}</td>
+                            <td class="p-3 text-sm">R$ {{ $.aporte }}</td>
+                            <td class="p-3 text-sm">R$ {{ $valor.JurosFormatado }}</td>
+                            <td class="p-3 text-sm">R$ {{ $valor.AcumuladoFormatado }}</td>
+                        </tr>
+                        {{ end }}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 p-3 card bg-yellow-800/50 text-white rounded-lg shadow-md w-full flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <p class="text-sm">
+                <strong class="text-yellow-300">Atenção:</strong> Este cálculo não considera os impostos sobre investimentos, como IR ou IOF. O valor líquido real pode ser menor dependendo da tributação aplicável.
+                </p>
+            </div>
+        </div>
+        {{end}}
+    </div>
+</div>
+{{ template "fv_chart" }}
+<script src="/public/scripts/graficoV2.js"></script>
+<script>
+    window.dados_tabela = JSON.parse(`{{ .tabela_json }}`);
+</script>
+{{ end }}

@@ -1,0 +1,156 @@
+{{ define "fv_predict_form" }}
+<div id="form_container" class="container mx-auto px-4 py-10">
+    <div class="card p-8 max-w-4xl mx-auto animate-fade-in">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-semibold text-white mb-2">Simulador de Previsão de Investimento</h2>
+            <p class="text-gray-400">
+            Preencha as informações abaixo para prever quanto você precisa investir para alcançar seu objetivo financeiro.
+            </p>
+        </div>
+
+        <!-- Mensagens de Erro -->
+        <div id="form_errors_htmx" class="bg-red-900 fade-out bg-opacity-20 border border-red-800 text-red-200 p-4 rounded-lg mb-6 {{ if not .erros_formulario }}hidden{{ end }}">
+            <div class="flex items-center mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="font-medium">Por favor, corrija os seguintes erros:</span>
+            </div>
+            <ul class="list-disc pl-5 space-y-1 text-sm">
+                {{ range $chave, $valor := .erros_formulario }}
+                {{ range $_, $valor_erro := $valor }}
+                <li>{{ $valor_erro }}</li>
+                {{ end }}
+                {{ end }}
+            </ul>
+        </div>
+
+        <!-- Formulário -->
+        <form id="formulario_prever" hx-post="/v2/predict" hx-target="#resultados_container" hx-swap="outerHTML" class="space-y-6">
+            <!-- Primeira linha: Valor Futuro e Taxa de Juros -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Valor futuro desejado -->
+                <div class="form-group">
+                    <label for="valor_futuro" class="block text-gray-300 text-sm font-medium mb-2">
+                        Valor futuro desejado
+                        <span class="text-teal-400 text-xs ml-1">(Ex.: 50.000)</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-dollar-sign"></i>
+                        </span>
+                        <input type="hidden" id="valor_futuro_input" name="valor_futuro" value="">
+                        <input id="valor_futuro" type="text" step="any"
+                        class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
+                        placeholder="Insira o valor" value="0,0">
+                    </div>
+                    <span class="text-red-400 text-xs mt-1 hidden" id="error_valor_futuro"></span>
+                </div>
+
+                <!-- Taxa de juros anual -->
+                <div class="form-group">
+                    <label for="taxa_juros_anual" class="block text-gray-300 text-sm font-medium mb-2">
+                        Taxa de juros anual
+                        <span class="text-teal-400 text-xs ml-1">(Selic.: {{ .taxa_selic }}%)</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-percentage"></i>
+                        </span>
+                        <input type="hidden" name="taxa_juros_anual" id="taxa_juros_anual_input">
+                        <input id="taxa_juros_anual" type="text" step="any"
+                        class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
+                        placeholder="Insira a taxa" value="{{ .taxa_selic }}">
+                    </div>
+                    <span class="text-red-400 text-xs mt-1 hidden" id="error_taxa_juros_anual"></span>
+                </div>
+            </div>
+
+            <!-- Segunda linha: Período, Contribuição Inicial e Valor Inicial -->
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Período de investimento -->
+                <div class="form-group">
+                    <label for="periodos" class="block text-gray-300 text-sm font-medium mb-2">
+                        Data do resgate
+                        <span class="text-teal-400 text-xs ml-1">(Ex.: 5 anos)</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                        <select id="periodos" name="periodos"
+                            class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200">
+                            <option value="6">6 meses</option>
+                            <option value="12" selected>1 ano</option>
+                            <option value="24">2 anos</option>
+                            <option value="36">3 anos</option>
+                            <option value="48">4 anos</option>
+                            <option value="60">5 anos</option>
+                            <option value="120">10 anos</option>
+                            <option value="240">20 anos</option>
+                        </select>
+                    </div>
+                    <span class="text-red-400 text-xs mt-1 hidden" id="error_periodos"></span>
+                </div>
+
+                <!-- Contribuição no início do período -->
+                <div class="form-group">
+                    <label for="contribuicao_inicio_periodo" class="block text-gray-300 text-sm font-medium mb-2">
+                        Contribuição no início do mês?
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-calendar-check"></i>
+                        </span>
+                        <select id="contribuicao_inicio_periodo" name="contribuicao_inicio_periodo"
+                            class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 appearance-none focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200">
+                            <option value="true">Sim</option>
+                            <option value="false">Não</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Valor inicial (opcional) -->
+                <div class="form-group">
+                    <label for="valor_inicial" class="block text-gray-300 text-sm font-medium mb-2">
+                        Valor inicial (opcional)
+                        <span class="text-teal-400 text-xs ml-1">(Ex.: 5.000)</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-dollar-sign"></i>
+                        </span>
+                        <input type="hidden" id="valor_inicial_input" name="valor_inicial" value="">
+                        <input id="valor_inicial" type="text" step="any"
+                        class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
+                        placeholder="Insira o valor" value="0,0">
+                    </div>
+                    <span class="text-red-400 text-xs mt-1 hidden" id="error_valor_inicial"></span>
+                </div>
+            </div>
+
+            <!-- Campos ocultos -->
+            <input type="hidden" name="csrf_token" value="{{ .csrf }}">
+
+            <!-- Botão Simular -->
+            <div class="">
+                <button id="calcular" type="submit" class="flex items-center justify-center rounded-lg mx-1 w-full card py-3 px-4 font-medium hover:bg-teal-400/10 hover:text-teal-400 transition-all duration-300 shadow-md border border-teal-400/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Calcular Investimento Necessário
+                    <svg class="htmx-indicator animate-spin h-5 w-5 text-teal-400 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{{ end }}

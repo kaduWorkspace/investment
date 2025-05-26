@@ -1,0 +1,11 @@
+{{ define "fv_predict_result_wrapper" }}
+<div id=""  class="flex flex-col w-full text-white justify-center items-center p-4">
+    {{ template "fv_predict_form" . }}
+    {{ if .predict_result }}
+    {{ template "predict_result" . }}
+    {{ else }}
+    <div id="resultados_container" class="flex flex-col justify-center items-center mb-4 w-full">
+    </div>
+    {{ end }}
+</div>
+{{ end }}
