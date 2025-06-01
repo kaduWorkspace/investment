@@ -3,16 +3,18 @@ package interface_chi
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	core_http "kaduhod/fin_v3/core/domain/http"
 	"kaduhod/fin_v3/core/domain/investment"
 	valueobjects "kaduhod/fin_v3/core/domain/valueObjects"
 	infra_investment "kaduhod/fin_v3/core/infra/investment/decimal"
+	validators_dto "kaduhod/fin_v3/core/interfaces/http/dto/validators"
 	"kaduhod/fin_v3/core/interfaces/web/renderer"
 	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
 	"net/http"
+	"strconv"
 	"time"
 )
-
 type InvestmentHandlerChiWeb struct {
     CompoundInterestService investment.CompoundInterest
     FutureValueOfASeriesService investment.FutureValueOfASeries
@@ -34,30 +36,33 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictFormPage(w http.Res
         fmt.Println(err)
     }
 }
-
 func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictResultPage(w http.ResponseWriter, r *http.Request) {
-    userInput := struct {
-        interestRateDecimal   float64
-        periods               int
-        finalValue            float64
-        initialValue          float64
-        contributionOnFirstDay bool
-    }{
-        interestRateDecimal:   0.12,
-        periods:               12,
-        contributionOnFirstDay: true,
-        finalValue:            2062.84,
-        initialValue:          500.00,
+    b, err := io.ReadAll(r.Body)
+    if err != nil {
+        fmt.Println(err)
+        w.WriteHeader(http.StatusBadRequest)
+        return
     }
-    finalValue := infra_investment.NewDecimalMoney(userInput.finalValue)
-    taxDecimal := infra_investment.NewDecimalMoney(userInput.interestRateDecimal)
-    initialValue := infra_investment.NewDecimalMoney(userInput.initialValue)
+    err, userInput := struct_utils.FromJson[validators_dto.PredictContributionFVSInput](b)
+    if err != nil {
+        fmt.Println(err)
+        w.WriteHeader(http.StatusBadRequest)
+        return
+    }
+    if err := userInput.Validate(userInput); err != nil {
+        fmt.Println(err)
+        w.WriteHeader(http.StatusBadRequest)
+        return
+    }
+    finalValue := infra_investment.NewDecimalMoney(userInput.FinalValue)
+    taxDecimal := infra_investment.NewDecimalMoney(userInput.TaxDecimal)
+    initialValue := infra_investment.NewDecimalMoney(userInput.InitialValue)
     contribution := h.FutureValueOfASeriesService.PredictContribution(
         finalValue,
         taxDecimal,
         initialValue,
-        userInput.contributionOnFirstDay,
-        userInput.periods,
+        userInput.ContributionOnFirstDay,
+        userInput.Periods,
     )
     data := map[string]any{
         "csrf": "1234546",
@@ -79,7 +84,106 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesFormPage(w http.ResponseWr
         fmt.Println(err)
     }
 }
-
+func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.ResponseWriter, r *http.Request) {
+    initialValueF, err := strconv.ParseFloat(r.FormValue("initial_value"), 64)
+    if err != nil {
+        w.WriteHeader(400)
+        w.Write([]byte("invalid initial_value"))
+        return
+    }
+    firstDay, err := strconv.ParseBool(r.FormValue("first_day"))
+    if err != nil {
+        w.WriteHeader(400)
+        w.Write([]byte("invalid fist_day"))
+        return
+    }
+    contributionF, err := strconv.ParseFloat(r.FormValue("contribution"), 64)
+    if err != nil {
+        w.WriteHeader(400)
+        w.Write([]byte("invalid contribution"))
+        return
+    }
+    taxF, err := strconv.ParseFloat(r.FormValue("tax_decimal"), 64)
+    if err != nil {
+        w.WriteHeader(400)
+        w.Write([]byte("invalid tax_decimal"))
+        return
+    }
+    taxF = taxF / 100
+    periodsF, err := strconv.ParseInt(r.FormValue("periods"), 10, 64)
+    if err != nil {
+        w.WriteHeader(400)
+        w.Write([]byte("invalid periods"))
+        return
+    }
+    if err != nil {
+        w.WriteHeader(400)
+        w.Write([]byte("invalid periods"))
+        return
+    }
+    userInput := validators_dto.FutureValueOfASeriesWithPeriodsInput{
+        InitialValue: initialValueF,
+        FirstDay: firstDay,
+        Periods: int(periodsF),
+        TaxDecimal: taxF,
+        Contribution: contributionF,
+        InitialDate: r.FormValue("initial_date"),
+    }
+    if err := userInput.Validate(userInput); err != nil {
+        fmt.Println(err)
+        errs := userInput.FormatValidationError(err, "pt")
+        fmt.Println(errs, "Aquiii")
+        w.Header().Set("HX-Retarget", "#form_container")
+        h.Renderer.Render(w, "fv_form", map[string]any{
+            "errs": errs,
+        })
+        return
+    }
+    initialValue := infra_investment.NewDecimalMoney(userInput.InitialValue)
+    contribution := infra_investment.NewDecimalMoney(userInput.Contribution)
+    periodsD := infra_investment.NewDecimalMoney(float64(userInput.Periods))
+    result, periods := h.FutureValueOfASeriesService.CalculateTrackingPeriods(
+        initialValue,
+        contribution,
+        infra_investment.NewDecimalMoney(userInput.TaxDecimal),
+        userInput.FirstDay,
+        time.Now(),
+        userInput.Periods,
+    )
+    periods = setupItensFromPeriods(periods, struct_utils.EhMobile(r.UserAgent()))
+    b, err := json.Marshal(periods)
+    var table string
+    if err != nil {
+        fmt.Println("Error building json table of period trackers")
+    } else {
+        table = string(b)
+    }
+    totalInvested := periodsD.Multiply(contribution).Add(initialValue)
+    var initialValueOrOne valueobjects.Money
+    if userInput.InitialValue < 1 {
+        initialValueOrOne = infra_investment.NewDecimalMoney(1.0)
+    } else {
+        initialValueOrOne = initialValue
+    }
+    roi := result.Subtract(infra_investment.NewDecimalMoney(userInput.InitialValue))
+    roiPorcentage := roi.Divide(initialValueOrOne).Multiply(infra_investment.NewDecimalMoney(100))
+    netGain := result.Subtract(periodsD.Multiply(contribution))
+    data := map[string]any{
+        "csrf": "1234546",
+        "selic_tax": h.GetTaxaSelic(),
+        "periods_json": table,
+        "roi": roi.Formatted(),// return of investment | valorizacao
+        "total_invested": totalInvested.Formatted(),// total investido
+        "initial_value": initialValue.Formatted(),
+        "final_value": result.Formatted(),
+        "net_gain": netGain.Formatted(),// juros rendido | rentabilidade liquida.
+        "roi_porcentage": roiPorcentage.Formatted(), // retorno sobre o investimento
+        "contribution": contribution.Formatted(),
+    }
+    if err := h.Renderer.Render(w, "fv_result", data); err != nil {
+        fmt.Println(err)
+    }
+}
 func setupItensFromPeriods(periods []investment.PeriodTracker, for_mobile bool) []investment.PeriodTracker {
     var max_table_items int
     if for_mobile {
@@ -107,65 +211,6 @@ func setupItensFromPeriods(periods []investment.PeriodTracker, for_mobile bool) 
         adjusted_table = append(adjusted_table, curr)
     }
     return adjusted_table
-}
-func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.ResponseWriter, r *http.Request) {
-    userInput := struct {
-        initialValue          float64
-        interestRateDecimal   float64
-        periods               int
-        contributionAmount    float64
-        contributionOnFirstDay bool
-    } {
-        initialValue: 0.0,
-        interestRateDecimal:   0.12,
-        periods:               12,
-        contributionAmount:    100,
-        contributionOnFirstDay: false,
-    }
-    initialValue := infra_investment.NewDecimalMoney(userInput.initialValue)
-    contribution := infra_investment.NewDecimalMoney(userInput.contributionAmount)
-    periodsD := infra_investment.NewDecimalMoney(float64(userInput.periods))
-    result, periods := h.FutureValueOfASeriesService.CalculateTrackingPeriods(
-        initialValue,
-        contribution,
-        infra_investment.NewDecimalMoney(userInput.interestRateDecimal),
-        userInput.contributionOnFirstDay,
-        time.Now(),
-        userInput.periods,
-    )
-    periods = setupItensFromPeriods(periods, struct_utils.EhMobile(r.UserAgent()))
-    b, err := json.Marshal(periods)
-    var table string
-    if err != nil {
-        fmt.Println("Error building json table of period trackers")
-    } else {
-        table = string(b)
-    }
-    totalInvested := periodsD.Multiply(contribution).Add(initialValue)
-    var initialValueOrOne valueobjects.Money
-    if userInput.initialValue < 1 {
-        initialValueOrOne = infra_investment.NewDecimalMoney(1.0)
-    } else {
-        initialValueOrOne = initialValue
-    }
-    roi := result.Subtract(infra_investment.NewDecimalMoney(userInput.initialValue))
-    roiPorcentage := roi.Divide(initialValueOrOne).Multiply(infra_investment.NewDecimalMoney(100))
-    netGain := result.Subtract(periodsD.Multiply(contribution))
-    data := map[string]any{
-        "csrf": "1234546",
-        "selic_tax": h.GetTaxaSelic(),
-        "periods_json": table,
-        "roi": roi.Formatted(),// return of investment | valorizacao
-        "total_invested": totalInvested.Formatted(),// total investido
-        "initial_value": initialValue.Formatted(),
-        "final_value": result.Formatted(),
-        "net_gain": netGain.Formatted(),// juros rendido | rentabilidade liquida.
-        "roi_porcentage": roiPorcentage.Formatted(), // retorno sobre o investimento
-        "contribution": contribution.Formatted(),
-    }
-    if err := h.Renderer.Render(w, "fv_result", data); err != nil {
-        fmt.Println(err)
-    }
 }
 func (h *InvestmentHandlerChiWeb) GetTaxaSelic() float64 {
     valueSelic := 13.25 // default

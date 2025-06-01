@@ -10,85 +10,86 @@ import setupFormValidation from './predict_form.js';
  * Setup form event listeners and initialize the form
  * @param {HTMLFormElement} form - The form element to initialize
  */
-export function setupFormListeners(form) {
-  if (!form) return;
+    export function setupFormListeners(form) {
+        if (!form) return;
 
-  // Setup form input event listener
-  form.addEventListener("input", e => {
-    FormUtils.handleErrorsEvent(e);
-    FormUtils.processInputs(form);
-    StorageUtils.saveInputValues(form);
-  });
+        // Setup form input event listener
+        form.addEventListener("input", e => {
+            FormUtils.handleErrorsEvent(e);
+            FormUtils.processInputs(form);
+            StorageUtils.saveInputValues(form);
+        });
 
-  // Setup currency input masks
-  const valorAporte = document.getElementById('valor_aporte');
-  const valorInicial = document.getElementById('valor_inicial');
-  const valorTaxaAnual = document.getElementById('valor_taxa_anual');
+        // Setup currency input masks
+        const valorAporte = document.getElementById('contribution');
+        const valorInicial = document.getElementById('initial_value');
+        const valorTaxaAnual = document.getElementById('tax_decimal');
 
-  if (valorAporte) valorAporte.addEventListener('input', CurrencyUtils.handleCurrencyInput);
-  if (valorInicial) valorInicial.addEventListener('input', CurrencyUtils.handleCurrencyInput);
-  if (valorTaxaAnual) valorTaxaAnual.addEventListener('input', CurrencyUtils.handleCurrencyInput);
+        if (valorAporte) valorAporte.addEventListener('input', CurrencyUtils.handleCurrencyInput);
+        if (valorInicial) valorInicial.addEventListener('input', CurrencyUtils.handleCurrencyInput);
+        if (valorTaxaAnual) valorTaxaAnual.addEventListener('input', CurrencyUtils.handleCurrencyInput);
 
-  // Setup htmx form validation
-  document.body.addEventListener("htmx:configRequest", event => {
-    if (event.detail.elt.id === "formulario_calcular") {
-      if (!FormUtils.validateRequest(event)) {
-        event.preventDefault();
-      }
+        // Setup htmx form validation
+        document.body.addEventListener("htmx:configRequest", event => {
+            if (event.detail.elt.id === "formulario_calcular") {
+                if (!FormUtils.validateRequest(event)) {
+                    event.preventDefault();
+                }
+            }
+        });
+
+        // Setup data_final_opcoes change event
+        const dataFinalOpcoes = document.getElementById('periods');
+        const dataFinalEspecificoWrapper = document.getElementById('data_especifica_wrapper');
+
+        if (dataFinalOpcoes && dataFinalEspecificoWrapper) {
+            dataFinalOpcoes.addEventListener('change', (e) => {
+                e.target.value === "data_especifica"
+                    ? dataFinalEspecificoWrapper.classList.remove('hidden')
+                    : dataFinalEspecificoWrapper.classList.add('hidden');
+            });
+        }
     }
-  });
-
-  // Setup data_final_opcoes change event
-  const dataFinalOpcoes = document.getElementById('data_final_opcao');
-  const dataFinalEspecificoWrapper = document.getElementById('data_especifica_wrapper');
-
-  if (dataFinalOpcoes && dataFinalEspecificoWrapper) {
-    dataFinalOpcoes.addEventListener('change', (e) => {
-      e.target.value === "data_especifica"
-        ? dataFinalEspecificoWrapper.classList.remove('hidden')
-        : dataFinalEspecificoWrapper.classList.add('hidden');
-    });
-  }
-}
 
 /**
  * Initialize form with stored values and default settings
  */
-export function initForm() {
-  const form = document.getElementById('formulario_calcular');
-  if (!form) return;
+    export function initForm() {
+        const form = document.getElementById('formulario_calcular');
+        console.log({form})
+        if (!form) return;
 
-  // Load stored values
-  StorageUtils.loadInputValues(form);
+        // Load stored values
+        StorageUtils.loadInputValues(form);
 
-  // Process inputs to ensure all values are properly set
-  FormUtils.processInputs(form);
+        // Process inputs to ensure all values are properly set
+        FormUtils.processInputs(form);
 
-  // Setup date values
-  const dataFinalOpcoes = document.getElementById('data_final_opcao');
-  const dataFinalEspecificoInput = document.getElementById('data_final');
-  const dataFinalEspecificoWrapper = document.getElementById('data_especifica_wrapper');
-  const dataInicialInput = document.getElementById("data_inicial");
+        // Setup date values
+        const dataFinalOpcoes = document.getElementById('periods');
+        const dataFinalEspecificoInput = document.getElementById('data_final');
+        const dataFinalEspecificoWrapper = document.getElementById('data_especifica_wrapper');
+        const dataInicialInput = document.getElementById("initial_date");
 
-  if (dataFinalOpcoes && dataFinalEspecificoInput) {
-    if (dataFinalOpcoes.value !== "data_especifica") {
-      const tipo = dataFinalOpcoes.value === "6" ? "meses" : "anos";
-      const dataResultado = DateUtils.increment(parseInt(dataFinalOpcoes.value), tipo);
-      dataFinalEspecificoInput.value = dataResultado;
-    } else if (dataFinalEspecificoWrapper) {
-      dataFinalEspecificoWrapper.classList.remove('hidden');
+        if (dataFinalOpcoes && dataFinalEspecificoInput) {
+            if (dataFinalOpcoes.value !== "data_especifica") {
+                const tipo = dataFinalOpcoes.value === "6" ? "meses" : "anos";
+                const dataResultado = DateUtils.increment(parseInt(dataFinalOpcoes.value), tipo);
+                dataFinalEspecificoInput.value = dataResultado;
+            } else if (dataFinalEspecificoWrapper) {
+                dataFinalEspecificoWrapper.classList.remove('hidden');
+            }
+        }
+
+        if (dataInicialInput) {
+            dataInicialInput.value = DateUtils.today();
+        }
+
+        // Setup form listeners
+        setupFormListeners(form);
+
+        return form;
     }
-  }
-
-  if (dataInicialInput) {
-    dataInicialInput.value = DateUtils.today();
-  }
-
-  // Setup form listeners
-  setupFormListeners(form);
-
-  return form;
-}
 
 // Setup listeners for page load and htmx content swaps
 export function setupGlobalListeners() {

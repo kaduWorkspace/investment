@@ -9,7 +9,7 @@ export const DateUtils = {
         const ano = date.getFullYear();
         const mes = String(date.getMonth() + 1).padStart(2, "0");
         const dia = String(date.getDate()).padStart(2, "0");
-        return `${ano}-${mes}-${dia}`;
+        return `${dia}/${mes}/${ano}`;
     },
 
     increment(quantidade = 6, tipo = "meses") {
@@ -104,11 +104,11 @@ export const Validators = {
         const erros = [];
 
         // Get DOM elements only when needed
-        const valorInicial = document.getElementById('valor_inicial');
-        const valorAporte = document.getElementById('valor_aporte');
-        const dataFinal = document.getElementById('data_final');
+        const valorInicial = document.getElementById('initial_value');
+        const valorAporte = document.getElementById('contribution');
+        //const dataFinal = document.getElementById('data_final');
 
-        if (!valorInicial || !valorAporte || !dataFinal) {
+        if (!valorInicial || !valorAporte) {
             console.error('Required form elements not found');
             return [['error_general', 'Form elements not found']];
         }
@@ -118,27 +118,26 @@ export const Validators = {
 
         // Validate initial value
         if (valorInicialNum < 0 || (validarNull && ["", null, false].includes(valorInicial.value))) {
-            erros.push(["error_valor_inicial", "Valor inicial inválido"]);
+            erros.push(["error_initial_value", "Valor inicial inválido"]);
         }
 
         // Validate monthly contribution
         if (valorAporteNum > 1000000000) {
-            erros.push(["error_valor_aporte", "Aporte mensal muito alto"]);
+            erros.push(["error_contribution", "Aporte mensal muito alto"]);
         }
 
         // Validate that at least one value is provided
         if (!(valorAporteNum + valorInicialNum > 0)) {
             erros.push(
-                ["error_valor_inicial", "O valor inicial ou valor de aporte devem ser preenchidos!"],
-                ["error_valor_aporte", "O valor inicial ou valor de aporte devem ser preenchidos!"]
+                ["error_nitial_value", "O valor inicial ou valor de aporte devem ser preenchidos!"],
+                ["error_contribution", "O valor inicial ou valor de aporte devem ser preenchidos!"]
             );
         }
 
         // Validate end date
-        if (!dataFinal.value) {
+        /*if (!dataFinal.value) {
             erros.push(["error_data_final", "Data final inválida"]);
-        }
-
+        }*/
         return erros.length ? erros : false;
     }
 };
@@ -183,17 +182,18 @@ export const FormUtils = {
         });
 
         // Get DOM elements
-        const valorTaxaAnual = document.getElementById('valor_taxa_anual');
-        const valorTaxaAnualInput = document.getElementById('valor_taxa_anual_input');
-        const valorAporte = document.getElementById('valor_aporte');
-        const valorAporteInput = document.getElementById('valor_aporte_input');
-        const valorInicial = document.getElementById('valor_inicial');
-        const valorInicialInput = document.getElementById('valor_inicial_input');
-        const dataFinalOpcoes = document.getElementById('data_final_opcao');
+        const valorTaxaAnual = document.getElementById('tax_decimal');
+        const valorTaxaAnualInput = document.getElementById('tax_decimal_input');
+        const valorAporte = document.getElementById('contribution');
+        const valorAporteInput = document.getElementById('contribution_input');
+        const valorInicial = document.getElementById('initial_value');
+        const valorInicialInput = document.getElementById('initial_value_input');
+        const dataFinalOpcoes = document.getElementById('periods');
         const dataFinalEspecificoInput = document.getElementById('data_final');
 
         if (!valorTaxaAnual || !valorTaxaAnualInput || !valorAporte || !valorAporteInput ||
             !valorInicial || !valorInicialInput || !dataFinalOpcoes || !dataFinalEspecificoInput) {
+            //console.log({valorTaxaAnual, valorTaxaAnualInput, valorAporte, valorAporteInput, valorInicial, valorInicialInput, dataFinalOpcoes, dataFinalEspecificoInput})
             console.error('Required form elements not found');
             return;
         }
