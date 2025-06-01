@@ -9,7 +9,7 @@
         </div>
 
         <!-- Mensagens de Erro -->
-        <div id="form_errors_htmx" class="bg-red-900 fade-out bg-opacity-20 border border-red-800 text-red-200 p-4 rounded-lg mb-6 {{ if not .erros_formulario }}hidden{{ end }}">
+        <div id="form_errors_htmx" class="fade-out bg-red-900 bg-opacity-20 border border-red-800 text-red-200 p-4 rounded-lg mb-6 {{ if not .errs }}hidden{{ end }}">
             <div class="flex items-center mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -17,10 +17,8 @@
                 <span class="font-medium">Por favor, corrija os seguintes erros:</span>
             </div>
             <ul class="list-disc pl-5 space-y-1 text-sm">
-                {{ range $chave, $valor := .erros_formulario }}
-                {{ range $_, $valor_erro := $valor }}
-                <li>{{ $valor_erro }}</li>
-                {{ end }}
+                {{ range $chave, $valor := .errs }}
+                <li>{{ $chave }}: {{ $valor }}</li>
                 {{ end }}
             </ul>
         </div>
@@ -31,7 +29,7 @@
             <div class="grid md:grid-cols-2 gap-6">
                 <!-- Valor futuro desejado -->
                 <div class="form-group">
-                    <label for="valor_futuro" class="block text-gray-300 text-sm font-medium mb-2">
+                    <label for="final_value" class="block text-gray-300 text-sm font-medium mb-2">
                         Valor futuro desejado
                         <span class="text-teal-400 text-xs ml-1">(Ex.: 50.000)</span>
                     </label>
@@ -39,17 +37,17 @@
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                             <i class="fas fa-dollar-sign"></i>
                         </span>
-                        <input type="hidden" id="valor_futuro_input" name="valor_futuro" value="">
-                        <input id="valor_futuro" type="text" step="any"
+                        <input type="hidden" id="final_value_input" name="final_value" value="">
+                        <input id="final_value" type="text" step="any"
                         class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
                         placeholder="Insira o valor" value="0,0">
                     </div>
-                    <span class="text-red-400 text-xs mt-1 hidden" id="error_valor_futuro"></span>
+                    <span class="text-red-400 text-xs mt-1 hidden" id="error_final_value"></span>
                 </div>
 
                 <!-- Taxa de juros anual -->
                 <div class="form-group">
-                    <label for="taxa_juros_anual" class="block text-gray-300 text-sm font-medium mb-2">
+                    <label for="tax_decimal" class="block text-gray-300 text-sm font-medium mb-2">
                         Taxa de juros anual
                         <span class="text-teal-400 text-xs ml-1">(Selic.: {{ .selic_tax }}%)</span>
                     </label>
@@ -57,12 +55,12 @@
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                             <i class="fas fa-percentage"></i>
                         </span>
-                        <input type="hidden" name="taxa_juros_anual" id="taxa_juros_anual_input">
-                        <input id="taxa_juros_anual" type="text" step="any"
+                        <input type="hidden" name="tax_decimal" id="tax_decimal_input">
+                        <input id="tax_decimal" type="text" step="any"
                         class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
                         placeholder="Insira a taxa" value="{{ .selic_tax }}">
                     </div>
-                    <span class="text-red-400 text-xs mt-1 hidden" id="error_taxa_juros_anual"></span>
+                    <span class="text-red-400 text-xs mt-1 hidden" id="error_tax_decimal"></span>
                 </div>
             </div>
 
@@ -70,7 +68,7 @@
             <div class="grid md:grid-cols-3 gap-6">
                 <!-- Período de investimento -->
                 <div class="form-group">
-                    <label for="periodos" class="block text-gray-300 text-sm font-medium mb-2">
+                    <label for="periods" class="block text-gray-300 text-sm font-medium mb-2">
                         Data do resgate
                         <span class="text-teal-400 text-xs ml-1">(Ex.: 5 anos)</span>
                     </label>
@@ -78,7 +76,7 @@
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                             <i class="far fa-calendar-alt"></i>
                         </span>
-                        <select id="periodos" name="periodos"
+                        <select id="periods" name="periods"
                             class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200">
                             <option value="6">6 meses</option>
                             <option value="12" selected>1 ano</option>
@@ -90,19 +88,19 @@
                             <option value="240">20 anos</option>
                         </select>
                     </div>
-                    <span class="text-red-400 text-xs mt-1 hidden" id="error_periodos"></span>
+                    <span class="text-red-400 text-xs mt-1 hidden" id="error_periods"></span>
                 </div>
 
                 <!-- Contribuição no início do período -->
                 <div class="form-group">
-                    <label for="contribuicao_inicio_periodo" class="block text-gray-300 text-sm font-medium mb-2">
+                    <label for="first_day" class="block text-gray-300 text-sm font-medium mb-2">
                         Contribuição no início do mês?
                     </label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                             <i class="fas fa-calendar-check"></i>
                         </span>
-                        <select id="contribuicao_inicio_periodo" name="contribuicao_inicio_periodo"
+                        <select id="first_day" name="first_day"
                             class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 appearance-none focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200">
                             <option value="true">Sim</option>
                             <option value="false">Não</option>
@@ -117,7 +115,7 @@
 
                 <!-- Valor inicial (opcional) -->
                 <div class="form-group">
-                    <label for="valor_inicial" class="block text-gray-300 text-sm font-medium mb-2">
+                    <label for="initial_value" class="block text-gray-300 text-sm font-medium mb-2">
                         Valor inicial (opcional)
                         <span class="text-teal-400 text-xs ml-1">(Ex.: 5.000)</span>
                     </label>
@@ -125,12 +123,12 @@
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                             <i class="fas fa-dollar-sign"></i>
                         </span>
-                        <input type="hidden" id="valor_inicial_input" name="initial_value" value="">
+                        <input type="hidden" id="initial_value_input" name="initial_value" value="">
                         <input id="initial_value" type="text" step="any"
                         class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
                         placeholder="Insira o valor" value="0,0">
                     </div>
-                    <span class="text-red-400 text-xs mt-1 hidden" id="error_valor_inicial"></span>
+                    <span class="text-red-400 text-xs mt-1 hidden" id="error_initial_value"></span>
                 </div>
             </div>
 

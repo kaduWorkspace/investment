@@ -132,6 +132,6 @@ type PredictContributionFVSInput struct {
     TaxDecimal float64 `json:"tax_decimal" form:"tax_decimal" validate:"required,gt=0,number"`
     FinalValue float64 `json:"final_value" form:"final_value" validate:"required,gte=1,gtfield=InitialValue,number"`
     InitialValue float64 `json:"initial_value" form:"initial_value" validate:"gte=0,number"`
-    ContributionOnFirstDay bool `json:"first_day" form:"contribution_on_first_day" validate:"required,boolean"`
+    ContributionOnFirstDay bool `json:"first_day" form:"contribution_on_first_day" validate:"boolean"`
 }
 

@@ -3,7 +3,6 @@ package interface_chi
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	core_http "kaduhod/fin_v3/core/domain/http"
 	"kaduhod/fin_v3/core/domain/investment"
 	valueobjects "kaduhod/fin_v3/core/domain/valueObjects"
@@ -13,6 +12,7 @@ import (
 	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 type InvestmentHandlerChiWeb struct {
@@ -37,21 +37,53 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictFormPage(w http.Res
     }
 }
 func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictResultPage(w http.ResponseWriter, r *http.Request) {
-    b, err := io.ReadAll(r.Body)
+    initialValueF, err := strconv.ParseFloat(r.FormValue("initial_value"), 64)
     if err != nil {
-        fmt.Println(err)
-        w.WriteHeader(http.StatusBadRequest)
+        w.WriteHeader(400)
+        w.Write([]byte("invalid initial_value"))
         return
     }
-    err, userInput := struct_utils.FromJson[validators_dto.PredictContributionFVSInput](b)
+    firstDay, err := strconv.ParseBool(r.FormValue("first_day"))
     if err != nil {
-        fmt.Println(err)
-        w.WriteHeader(http.StatusBadRequest)
+        w.WriteHeader(400)
+        w.Write([]byte("invalid first_day"))
         return
+    }
+    taxF, err := strconv.ParseFloat(r.FormValue("tax_decimal"), 64)
+    if err != nil {
+        w.WriteHeader(400)
+        w.Write([]byte("invalid tax_decimal"))
+        return
+    }
+    taxF = taxF / 100
+    periodsF, err := strconv.ParseInt(r.FormValue("periods"), 10, 64)
+    if err != nil {
+        w.WriteHeader(400)
+        w.Write([]byte("invalid periods"))
+        return
+    }
+    finalValueF, err := strconv.ParseFloat(r.FormValue("final_value"), 64)
+    if err != nil {
+        w.WriteHeader(400)
+        w.Write([]byte("invalid final value"))
+        return
+    }
+    userInput := validators_dto.PredictContributionFVSInput{
+        InitialValue: initialValueF,
+        ContributionOnFirstDay: firstDay,
+        Periods: int(periodsF),
+        TaxDecimal: taxF,
+        FinalValue: finalValueF,
     }
     if err := userInput.Validate(userInput); err != nil {
         fmt.Println(err)
-        w.WriteHeader(http.StatusBadRequest)
+        errs := userInput.FormatValidationError(err, "pt")
+        w.Header().Set("HX-Retarget", "#form_container")
+        h.Renderer.Render(w, "fv_predict_form", map[string]any{
+            "csrf": "1234546",
+            "selic_tax": h.GetTaxaSelic(),
+            "errs": errs,
+        })
         return
     }
     finalValue := infra_investment.NewDecimalMoney(userInput.FinalValue)
@@ -134,6 +166,8 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
         errs := userInput.FormatValidationError(err, "pt")
         w.Header().Set("HX-Retarget", "#form_container")
         h.Renderer.Render(w, "fv_form", map[string]any{
+            "csrf": "1234546",
+            "selic_tax": h.GetTaxaSelic(),
             "errs": errs,
         })
         return
@@ -212,8 +246,8 @@ func setupItensFromPeriods(periods []investment.PeriodTracker, for_mobile bool) 
     }
     return adjusted_table
 }
-func (h *InvestmentHandlerChiWeb) GetTaxaSelic() float64 {
-    valueSelic := 13.25 // default
+func (h *InvestmentHandlerChiWeb) GetTaxaSelic() string {
+    valueSelic := "13,25" // default
     result, err := struct_utils.HttpRequest("https://www.bcb.gov.br/api/servico/sitebcb//taxaselic/ultima?withCredentials=true", "GET",
         map[string]string{"content-type":"text/plain"}, "")
     if err != nil {
@@ -233,7 +267,8 @@ func (h *InvestmentHandlerChiWeb) GetTaxaSelic() float64 {
         return valueSelic
     }
     if metaSelic, ok := firstItem["MetaSelic"].(float64); ok {
-        valueSelic = metaSelic
+        valueSelic = fmt.Sprintf("%.2f", metaSelic)
+        valueSelic = strings.ReplaceAll(valueSelic, ".", ",")
     }
     return valueSelic
 }
