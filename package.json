@@ -1,0 +1,24 @@
+{
+  "name": "chi_version",
+  "version": "1.0.0",
+  "description": "Este projeto é uma aplicação web que simula investimentos financeiros com base em uma taxa de juros. A taxa padrão utilizada é a Selic, atualizada automaticamente via API do Banco Central.",
+  "homepage": "https://github.com/kaduWorkspace/investment#readme",
+  "bugs": {
+    "url": "https://github.com/kaduWorkspace/investment/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaduWorkspace/investment.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.8",
+    "tailwindcss": "^4.1.8"
+  }
+}

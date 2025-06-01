@@ -1,4 +1,6 @@
 bin
+/node_modules
+package-lock.json
 .secrets
 .env*
 go.mod
