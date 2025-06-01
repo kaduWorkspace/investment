@@ -29,7 +29,7 @@
             </div>
             {{end}}
         </div>
-        {{if .tabela }}
+        {{if .periodsTracker }}
         <div class="w-full sm:w-5/6 mx-auto mt-6 animate-fade-in">
             <!-- Título da tabela -->
             <h2 class="text-2xl font-bold text-white text-center mb-4">
@@ -54,14 +54,14 @@
                             <td class="p-3 text-sm">0</td>
                             <td class="p-3 text-sm">R$ 0,0</td>
                             <td class="p-3 text-sm">R$ 0,0</td>
-                            <td class="p-3 text-sm">R$ {{ .valor_inicial }}</td>
+                            <td class="p-3 text-sm">R$ {{ .initial_value }}</td>
                         </tr>
-                        {{ range $chave, $valor := .tabela }}
+                        {{ range $chave, $valor := .periodsTracker }}
                         <tr class="border-b border-gray-700 hover:bg-gray-800 transition-all duration-300">
-                            <td class="p-3 text-sm">{{ $valor.DataMesAno }}</td>
-                            <td class="p-3 text-sm">R$ {{ $.aporte }}</td>
-                            <td class="p-3 text-sm">R$ {{ $valor.JurosFormatado }}</td>
-                            <td class="p-3 text-sm">R$ {{ $valor.AcumuladoFormatado }}</td>
+                            <td class="p-3 text-sm">{{ $valor.DateFormated }}</td>
+                            <td class="p-3 text-sm">R$ {{ $.contribution }}</td>
+                            <td class="p-3 text-sm">R$ {{ $valor.InterestFormated }}</td>
+                            <td class="p-3 text-sm">R$ {{ $valor.AccruedFormated }}</td>
                         </tr>
                         {{ end }}
                     </tbody>

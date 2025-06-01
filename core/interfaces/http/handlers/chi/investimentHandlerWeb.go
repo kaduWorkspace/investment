@@ -132,7 +132,6 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
     if err := userInput.Validate(userInput); err != nil {
         fmt.Println(err)
         errs := userInput.FormatValidationError(err, "pt")
-        fmt.Println(errs, "Aquiii")
         w.Header().Set("HX-Retarget", "#form_container")
         h.Renderer.Render(w, "fv_form", map[string]any{
             "errs": errs,
@@ -179,6 +178,7 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
         "net_gain": netGain.Formatted(),// juros rendido | rentabilidade liquida.
         "roi_porcentage": roiPorcentage.Formatted(), // retorno sobre o investimento
         "contribution": contribution.Formatted(),
+        "periodsTracker": periods,
     }
     if err := h.Renderer.Render(w, "fv_result", data); err != nil {
         fmt.Println(err)

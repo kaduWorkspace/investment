@@ -18,7 +18,7 @@
             </div>
             <ul class="list-disc pl-5 space-y-1 text-sm">
                 {{ range $chave, $valor := .errs }}
-                <li>{{ $valor }}</li>
+                <li>{{ $chave }}:  {{ $valor }}</li>
                 {{ end }}
             </ul>
         </div>

@@ -56,7 +56,6 @@ import setupFormValidation from './predict_form.js';
  */
     export function initForm() {
         const form = document.getElementById('formulario_calcular');
-        console.log({form})
         if (!form) return;
 
         // Load stored values

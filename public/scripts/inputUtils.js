@@ -193,7 +193,6 @@ export const FormUtils = {
 
         if (!valorTaxaAnual || !valorTaxaAnualInput || !valorAporte || !valorAporteInput ||
             !valorInicial || !valorInicialInput || !dataFinalOpcoes || !dataFinalEspecificoInput) {
-            //console.log({valorTaxaAnual, valorTaxaAnualInput, valorAporte, valorAporteInput, valorInicial, valorInicialInput, dataFinalOpcoes, dataFinalEspecificoInput})
             console.error('Required form elements not found');
             return;
         }
