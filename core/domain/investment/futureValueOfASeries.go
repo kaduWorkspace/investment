@@ -25,7 +25,7 @@ func NewPeriodTracker(accrued valueobjects.Money, period int, interest valueobje
     }
 }
 func GetDateFormated(date time.Time) string {
-    return date.Format("02/01/2006")
+    return date.Format("01/06")
 }
 type FutureValueOfASeries interface {
     Calculate(contribution, taxDecimal valueobjects.Money, firstDay bool, periods int) valueobjects.Money

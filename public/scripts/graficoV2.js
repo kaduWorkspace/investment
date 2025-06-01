@@ -55,9 +55,9 @@ if (typeof main_local !== "function"){
     function main_local() {
         const dados_tabela = window.dados_tabela;
         if (!dados_tabela) return;
-        const meses = dados_tabela.map((item) => item.data_mes_ano);
-        const juros = dados_tabela.map((item) => item.juros);
-        const acumulado = dados_tabela.map((item) => item.acumulado);
+        const meses = dados_tabela.map((item) => item.date);
+        const juros = dados_tabela.map((item) => Number(item.interest.replaceAll(".", "").replaceAll(",", ".")));
+        const acumulado = dados_tabela.map((item) => Number(item.accrued.replaceAll(".", "").replaceAll(",", ".")));
         const grafico_container = document.getElementById("grafico_container");
         montar_grafico_v2("chartjs", { y: meses, x: [juros, acumulado] });
 

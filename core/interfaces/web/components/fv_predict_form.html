@@ -26,7 +26,7 @@
         </div>
 
         <!-- Formulário -->
-        <form id="formulario_prever" hx-post="/v2/predict" hx-target="#resultados_container" hx-swap="outerHTML" class="space-y-6">
+        <form id="formulario_prever" hx-post="web/investments/fv/predict" hx-target="#resultados_container" hx-swap="outerHTML" class="space-y-6">
             <!-- Primeira linha: Valor Futuro e Taxa de Juros -->
             <div class="grid md:grid-cols-2 gap-6">
                 <!-- Valor futuro desejado -->
@@ -51,7 +51,7 @@
                 <div class="form-group">
                     <label for="taxa_juros_anual" class="block text-gray-300 text-sm font-medium mb-2">
                         Taxa de juros anual
-                        <span class="text-teal-400 text-xs ml-1">(Selic.: {{ .taxa_selic }}%)</span>
+                        <span class="text-teal-400 text-xs ml-1">(Selic.: {{ .selic_tax }}%)</span>
                     </label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -60,7 +60,7 @@
                         <input type="hidden" name="taxa_juros_anual" id="taxa_juros_anual_input">
                         <input id="taxa_juros_anual" type="text" step="any"
                         class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
-                        placeholder="Insira a taxa" value="{{ .taxa_selic }}">
+                        placeholder="Insira a taxa" value="{{ .selic_tax }}">
                     </div>
                     <span class="text-red-400 text-xs mt-1 hidden" id="error_taxa_juros_anual"></span>
                 </div>

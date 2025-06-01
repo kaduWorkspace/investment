@@ -29,11 +29,8 @@ func (s *ServerChi) Setup() {
     if err != nil {
         panic(err)
     }
-    investmentHandler := InvestmentHandlerChi{
-        CompoundInterestService: compoundInterestServiceDecimal,
-        FutureValueOfASeriesService: futureValueOfASeriesServiceDecimal,
-        Renderer: rndr,
-    }
+    investmentHandler := NewInvestmentHandler(compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal)
+    investmentHandlerWeb := NewInvestmentHandlerChiWeb(compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal, rndr)
     r := chi.NewRouter()
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
@@ -49,10 +46,10 @@ func (s *ServerChi) Setup() {
         r.Post("/future-value-of-a-series/predict-contribution", investmentHandler.PredictFV)
     })
     r.Route("/web/investments", func(r chi.Router) {
-        r.Get("/fv", investmentHandler.FutureValueOfASeriesForm)
-        r.Get("/fv/predict", investmentHandler.FutureValueOfASeriesPredictForm)
-        r.Post("/compound-interest", investmentHandler.CompoundInterest)
-        r.Post("/future-value-of-a-series", investmentHandler.FutureValueOfASeries)
+        r.Get("/fv", investmentHandlerWeb.FutureValueOfASeriesFormPage)
+        r.Post("/fv", investmentHandlerWeb.FutureValueOfASeriesResultPage)
+        r.Get("/fv/predict", investmentHandlerWeb.FutureValueOfASeriesPredictFormPage)
+        r.Post("/fv/predict", investmentHandlerWeb.FutureValueOfASeriesPredictResultPage)
     })
     r.Get("/", func(w http.ResponseWriter, r *http.Request) {
         if err := rndr.Render(w, "base", nil); err != nil {

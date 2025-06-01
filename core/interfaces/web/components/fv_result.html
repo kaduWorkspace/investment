@@ -18,7 +18,7 @@
 
         <div id="resultadoGeralInfo" class="flex flex-col w-full justify-around">
             {{ template "fv_result_data" . }}
-            {{if .tabela_json }}
+            {{if .periods_json }}
             <div id="grafico_wrapper_botao" class="flex mt-4 flex-col justify-center items-center w-full">
                 <button id="botao_ativar_grafico" type="submit" class="flex my-1 items-center animate-fade-in justify-center rounded-lg w-5/6 mx-1 card py-3 px-4 font-medium hover:bg-teal-400/10 hover:text-teal-400 transition-all duration-300 shadow-md border border-teal-400/30">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -83,6 +83,6 @@
 {{ template "fv_chart" }}
 <script src="/public/scripts/graficoV2.js"></script>
 <script>
-    window.dados_tabela = JSON.parse(`{{ .tabela_json }}`);
+    window.dados_tabela = JSON.parse(`{{ .periods_json }}`);
 </script>
 {{ end }}

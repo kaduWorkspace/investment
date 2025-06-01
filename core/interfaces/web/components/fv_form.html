@@ -26,7 +26,7 @@
         </div>
 
         <!-- Formulário -->
-        <form hx-post="/v2/simular-jc" hx-target="#resultados_container" hx-swap="outerHTML" id="formulario_calcular" class="space-y-6">
+        <form hx-post="web/investments/fv" hx-target="#resultados_container" hx-swap="outerHTML" id="formulario_calcular" class="space-y-6">
             <!-- Primeira linha - Valor inicial e Aporte mensal -->
             <div class="grid md:grid-cols-2 gap-6">
                 <div class="form-group">
@@ -69,7 +69,7 @@
                 <div class="form-group">
                     <label for="valor_taxa_anual" class="block text-gray-300 text-sm font-medium mb-2">
                         Valor Taxa Anual
-                        <span class="text-teal-400 text-xs ml-1">(Selic.: {{ .taxa_selic }}%)</span>
+                        <span class="text-teal-400 text-xs ml-1">(Selic.: {{ .selic_tax }}%)</span>
                     </label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -78,7 +78,7 @@
                         <input type="hidden" name="valor_taxa_anual" id="valor_taxa_anual_input">
                         <input id="valor_taxa_anual" type="text" step="any"
                             class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
-                            placeholder="Insira o valor" value="{{ .taxa_selic }}">
+                            placeholder="Insira o valor" value="{{ .selic_tax }}">
                     </div>
                     <span class="text-red-400 text-xs mt-1 hidden" id="error_valor_taxa_anual"></span>
                 </div>
