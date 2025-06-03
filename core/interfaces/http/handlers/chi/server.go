@@ -4,6 +4,7 @@ import (
 	domain_http "kaduhod/fin_v3/core/domain/http"
 	auth_std "kaduhod/fin_v3/core/infra/auth/std"
 	infra_investment "kaduhod/fin_v3/core/infra/investment/decimal"
+	"kaduhod/fin_v3/core/infra/session/memory"
 	"kaduhod/fin_v3/core/interfaces/web/renderer"
 	"net/http"
 	"os"
@@ -30,7 +31,8 @@ func (s *ServerChi) Setup() {
         panic(err)
     }
     investmentHandler := NewInvestmentHandler(compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal)
-    investmentHandlerWeb := NewInvestmentHandlerChiWeb(compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal, rndr)
+    inMemorySessionService := memory.NewInMemorySession()
+    investmentHandlerWeb := NewInvestmentHandlerChiWeb(inMemorySessionService ,compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal, rndr)
     r := chi.NewRouter()
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
@@ -51,10 +53,6 @@ func (s *ServerChi) Setup() {
         r.Get("/fv/predict", investmentHandlerWeb.FutureValueOfASeriesPredictFormPage)
         r.Post("/fv/predict", investmentHandlerWeb.FutureValueOfASeriesPredictResultPage)
     })
-    r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-        if err := rndr.Render(w, "base", nil); err != nil {
-            w.WriteHeader(500)
-        }
-    })
+    r.Get("/", investmentHandlerWeb.Index)
     s.handler = r
 }

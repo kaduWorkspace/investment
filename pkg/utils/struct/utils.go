@@ -75,3 +75,24 @@ func EhMobile(userAgent string) bool {
 	}
 	return false
 }
+func SessionId(r *http.Request) string {
+    // 1. Pega o User-Agent
+    userAgent := r.UserAgent()
+
+    // 2. Tenta pegar o IP do cabeçalho X-Forwarded-For (caso esteja atrás de proxy)
+    ip := r.Header.Get("X-Forwarded-For")
+    if ip == "" {
+        // Se não tiver, usa o RemoteAddr
+        ip = r.RemoteAddr
+    } else {
+        // Se o X-Forwarded-For tiver múltiplos IPs, pega o primeiro
+        ip = strings.Split(ip, ",")[0]
+    }
+
+    // Se RemoteAddr contiver porta (tipo "192.168.0.1:12345"), remove
+    if strings.Contains(ip, ":") {
+        ip = strings.Split(ip, ":")[0]
+    }
+
+    return fmt.Sprintf("%s:%s", ip, userAgent)
+}

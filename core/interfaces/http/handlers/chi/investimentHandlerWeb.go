@@ -19,15 +19,40 @@ type InvestmentHandlerChiWeb struct {
     CompoundInterestService investment.CompoundInterest
     FutureValueOfASeriesService investment.FutureValueOfASeries
     Renderer *renderer.Renderer
+    sessionService core_http.SessionService
 }
-func NewInvestmentHandlerChiWeb(compoundInterestService investment.CompoundInterest, futureValueOfASeriesService investment.FutureValueOfASeries, renderer *renderer.Renderer) core_http.InvestmentHandlerWeb {
+func NewInvestmentHandlerChiWeb(sessionService core_http.SessionService ,compoundInterestService investment.CompoundInterest, futureValueOfASeriesService investment.FutureValueOfASeries, renderer *renderer.Renderer) core_http.InvestmentHandlerWeb {
     return &InvestmentHandlerChiWeb{
         CompoundInterestService: compoundInterestService,
         FutureValueOfASeriesService: futureValueOfASeriesService,
         Renderer: renderer,
+        sessionService: sessionService,
     }
 }
+func (h *InvestmentHandlerChiWeb) Index(w http.ResponseWriter, r *http.Request) {
+    session := h.GetSessionService()
+    testData := map[string]string{
+        "expiration": fmt.Sprintf("%d",time.Now().Add(72 * time.Hour).Unix()),
+    }
+    sessionId := struct_utils.SessionId(r)
+    if _, err := session.Get(sessionId); err == nil {
+        session.Store(sessionId, testData)
+    }
+    if err := h.Renderer.Render(w, "base", nil); err != nil {
+        w.WriteHeader(500)
+    }
+}
+func (h *InvestmentHandlerChiWeb) GetSessionService() core_http.SessionService {
+    return h.sessionService
+}
 func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictFormPage(w http.ResponseWriter, r *http.Request) {
+    session := h.GetSessionService()
+    sessionId := struct_utils.SessionId(r)
+    dataS, err := session.Get(sessionId)
+    if err != nil {
+        fmt.Println(err)
+    }
+    fmt.Println(dataS)
     data := map[string]any{
         "csrf": "1234546",
         "selic_tax": h.GetTaxaSelic(),
