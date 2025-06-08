@@ -106,7 +106,7 @@ func CreateCookie(w http.ResponseWriter) *http.Cookie {
 		Value:    sessionID,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   false, // altere para true em produção com HTTPS
+		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
 		Expires:  time.Now().Add(71 * time.Hour),
 	}
