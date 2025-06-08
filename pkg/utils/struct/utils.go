@@ -110,7 +110,6 @@ func CreateCookie(w http.ResponseWriter) *http.Cookie {
 		SameSite: http.SameSiteLaxMode,
 		Expires:  time.Now().Add(71 * time.Hour),
 	}
-    cookie.Expires = time.Now().Add(71 * time.Hour)
 	http.SetCookie(w, cookie)
 	return cookie
 }
