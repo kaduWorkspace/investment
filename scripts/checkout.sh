@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e  # Exit immediately if any command fails
+BRANCH=${1:-master}
 ssh -t deployer@172.17.0.2 <<EOF
     REPO_DIR="investment"
 
@@ -16,6 +17,6 @@ ssh -t deployer@172.17.0.2 <<EOF
         git clone git@github.com:kaduWorkspace/investment.git
     fi
     cd investment
-    git checkout master
+    git checkout $BRANCH
     git pull
 EOF
