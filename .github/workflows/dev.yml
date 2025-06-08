@@ -18,7 +18,7 @@ jobs:
     needs: make_scripts_executable
     steps:
       - name: Run checkout on homol
-        run: ./scripts/checkout.sh
+        run: ./scripts/checkout.sh ${{ github.ref_name }}
 
   create_env:
     runs-on: [ self-hosted, linux ]
