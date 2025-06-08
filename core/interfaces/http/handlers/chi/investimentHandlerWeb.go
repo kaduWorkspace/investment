@@ -2,6 +2,7 @@ package interface_chi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	core_http "kaduhod/fin_v3/core/domain/http"
 	"kaduhod/fin_v3/core/domain/investment"
@@ -37,9 +38,30 @@ func (h *InvestmentHandlerChiWeb) Index(w http.ResponseWriter, r *http.Request) 
 func (h *InvestmentHandlerChiWeb) GetSessionService() core_http.SessionService {
     return h.sessionService
 }
+func (h *InvestmentHandlerChiWeb) getSession(r *http.Request) (map[string]string, error) {
+    session, err := h.sessionService.Get(struct_utils.GetCookie(r).Value)
+    if err != nil {
+        fmt.Println(err)
+        return nil, err
+    }
+    return session, nil
+}
+func (h *InvestmentHandlerChiWeb) getCsrfToken(r *http.Request) (string, error) {
+    session, err := h.getSession(r)
+    if err != nil {
+        return "", errors.New("Session not found")
+    }
+    return session["csrf"], nil
+}
 func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictFormPage(w http.ResponseWriter, r *http.Request) {
+    csrf, err := h.getCsrfToken(r)
+    if err != nil {
+        fmt.Println(err)
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
     data := map[string]any{
-        "csrf": "1234546",
+        "csrf": csrf,
         "selic_tax": h.GetTaxaSelic(),
     }
     if err := h.Renderer.Render(w, "fv_predict_form_result_page", data); err != nil {
@@ -47,6 +69,12 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictFormPage(w http.Res
     }
 }
 func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictResultPage(w http.ResponseWriter, r *http.Request) {
+    csrf, err := h.getCsrfToken(r)
+    if err != nil {
+        fmt.Println(err)
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
     initialValueF, err := strconv.ParseFloat(r.FormValue("initial_value"), 64)
     if err != nil {
         w.WriteHeader(400)
@@ -90,7 +118,7 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictResultPage(w http.R
         errs := userInput.FormatValidationError(err, "pt")
         w.Header().Set("HX-Retarget", "#form_container")
         h.Renderer.Render(w, "fv_predict_form", map[string]any{
-            "csrf": "1234546",
+            "csrf": csrf,
             "selic_tax": h.GetTaxaSelic(),
             "errs": errs,
         })
@@ -107,7 +135,7 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictResultPage(w http.R
         userInput.Periods,
     )
     data := map[string]any{
-        "csrf": "1234546",
+        "csrf": csrf,
         "selic_tax": h.GetTaxaSelic(),
         "final_value": finalValue.Formatted(),
         "contribution_needed": contribution.Formatted(),
@@ -118,8 +146,14 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictResultPage(w http.R
     }
 }
 func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesFormPage(w http.ResponseWriter, r *http.Request) {
+    csrf, err := h.getCsrfToken(r)
+    if err != nil {
+        fmt.Println(err)
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
     data := map[string]any{
-        "csrf": "1234546",
+        "csrf": csrf,
         "selic_tax": h.GetTaxaSelic(),
     }
     if err := h.Renderer.Render(w, "fv_form_result_page", data); err != nil {
@@ -127,6 +161,12 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesFormPage(w http.ResponseWr
     }
 }
 func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.ResponseWriter, r *http.Request) {
+    csrf, err := h.getCsrfToken(r)
+    if err != nil {
+        fmt.Println(err)
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
     initialValueF, err := strconv.ParseFloat(r.FormValue("initial_value"), 64)
     if err != nil {
         w.WriteHeader(400)
@@ -176,7 +216,7 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
         errs := userInput.FormatValidationError(err, "pt")
         w.Header().Set("HX-Retarget", "#form_container")
         h.Renderer.Render(w, "fv_form", map[string]any{
-            "csrf": "1234546",
+            "csrf": csrf,
             "selic_tax": h.GetTaxaSelic(),
             "errs": errs,
         })
@@ -212,7 +252,7 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
     roiPorcentage := roi.Divide(initialValueOrOne).Multiply(infra_investment.NewDecimalMoney(100))
     netGain := result.Subtract(periodsD.Multiply(contribution))
     data := map[string]any{
-        "csrf": "1234546",
+        "csrf": csrf,
         "selic_tax": h.GetTaxaSelic(),
         "periods_json": table,
         "roi": roi.Formatted(),// return of investment | valorizacao

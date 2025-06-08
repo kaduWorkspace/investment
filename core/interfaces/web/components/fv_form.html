@@ -60,6 +60,7 @@
                             placeholder="Insira o valor" value="0,0">
                     </div>
                     <span class="text-red-400 text-xs mt-1 hidden" id="error_contribution"></span>
+                    <input type="hidden" name="_csrf" value="{{ .csrf }}">
                 </div>
             </div>
 
@@ -141,7 +142,6 @@
             </div>
 
             <input id="initial_date" type="hidden" name="initial_date" value="">
-            <input type="hidden" name="csrf_token" value="{{ .csrf }}">
 
             <!-- Botão Simular -->
             <div class="">

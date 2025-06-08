@@ -8,6 +8,9 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 func FromJson[T any](b []byte) (error, T) {
@@ -95,4 +98,26 @@ func SessionId(r *http.Request) string {
     }
 
     return fmt.Sprintf("%s:%s", ip, userAgent)
+}
+func CreateCookie(w http.ResponseWriter) *http.Cookie {
+	sessionID := uuid.New().String()
+	cookie := &http.Cookie{
+		Name:     "cookie",
+		Value:    sessionID,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false, // altere para true em produção com HTTPS
+		SameSite: http.SameSiteLaxMode,
+		Expires:  time.Now().Add(71 * time.Hour),
+	}
+    cookie.Expires = time.Now().Add(71 * time.Hour)
+	http.SetCookie(w, cookie)
+	return cookie
+}
+func GetCookie(r *http.Request) *http.Cookie {
+    cookie, err := r.Cookie("cookie")
+    if err != nil {
+        return nil
+    }
+    return cookie
 }
