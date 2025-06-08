@@ -11,7 +11,6 @@ import (
 	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -23,8 +22,9 @@ func NewSessionHandlerMiddleware(sessionService core_http.SessionService) *Sessi
         sessionService: sessionService,
     }
 }
-func (m *SessionHandlerMiddleware) createSession(w http.ResponseWriter, r *http.Request) map[string]string {
+func (m *SessionHandlerMiddleware) createSession(w http.ResponseWriter, r *http.Request) core_http.SessionData {
     cookie := struct_utils.GetCookie(r)
+    var sessionData core_http.SessionData
     if cookie == nil {
         cookie = struct_utils.CreateCookie(w)
     }
@@ -32,43 +32,35 @@ func (m *SessionHandlerMiddleware) createSession(w http.ResponseWriter, r *http.
     if err != nil {
         fmt.Println(err)
         w.WriteHeader(http.StatusInternalServerError)
-        return nil
+        return sessionData
     }
-    sessionData := map[string]string{
-        "expiration": fmt.Sprintf("%d", cookie.Expires.Unix()),
-        "csrf":       csrf,
+    sessionData = core_http.SessionData {
+        Expiration: cookie.Expires.Unix(),
+        Csrf: csrf,
     }
     m.sessionService.Store(cookie.Value, sessionData)
     return sessionData
 }
-func (m *SessionHandlerMiddleware) validateSession(session map[string]string) bool {
-    expirationStr, ok := session["expiration"]
-    if !ok {
-        return false
-    }
-    expiration, err := strconv.Atoi(expirationStr)
-    if err != nil {
-        fmt.Println(err)
-        return false
-    }
-    expirationDate := time.Unix(int64(expiration), 0)
+func (m *SessionHandlerMiddleware) validateSession(session core_http.SessionData) bool {
+    expirationDate := time.Unix(session.Expiration, 0)
     if expirationDate.Before(time.Now()) {
         return false
     }
     return true
 }
-func (m *SessionHandlerMiddleware) getSession(r *http.Request) (map[string]string, error) {
+func (m *SessionHandlerMiddleware) getSession(r *http.Request) (core_http.SessionData, error) {
+    var session core_http.SessionData
     if r == nil {
-        return nil, errors.New("Request is nil")
+        return session, errors.New("Request is nil")
     }
     cookie := struct_utils.GetCookie(r)
     if cookie == nil {
-        return nil, errors.New("Cookie is nil")
+        return session, errors.New("Cookie is nil")
     }
     session, err := m.sessionService.Get(cookie.Value)
     if err != nil {
         fmt.Println(err)
-        return nil, err
+        return session, err
     }
     return session, nil
 }
@@ -79,7 +71,7 @@ func (m *SessionHandlerMiddleware) CreateSessionMiddleware(next http.Handler) ht
             w.WriteHeader(http.StatusInternalServerError)
             return
         }
-        if session != nil && m.validateSession(session) {
+        if m.validateSession(session) {
             next.ServeHTTP(w, r)
             return
         }
@@ -94,7 +86,7 @@ func (m *SessionHandlerMiddleware) CheckSessionMiddleware(next http.Handler) htt
             w.WriteHeader(http.StatusInternalServerError)
             return
         }
-        if session != nil && m.validateSession(session) {
+        if m.validateSession(session) {
             next.ServeHTTP(w, r)
             return
         }
