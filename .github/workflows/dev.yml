@@ -1,0 +1,70 @@
+name: CI
+on:
+  push:
+    branches: ["master", "cicd"]
+  pull_request:
+    branches: ["master"]
+  workflow_dispatch:
+
+jobs:
+  make_scripts_executable:
+    runs-on: [ self-hosted, linux ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Make scripts executable
+        run: chmod +x scripts/*
+  checkout:
+    runs-on: [ self-hosted, linux ]
+    needs: make_scripts_executable
+    steps:
+      - name: Run checkout on homol
+        run: ./scripts/checkout.sh ${{ github.ref_name }}
+
+  create_env:
+    runs-on: [ self-hosted, linux ]
+    needs: checkout
+    steps:
+     - name: Create environment
+       run: |
+         touch .env
+         echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
+     - name: Copy variables to env
+       run: |
+         echo "${{ secrets.DEV_ENV }}" >> .env
+     - name: Copy env to project
+       run: scp .env deployer@172.17.0.2:~/investment/.env
+
+  tests:
+    runs-on: [ self-hosted, linux ]
+    needs: create_env
+    steps:
+      - name: Run tests
+        run: ./scripts/tests.sh
+
+  build_image:
+    runs-on: [ self-hosted, linux ]
+    needs: tests
+    steps:
+      - name: Run build
+        run: ./scripts/build_image.sh
+
+  push_image:
+    runs-on: [ self-hosted, linux ]
+    needs: build_image
+    steps:
+      - name: Run push
+        run: ./scripts/push_image.sh
+
+  deploy:
+    needs: build_image
+    runs-on: [ self-hosted, linux ]
+    steps:
+      - name: Deploy DEV
+        run: ./scripts/deploy.dev.sh
+
+  clean_docker:
+    needs: push_image
+    runs-on: [ self-hosted, linux ]
+    steps:
+      - name: Clean unused images
+        run: ./scripts/clean_docker.sh

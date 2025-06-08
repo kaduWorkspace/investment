@@ -1,0 +1,20 @@
+name: CI
+on:
+  push:
+    branches: ["prod"]
+  pull_request:
+    branches: ["prod"]
+
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: [ self-hosted, linux ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Debug"
+        run: ls -lah
+      - name: "Permissao de execucao"
+        run: chmod +x scripts/deploy.sh
+      - name: Deploy
+        run: ./scripts/deploy.sh
+
