@@ -53,7 +53,6 @@ func (m *SessionHandlerMiddleware) validateSession(session map[string]string) bo
     }
     expirationDate := time.Unix(int64(expiration), 0)
     if expirationDate.Before(time.Now()) {
-        fmt.Println("Session expired")
         return false
     }
     return true
