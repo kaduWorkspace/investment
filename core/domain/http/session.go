@@ -1,7 +1,10 @@
 package http
 
+type SessionData struct {
+    Expiration int64
+    Csrf       string
+}
 type SessionService interface {
-    Store(id string, data map[string]string)
-    Get(id string) (map[string]string, error)
-    Set(id string, key string, value string) error
+    Store(id string, data SessionData)
+    Get(id string) (SessionData, error)
 }
