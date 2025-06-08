@@ -26,6 +26,7 @@
         <!-- Formulário -->
         <form id="formulario_prever" hx-post="web/investments/fv/predict" hx-target="#resultados_container" hx-swap="outerHTML" class="space-y-6">
             <!-- Primeira linha: Valor Futuro e Taxa de Juros -->
+            <input type="hidden" name="_csrf" value="{{ .csrf }}">
             <div class="grid md:grid-cols-2 gap-6">
                 <!-- Valor futuro desejado -->
                 <div class="form-group">
@@ -131,9 +132,6 @@
                     <span class="text-red-400 text-xs mt-1 hidden" id="error_initial_value"></span>
                 </div>
             </div>
-
-            <!-- Campos ocultos -->
-            <input type="hidden" name="csrf_token" value="{{ .csrf }}">
 
             <!-- Botão Simular -->
             <div class="">

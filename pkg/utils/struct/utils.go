@@ -8,6 +8,9 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 func FromJson[T any](b []byte) (error, T) {
@@ -74,4 +77,47 @@ func EhMobile(userAgent string) bool {
 		}
 	}
 	return false
+}
+func SessionId(r *http.Request) string {
+    // 1. Pega o User-Agent
+    userAgent := r.UserAgent()
+
+    // 2. Tenta pegar o IP do cabeçalho X-Forwarded-For (caso esteja atrás de proxy)
+    ip := r.Header.Get("X-Forwarded-For")
+    if ip == "" {
+        // Se não tiver, usa o RemoteAddr
+        ip = r.RemoteAddr
+    } else {
+        // Se o X-Forwarded-For tiver múltiplos IPs, pega o primeiro
+        ip = strings.Split(ip, ",")[0]
+    }
+
+    // Se RemoteAddr contiver porta (tipo "192.168.0.1:12345"), remove
+    if strings.Contains(ip, ":") {
+        ip = strings.Split(ip, ":")[0]
+    }
+
+    return fmt.Sprintf("%s:%s", ip, userAgent)
+}
+func CreateCookie(w http.ResponseWriter) *http.Cookie {
+	sessionID := uuid.New().String()
+	cookie := &http.Cookie{
+		Name:     "cookie",
+		Value:    sessionID,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false, // altere para true em produção com HTTPS
+		SameSite: http.SameSiteLaxMode,
+		Expires:  time.Now().Add(71 * time.Hour),
+	}
+    cookie.Expires = time.Now().Add(71 * time.Hour)
+	http.SetCookie(w, cookie)
+	return cookie
+}
+func GetCookie(r *http.Request) *http.Cookie {
+    cookie, err := r.Cookie("cookie")
+    if err != nil {
+        return nil
+    }
+    return cookie
 }
