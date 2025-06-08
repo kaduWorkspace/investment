@@ -38,11 +38,11 @@ func (h *InvestmentHandlerChiWeb) Index(w http.ResponseWriter, r *http.Request) 
 func (h *InvestmentHandlerChiWeb) GetSessionService() core_http.SessionService {
     return h.sessionService
 }
-func (h *InvestmentHandlerChiWeb) getSession(r *http.Request) (map[string]string, error) {
+func (h *InvestmentHandlerChiWeb) getSession(r *http.Request) (core_http.SessionData, error) {
     session, err := h.sessionService.Get(struct_utils.GetCookie(r).Value)
     if err != nil {
         fmt.Println(err)
-        return nil, err
+        return session, err
     }
     return session, nil
 }
@@ -51,7 +51,7 @@ func (h *InvestmentHandlerChiWeb) getCsrfToken(r *http.Request) (string, error) 
     if err != nil {
         return "", errors.New("Session not found")
     }
-    return session["csrf"], nil
+    return session.Csrf, nil
 }
 func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictFormPage(w http.ResponseWriter, r *http.Request) {
     csrf, err := h.getCsrfToken(r)

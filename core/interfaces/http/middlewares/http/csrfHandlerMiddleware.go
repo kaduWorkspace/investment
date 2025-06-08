@@ -21,18 +21,19 @@ func NewCsrfHandlerMiddleware(sessionService core_http.SessionService) *CsrfHand
         sessionService: sessionService,
     }
 }
-func (m *CsrfHandlerMiddleware) getSession(r *http.Request) (map[string]string, error) {
+func (m *CsrfHandlerMiddleware) getSession(r *http.Request) (core_http.SessionData, error) {
+    var session core_http.SessionData
     if r == nil {
-        return nil, errors.New("Request is nil")
+        return session, errors.New("Request is nil")
     }
     cookie := struct_utils.GetCookie(r)
     if cookie == nil {
-        return nil, errors.New("Cookie is nil")
+        return session, errors.New("Cookie is nil")
     }
     session, err := m.sessionService.Get(cookie.Value)
     if err != nil {
         fmt.Println(err)
-        return nil, err
+        return session, err
     }
     return session, nil
 }
@@ -43,7 +44,6 @@ func (m *CsrfHandlerMiddleware) ValidateCsrfMiddleware(next http.Handler) http.H
             w.WriteHeader(http.StatusUnauthorized)
             return
         }
-
         if !m.validateCsrfToken(csrf) {
             w.WriteHeader(http.StatusUnauthorized)
             return
