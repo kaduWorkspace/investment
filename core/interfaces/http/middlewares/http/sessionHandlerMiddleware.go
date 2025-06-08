@@ -25,7 +25,7 @@ func NewSessionHandlerMiddleware(sessionService core_http.SessionService) *Sessi
 func (m *SessionHandlerMiddleware) createSession(w http.ResponseWriter, r *http.Request) core_http.SessionData {
     cookie := struct_utils.GetCookie(r)
     var sessionData core_http.SessionData
-    if cookie == nil {
+    if cookie == nil || cookie.MaxAge < 0 || cookie.Expires.Before(time.Now()) {
         cookie = struct_utils.CreateCookie(w)
     }
     csrf, err := m.createCsrfToken()
