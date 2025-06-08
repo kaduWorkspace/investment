@@ -21,7 +21,10 @@ func NewServer() domain_http.Server {
 }
 
 func (s *ServerChi) Start(port string) {
-    http.ListenAndServe(port, s.handler)
+    err := http.ListenAndServe(port, s.handler)
+    if err != nil {
+        panic(err)
+    }
 }
 func (s *ServerChi) Setup() {
     compoundInterestServiceDecimal := infra_investment.CompoundInterestDecimal{}
