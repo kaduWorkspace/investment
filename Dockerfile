@@ -11,7 +11,7 @@ COPY . .
 COPY go.mod .
 COPY go.sum .
 RUN go mod tidy
-RUN go build --ldflags "-extldflags -static" -o main .
+RUN go build --ldflags "-extldflags -static" -o main cmd/web/main.go
 
 FROM alpine:latest
 WORKDIR /www
