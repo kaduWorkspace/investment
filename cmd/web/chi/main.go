@@ -7,5 +7,5 @@ import (
 func Run() {
     server := interface_chi.ServerChi{}
     server.Setup()
-    server.Start(":8989")
+    server.Start(":3000")
 }
