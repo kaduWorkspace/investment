@@ -91,7 +91,7 @@ func (m *SessionHandlerMiddleware) CreateSessionMiddleware(next http.Handler) ht
 func (m *SessionHandlerMiddleware) CheckSessionMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         session, err := m.getSession(r);
-        if err != nil && err.Error() != "Cookie is nil"{
+        if err != nil && (err.Error() != "Cookie is nil" && err.Error() != "Id not found"){
             w.WriteHeader(http.StatusInternalServerError)
             return
         }
@@ -99,7 +99,8 @@ func (m *SessionHandlerMiddleware) CheckSessionMiddleware(next http.Handler) htt
             next.ServeHTTP(w, r)
             return
         }
-        w.WriteHeader(302)
+        w.Header().Set("HX-Redirect", "/")
+        w.WriteHeader(303)
         http.Redirect(w, r, "/", http.StatusSeeOther)
     })
 }
