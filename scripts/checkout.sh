@@ -17,6 +17,7 @@ ssh -t deployer@172.17.0.2 <<EOF
         git clone git@github.com:kaduWorkspace/investment.git
     fi
     cd investment
+    git fetch
     git checkout $BRANCH
     git pull
 EOF
