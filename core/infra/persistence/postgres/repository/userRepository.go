@@ -31,9 +31,9 @@ func (r *UserRepository) Save(fields entitys.User) (int, error) {
     if err != nil {
         return id, err
     }
-    defer tx.Rollback(ctx)
     err = tx.QueryRow(ctx, "insert into users (name, email, password) values ($1, $2, $3) returning id", fields.Name, fields.Email, fields.Password).Scan(&id);
     if err != nil {
+        tx.Rollback(ctx)
         return id, err
     }
     tx.Commit(ctx)
