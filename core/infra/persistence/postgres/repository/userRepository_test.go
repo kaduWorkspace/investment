@@ -7,6 +7,7 @@ import (
 	"kaduhod/fin_v3/core/infra/persistence/postgres/connection"
 	"log"
 	"testing"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
@@ -65,4 +66,174 @@ func TestUserRepository_Save(t *testing.T) {
 		_, err = repo.Save(testUser)
 		assert.Error(t, err)
 	})
+}
+func TestUserRepository_Get(t *testing.T) {
+    err := godotenv.Load("/home/carlos/projetos/meu-app/chi_version/.env")
+    if err != nil {
+        fmt.Println(err)
+        log.Fatal("Error loading .env file")
+    }
+
+    // Setup test database connection
+    ctx := context.Background()
+    conn := pg_connection.NewPgxConnection()
+    defer conn.Conn.Close()
+
+    // Create repository
+    repo := NewUserRepository(conn)
+
+    // Create test user
+    testUser := entitys.User{
+        Name:     "Test Get User",
+        Email:    "test_get_user@example.com",
+        Password: "password",
+    }
+    id, err := repo.Save(testUser)
+    assert.NoError(t, err)
+
+    // Clean up test data
+    defer func() {
+        _, _ = conn.Conn.Exec(ctx, "DELETE FROM users WHERE email = $1", testUser.Email)
+    }()
+
+    t.Run("successfully gets user by ID", func(t *testing.T) {
+        filters := entitys.User{Id: id}
+        result, err := repo.Get(filters)
+
+        assert.NoError(t, err)
+        assert.Equal(t, id, result.Id)
+        assert.Equal(t, testUser.Name, result.Name)
+        assert.Equal(t, testUser.Email, result.Email)
+    })
+
+    t.Run("successfully gets user by email", func(t *testing.T) {
+        filters := entitys.User{Email: testUser.Email}
+        result, err := repo.Get(filters)
+
+        assert.NoError(t, err)
+        assert.Equal(t, id, result.Id)
+        assert.Equal(t, testUser.Name, result.Name)
+        assert.Equal(t, testUser.Email, result.Email)
+    })
+
+    t.Run("returns error when no filters provided", func(t *testing.T) {
+        filters := entitys.User{}
+        _, err := repo.Get(filters)
+
+        assert.Error(t, err)
+        assert.Equal(t, "no filter criteria provided", err.Error())
+    })
+
+    t.Run("returns error when user doesn't exist", func(t *testing.T) {
+        filters := entitys.User{Email: "nonexistent@example.com"}
+        _, err := repo.Get(filters)
+
+        assert.Error(t, err)
+        assert.Contains(t, err.Error(), "failed to get user")
+    })
+}
+func TestUserRepository_Update(t *testing.T) {
+    err := godotenv.Load("/home/carlos/projetos/meu-app/chi_version/.env")
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
+
+    ctx := context.Background()
+    conn := pg_connection.NewPgxConnection()
+    defer conn.Conn.Close()
+
+    repo := NewUserRepository(conn)
+
+    // Create test user
+    testUser := entitys.User{
+        Name:     "Test Update User",
+        Email:    "test_update_user@example.com",
+        Password: "password",
+    }
+    id, err := repo.Save(testUser)
+    assert.NoError(t, err)
+
+    defer func() {
+        _, _ = conn.Conn.Exec(ctx, "DELETE FROM users WHERE email LIKE 'test_update%'")
+    }()
+
+    t.Run("successfully updates user", func(t *testing.T) {
+        updatedUser := entitys.User{
+            Id:       id,
+            Name:     "Updated Name",
+            Email:    "updated_email@example.com",
+            Password: "newpassword",
+        }
+
+        err := repo.Update(updatedUser)
+        assert.NoError(t, err)
+
+        // Verify update
+        result, err := repo.Get(entitys.User{Id: id})
+        assert.NoError(t, err)
+        assert.Equal(t, updatedUser.Name, result.Name)
+        assert.Equal(t, updatedUser.Email, result.Email)
+    })
+
+    t.Run("returns error when no ID provided", func(t *testing.T) {
+        err := repo.Update(entitys.User{})
+        assert.Error(t, err)
+        assert.Equal(t, "user ID is required for update", err.Error())
+    })
+
+    t.Run("returns error when user doesn't exist", func(t *testing.T) {
+        err := repo.Update(entitys.User{Id: 999999})
+        assert.Error(t, err)
+        assert.Contains(t, err.Error(), "failed to update user")
+    })
+}
+
+func TestUserRepository_Delete(t *testing.T) {
+    err := godotenv.Load("/home/carlos/projetos/meu-app/chi_version/.env")
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
+
+    ctx := context.Background()
+    conn := pg_connection.NewPgxConnection()
+    defer conn.Conn.Close()
+
+    repo := NewUserRepository(conn)
+
+    // Create test user
+    testUser := entitys.User{
+        Name:     "Test Delete User",
+        Email:    "test_delete_user@example.com",
+        Password: "password",
+    }
+    id, err := repo.Save(testUser)
+    assert.NoError(t, err)
+
+    defer func() {
+        _, _ = conn.Conn.Exec(ctx, "DELETE FROM users WHERE email LIKE 'test_delete%'")
+    }()
+
+    t.Run("successfully deletes user", func(t *testing.T) {
+        err := repo.Delete(entitys.User{Id: id})
+        assert.NoError(t, err)
+
+        // Verify deletion
+        var deletedAt *time.Time
+        err = conn.Conn.QueryRow(ctx,
+            "SELECT deleted_at FROM users WHERE id = $1", id).Scan(&deletedAt)
+        assert.NoError(t, err)
+        assert.NotNil(t, deletedAt)
+    })
+
+    t.Run("returns error when no ID provided", func(t *testing.T) {
+        err := repo.Delete(entitys.User{})
+        assert.Error(t, err)
+        assert.Equal(t, "user ID is required for deletion", err.Error())
+    })
+
+    t.Run("returns error when user doesn't exist", func(t *testing.T) {
+        err := repo.Delete(entitys.User{Id: 999999})
+        assert.Error(t, err)
+        assert.Equal(t, "user not found or already deleted", err.Error())
+    })
 }
