@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"kaduhod/fin_v3/core/domain/repository"
-	entitys "kaduhod/fin_v3/core/domain/user"
+	user "kaduhod/fin_v3/core/domain/user"
 	pg_connection "kaduhod/fin_v3/core/infra/persistence/postgres/connection"
 	"strings"
 )
@@ -22,12 +22,12 @@ import (
 type UserRepository struct {
     pgx *pg_connection.PgxConnextion
 }
-func NewUserRepository(connection *pg_connection.PgxConnextion) repository.Repository[entitys.User] {
+func NewUserRepository(connection *pg_connection.PgxConnextion) repository.Repository[user.User] {
     return &UserRepository{
         pgx: connection,
     }
 }
-func (r *UserRepository) Save(fields entitys.User) (int, error) {
+func (r *UserRepository) Save(fields user.User) (int, error) {
     ctx := context.Background()
     tx, err := r.pgx.Conn.Begin(ctx)
     var id int
@@ -43,9 +43,9 @@ func (r *UserRepository) Save(fields entitys.User) (int, error) {
     return id, nil
 }
 
-func (r *UserRepository) Get(filters entitys.User) (entitys.User, error) {
+func (r *UserRepository) Get(filters user.User) (user.User, error) {
     ctx := context.Background()
-    var user entitys.User
+    var user user.User
 
     // Build WHERE clause and arguments
     var whereClause strings.Builder
@@ -84,7 +84,7 @@ func (r *UserRepository) Get(filters entitys.User) (entitys.User, error) {
     return user, nil
 }
 
-func (r *UserRepository) Update(user entitys.User) error {
+func (r *UserRepository) Update(user user.User) error {
     if user.Id == 0 {
         return errors.New("user ID is required for update")
     }
@@ -145,7 +145,7 @@ func (r *UserRepository) Update(user entitys.User) error {
 }
 
 
-func (r *UserRepository) Delete(user entitys.User) error {
+func (r *UserRepository) Delete(user user.User) error {
     ctx := context.Background()
 
     if user.Id == 0 {

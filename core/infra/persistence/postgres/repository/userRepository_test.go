@@ -34,7 +34,7 @@ func TestUserRepository_Save(t *testing.T) {
 	}()
 
 	t.Run("successfully saves user", func(t *testing.T) {
-		testUser := entitys.User{
+		testUser := user.User{
 			Name:     "Test User",
 			Email:    "test_user@example.com",
 			Password: "securepassword",
@@ -52,7 +52,7 @@ func TestUserRepository_Save(t *testing.T) {
 	})
 
 	t.Run("returns error for duplicate email", func(t *testing.T) {
-		testUser := entitys.User{
+		testUser := user.User{
 			Name:     "Duplicate User",
 			Email:    "duplicate@example.com",
 			Password: "password",
@@ -83,7 +83,7 @@ func TestUserRepository_Get(t *testing.T) {
     repo := NewUserRepository(conn)
 
     // Create test user
-    testUser := entitys.User{
+    testUser := user.User{
         Name:     "Test Get User",
         Email:    "test_get_user@example.com",
         Password: "password",
@@ -97,7 +97,7 @@ func TestUserRepository_Get(t *testing.T) {
     }()
 
     t.Run("successfully gets user by ID", func(t *testing.T) {
-        filters := entitys.User{Id: id}
+        filters := user.User{Id: id}
         result, err := repo.Get(filters)
 
         assert.NoError(t, err)
@@ -107,7 +107,7 @@ func TestUserRepository_Get(t *testing.T) {
     })
 
     t.Run("successfully gets user by email", func(t *testing.T) {
-        filters := entitys.User{Email: testUser.Email}
+        filters := user.User{Email: testUser.Email}
         result, err := repo.Get(filters)
 
         assert.NoError(t, err)
@@ -117,7 +117,7 @@ func TestUserRepository_Get(t *testing.T) {
     })
 
     t.Run("returns error when no filters provided", func(t *testing.T) {
-        filters := entitys.User{}
+        filters := user.User{}
         _, err := repo.Get(filters)
 
         assert.Error(t, err)
@@ -125,7 +125,7 @@ func TestUserRepository_Get(t *testing.T) {
     })
 
     t.Run("returns error when user doesn't exist", func(t *testing.T) {
-        filters := entitys.User{Email: "nonexistent@example.com"}
+        filters := user.User{Email: "nonexistent@example.com"}
         _, err := repo.Get(filters)
 
         assert.Error(t, err)
@@ -145,7 +145,7 @@ func TestUserRepository_Update(t *testing.T) {
     repo := NewUserRepository(conn)
 
     // Create test user
-    testUser := entitys.User{
+    testUser := user.User{
         Name:     "Test Update User",
         Email:    "test_update_user@example.com",
         Password: "password",
@@ -154,11 +154,11 @@ func TestUserRepository_Update(t *testing.T) {
     assert.NoError(t, err)
 
     defer func() {
-        _, _ = conn.Conn.Exec(ctx, "DELETE FROM users WHERE email LIKE 'test_update%'")
+        _, _ = conn.Conn.Exec(ctx, "DELETE FROM users WHERE email LIKE 'test_update%' or LIKE 'updated_email%'")
     }()
 
     t.Run("successfully updates user", func(t *testing.T) {
-        updatedUser := entitys.User{
+        updatedUser := user.User{
             Id:       id,
             Name:     "Updated Name",
             Email:    "updated_email@example.com",
@@ -169,20 +169,20 @@ func TestUserRepository_Update(t *testing.T) {
         assert.NoError(t, err)
 
         // Verify update
-        result, err := repo.Get(entitys.User{Id: id})
+        result, err := repo.Get(user.User{Id: id})
         assert.NoError(t, err)
         assert.Equal(t, updatedUser.Name, result.Name)
         assert.Equal(t, updatedUser.Email, result.Email)
     })
 
     t.Run("returns error when no ID provided", func(t *testing.T) {
-        err := repo.Update(entitys.User{})
+        err := repo.Update(user.User{})
         assert.Error(t, err)
         assert.Equal(t, "user ID is required for update", err.Error())
     })
 
     t.Run("returns error when user doesn't exist", func(t *testing.T) {
-        err := repo.Update(entitys.User{Id: 999999})
+        err := repo.Update(user.User{Id: 999999})
         assert.Error(t, err)
         assert.Contains(t, err.Error(), "failed to update user")
     })
@@ -201,7 +201,7 @@ func TestUserRepository_Delete(t *testing.T) {
     repo := NewUserRepository(conn)
 
     // Create test user
-    testUser := entitys.User{
+    testUser := user.User{
         Name:     "Test Delete User",
         Email:    "test_delete_user@example.com",
         Password: "password",
@@ -214,7 +214,7 @@ func TestUserRepository_Delete(t *testing.T) {
     }()
 
     t.Run("successfully deletes user", func(t *testing.T) {
-        err := repo.Delete(entitys.User{Id: id})
+        err := repo.Delete(user.User{Id: id})
         assert.NoError(t, err)
 
         // Verify deletion
@@ -226,13 +226,13 @@ func TestUserRepository_Delete(t *testing.T) {
     })
 
     t.Run("returns error when no ID provided", func(t *testing.T) {
-        err := repo.Delete(entitys.User{})
+        err := repo.Delete(user.User{})
         assert.Error(t, err)
         assert.Equal(t, "user ID is required for deletion", err.Error())
     })
 
     t.Run("returns error when user doesn't exist", func(t *testing.T) {
-        err := repo.Delete(entitys.User{Id: 999999})
+        err := repo.Delete(user.User{Id: 999999})
         assert.Error(t, err)
         assert.Equal(t, "user not found or already deleted", err.Error())
     })
