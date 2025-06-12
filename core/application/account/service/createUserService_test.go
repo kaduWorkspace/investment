@@ -1,11 +1,11 @@
-package service_test
+package app_account_service_test
 
 import (
 	"context"
 	"testing"
 
-	app_dto "kaduhod/fin_v3/core/application/dto"
-	"kaduhod/fin_v3/core/application/service"
+	app_account_dto "kaduhod/fin_v3/core/application/account/dto"
+	app_account_service "kaduhod/fin_v3/core/application/account/service"
 	pg_connection "kaduhod/fin_v3/core/infra/persistence/postgres/connection"
 	pg_repository "kaduhod/fin_v3/core/infra/persistence/postgres/repository"
 
@@ -25,10 +25,10 @@ func TestCreateUserService_Integration(t *testing.T) {
 	conn := setupDB(t)
 	defer cleanupTestUsers(t, conn) // This will run after all tests complete
 	userRepo := pg_repository.NewUserRepository(conn)
-	userService := service.NewCreateUserService(userRepo)
+	userService := app_account_service.NewCreateUserService(userRepo)
 
 	t.Run("Create user successfully", func(t *testing.T) {
-		input := app_dto.CreateUserInput{
+		input := app_account_dto.CreateUserInput{
 			Name:     "Test User",
 			Email:    "test1@example.com",
 			Password: "password123!",
@@ -39,7 +39,7 @@ func TestCreateUserService_Integration(t *testing.T) {
 	})
 
 	t.Run("Fail to create user with duplicate email", func(t *testing.T) {
-		input := app_dto.CreateUserInput{
+		input := app_account_dto.CreateUserInput{
 			Name:     "Test User",
 			Email:    "test2@example.com",
 			Password: "password123!",
@@ -56,7 +56,7 @@ func TestCreateUserService_Integration(t *testing.T) {
 	})
 
 	t.Run("Fail to create user with invalid password", func(t *testing.T) {
-		input := app_dto.CreateUserInput{
+		input := app_account_dto.CreateUserInput{
 			Name:     "Test User",
 			Email:    "test3@example.com",
 			Password: "short", // Doesn't meet validation requirements

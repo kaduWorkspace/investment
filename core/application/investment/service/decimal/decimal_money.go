@@ -1,4 +1,4 @@
-package infra_investment
+package app_investment_decimal
 
 import (
 	valueobjects "kaduhod/fin_v3/core/domain/valueObjects"

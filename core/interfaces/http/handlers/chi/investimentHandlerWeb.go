@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	app_investment_decimal "kaduhod/fin_v3/core/application/investment/service/decimal"
 	core_http "kaduhod/fin_v3/core/domain/http"
 	"kaduhod/fin_v3/core/domain/investment"
 	valueobjects "kaduhod/fin_v3/core/domain/valueObjects"
-	infra_investment "kaduhod/fin_v3/core/infra/investment/decimal"
 	validators_dto "kaduhod/fin_v3/core/interfaces/http/dto/validators"
 	"kaduhod/fin_v3/core/interfaces/web/renderer"
 	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
@@ -124,9 +124,9 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictResultPage(w http.R
         })
         return
     }
-    finalValue := infra_investment.NewDecimalMoney(userInput.FinalValue)
-    taxDecimal := infra_investment.NewDecimalMoney(userInput.TaxDecimal)
-    initialValue := infra_investment.NewDecimalMoney(userInput.InitialValue)
+    finalValue := app_investment_decimal.NewDecimalMoney(userInput.FinalValue)
+    taxDecimal := app_investment_decimal.NewDecimalMoney(userInput.TaxDecimal)
+    initialValue := app_investment_decimal.NewDecimalMoney(userInput.InitialValue)
     contribution := h.FutureValueOfASeriesService.PredictContribution(
         finalValue,
         taxDecimal,
@@ -222,13 +222,13 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
         })
         return
     }
-    initialValue := infra_investment.NewDecimalMoney(userInput.InitialValue)
-    contribution := infra_investment.NewDecimalMoney(userInput.Contribution)
-    periodsD := infra_investment.NewDecimalMoney(float64(userInput.Periods))
+    initialValue := app_investment_decimal.NewDecimalMoney(userInput.InitialValue)
+    contribution := app_investment_decimal.NewDecimalMoney(userInput.Contribution)
+    periodsD := app_investment_decimal.NewDecimalMoney(float64(userInput.Periods))
     result, periods := h.FutureValueOfASeriesService.CalculateTrackingPeriods(
         initialValue,
         contribution,
-        infra_investment.NewDecimalMoney(userInput.TaxDecimal),
+        app_investment_decimal.NewDecimalMoney(userInput.TaxDecimal),
         userInput.FirstDay,
         time.Now(),
         userInput.Periods,
@@ -244,12 +244,12 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
     totalInvested := periodsD.Multiply(contribution).Add(initialValue)
     var initialValueOrOne valueobjects.Money
     if userInput.InitialValue < 1 {
-        initialValueOrOne = infra_investment.NewDecimalMoney(1.0)
+        initialValueOrOne = app_investment_decimal.NewDecimalMoney(1.0)
     } else {
         initialValueOrOne = initialValue
     }
-    roi := result.Subtract(infra_investment.NewDecimalMoney(userInput.InitialValue))
-    roiPorcentage := roi.Divide(initialValueOrOne).Multiply(infra_investment.NewDecimalMoney(100))
+    roi := result.Subtract(app_investment_decimal.NewDecimalMoney(userInput.InitialValue))
+    roiPorcentage := roi.Divide(initialValueOrOne).Multiply(app_investment_decimal.NewDecimalMoney(100))
     netGain := result.Subtract(periodsD.Multiply(contribution))
     data := map[string]any{
         "csrf": csrf,
