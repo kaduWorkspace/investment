@@ -1,4 +1,4 @@
-package app_dto
+package app_account_dto
 
 import (
 	"errors"

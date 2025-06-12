@@ -1,9 +1,9 @@
-package service
+package app_account_service
 
 import (
 	"errors"
 	"fmt"
-	app_dto "kaduhod/fin_v3/core/application/dto"
+	app_account_dto "kaduhod/fin_v3/core/application/account/dto"
 	"kaduhod/fin_v3/core/domain/repository"
 	"kaduhod/fin_v3/core/domain/user"
 
@@ -12,12 +12,12 @@ import (
 type CreateUserService struct {
     repository repository.Repository[user.User]
 }
-func NewCreateUserService(repository repository.Repository[user.User]) user.CreateUserServiceI[app_dto.CreateUserInput] {
+func NewCreateUserService(repository repository.Repository[user.User]) user.CreateUserServiceI[app_account_dto.CreateUserInput] {
     return &CreateUserService{
         repository: repository,
     }
 }
-func (s *CreateUserService) Create(usr app_dto.CreateUserInput) error {
+func (s *CreateUserService) Create(usr app_account_dto.CreateUserInput) error {
     hash , err := bcrypt.GenerateFromPassword([]byte(usr.Password), bcrypt.DefaultCost)
     if err != nil {
         fmt.Println(err)

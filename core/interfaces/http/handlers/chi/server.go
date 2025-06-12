@@ -1,9 +1,9 @@
 package interface_chi
 
 import (
+	app_investment_decimal "kaduhod/fin_v3/core/application/investment/service/decimal"
 	domain_http "kaduhod/fin_v3/core/domain/http"
 	auth_std "kaduhod/fin_v3/core/infra/auth/std"
-	infra_investment "kaduhod/fin_v3/core/infra/investment/decimal"
 	"kaduhod/fin_v3/core/infra/session/memory"
 	http_middleware "kaduhod/fin_v3/core/interfaces/http/middlewares/http"
 	"kaduhod/fin_v3/core/interfaces/web/renderer"
@@ -27,8 +27,8 @@ func (s *ServerChi) Start(port string) {
     }
 }
 func (s *ServerChi) Setup() {
-    compoundInterestServiceDecimal := infra_investment.CompoundInterestDecimal{}
-    futureValueOfASeriesServiceDecimal := infra_investment.FutureValueOfASerieDecimal{}
+    compoundInterestServiceDecimal := app_investment_decimal.CompoundInterestDecimal{}
+    futureValueOfASeriesServiceDecimal := app_investment_decimal.FutureValueOfASerieDecimal{}
     rootDir, _ := os.Getwd()
     rndr, err := renderer.NewRenderer(rootDir+"/core/interfaces/web/components", rootDir+"/core/interfaces/web/pages")
     if err != nil {
