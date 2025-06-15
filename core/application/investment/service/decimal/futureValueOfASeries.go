@@ -19,6 +19,11 @@ func (self FutureValueOfASerieDecimal) Calculate(contribution, taxDecimal valueo
     result := contribution.Multiply(growthFactorPerMonthlyTax)
     return result
 }
+func (self FutureValueOfASerieDecimal) CalculateRealValue(contribution, taxDecimal, inflationTax valueobjects.Money, firstDay bool, periods int) valueobjects.Money {
+    one := NewDecimalMoney(1.0)
+    realTax := one.Add(taxDecimal).Divide(one.Add(inflationTax)).Subtract(one)
+    return self.Calculate(contribution, realTax, firstDay, periods)
+}
 func (self FutureValueOfASerieDecimal) monthlyTax(tax valueobjects.Money) valueobjects.Money {
     twelve := NewDecimalMoney(12.0)
     return tax.Divide(twelve)
@@ -56,4 +61,7 @@ func (self FutureValueOfASerieDecimal) PredictContribution(finalValue, taxDecima
     }
     result := finalValue.Divide(growthFactor)
     return result
+}
+func NewFutureValueOfASerieDecimal() investment.FutureValueOfASeries {
+    return &FutureValueOfASerieDecimal{}
 }

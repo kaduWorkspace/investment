@@ -29,6 +29,7 @@ func GetDateFormated(date time.Time) string {
 }
 type FutureValueOfASeries interface {
     Calculate(contribution, taxDecimal valueobjects.Money, firstDay bool, periods int) valueobjects.Money
+    CalculateRealValue(contribution, taxDecimal, taxInflation valueobjects.Money, firstDay bool, periods int) valueobjects.Money
     CalculateTrackingPeriods(initialValue, contribution, taxDecimal valueobjects.Money, firstDay bool, initialDate time.Time, periods int) (valueobjects.Money, []PeriodTracker)
     PredictContribution(finalValue, taxDecimal, initialValue valueobjects.Money, contributionOnFirstDay bool, periods int) (valueobjects.Money)
 }
