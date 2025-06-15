@@ -64,6 +64,56 @@ func TestCompoundInterestDecimal_Calculate(t *testing.T) {
 		})
 	}
 }
+
+func TestCompoundInterestDecimal_CalculateReal(t *testing.T) {
+	tests := []struct {
+		name         string
+		initialValue float64
+		tax          float64
+        taxInflation float64
+		periods      int
+		want         float64
+        wantReal float64
+	}{
+
+        {
+            name:     "Compound interest in a real situation",
+            initialValue:  1000.0,
+            tax:      0.20,
+            taxInflation: 0.05,
+            periods:   24,
+            want: 1486.9146179463576,
+            wantReal: 1328.4687770436956,
+        },
+        {
+            name:     "Compound interest in a real situation with inflation bigger then tax",
+            initialValue:  1000.0,
+            tax:      0.20,
+            taxInflation: 0.25,
+            periods:   24,
+            want: 1486.9146179463576,
+            wantReal: 922.9929982472579,
+        },
+	}
+    cp := CompoundInterestDecimal{}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			initial := NewDecimalMoney(tt.initialValue)
+			tax := NewDecimalMoney(tt.tax)
+            taxInflation := NewDecimalMoney(tt.taxInflation)
+			periods := tt.periods
+
+			got := cp.Calculate(initial, tax, periods)
+			if !almostEqual(got.GetAmount(), tt.want, 0.01) {
+				t.Errorf("Calculate() = %v, want %v", got, tt.want)
+			}
+            gotReal := cp.CalculateRealValue(initial, tax, taxInflation, periods)
+			if !almostEqual(gotReal.GetAmount(), tt.wantReal, 0.01) {
+				t.Errorf("Calculate() = %v, want %v", gotReal, tt.wantReal)
+			}
+		})
+	}
+}
 func almostEqual(a, b, tolerance float64) bool {
     return math.Abs(a-b) <= tolerance || math.Abs(b-a) <= tolerance
 }
