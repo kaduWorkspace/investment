@@ -2,7 +2,7 @@ bin
 /node_modules
 package-lock.json
 .secrets
-.env*
+.env
 go.mod
 # Binaries e diretórios temporários do Air
 /tmp

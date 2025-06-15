@@ -10,7 +10,7 @@ import (
 
 func TestToken(t *testing.T) {
     godotenv.Load()
-    b, err := bcrypt.GenerateFromPassword([]byte("yp7ORf71nOKza4yGab5O7x1p"), bcrypt.DefaultCost)
+    b, err := bcrypt.GenerateFromPassword([]byte("CtL44Rd6-zKv"), bcrypt.DefaultCost)
     if err != nil {
         panic(err)
     }

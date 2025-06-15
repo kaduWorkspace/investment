@@ -14,7 +14,7 @@ import (
 )
 
 func TestUserRepository_Save(t *testing.T) {
-    err := godotenv.Load("/home/carlos/projetos/meu-app/chi_version/.env")
+    err := godotenv.Load("/home/carlos/projetos/meu-app/chi_version/.env.development")
     if err != nil {
         fmt.Println(err)
         log.Fatal("Error loading .env file")
