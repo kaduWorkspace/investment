@@ -20,9 +20,11 @@ func (self FutureValueOfASerieDecimal) Calculate(contribution, taxDecimal valueo
     return result
 }
 func (self FutureValueOfASerieDecimal) CalculateRealValue(contribution, taxDecimal, inflationTax valueobjects.Money, firstDay bool, periods int) valueobjects.Money {
+    return self.Calculate(contribution, self.taxAdjusted(taxDecimal, inflationTax), firstDay, periods)
+}
+func (self FutureValueOfASerieDecimal) taxAdjusted(taxDecimal, inflationTax valueobjects.Money) valueobjects.Money {
     one := NewDecimalMoney(1.0)
-    realTax := one.Add(taxDecimal).Divide(one.Add(inflationTax)).Subtract(one)
-    return self.Calculate(contribution, realTax, firstDay, periods)
+    return one.Add(taxDecimal).Divide(one.Add(inflationTax)).Subtract(one)
 }
 func (self FutureValueOfASerieDecimal) monthlyTax(tax valueobjects.Money) valueobjects.Money {
     twelve := NewDecimalMoney(12.0)
@@ -47,6 +49,9 @@ func (self FutureValueOfASerieDecimal) CalculateTrackingPeriods(initialValue, co
     }
     futureValue := accrued
     return futureValue, periodsTracker
+}
+func (self FutureValueOfASerieDecimal) CalculateTrackingPeriodsRealValue(initialValue, contribution, taxDecimal, taxInflation valueobjects.Money, firstDay bool, initialDate time.Time, periods int) (valueobjects.Money ,[]investment.PeriodTracker) {
+    return self.CalculateTrackingPeriods(initialValue, contribution, self.taxAdjusted(taxDecimal, taxInflation), firstDay, initialDate, periods)
 }
 func (self FutureValueOfASerieDecimal) PredictContribution(finalValue, taxDecimal, initialValue valueobjects.Money, contributionOnFirstDay bool, periods int) (valueobjects.Money) {
     taxByMonths := self.monthlyTax(taxDecimal)
