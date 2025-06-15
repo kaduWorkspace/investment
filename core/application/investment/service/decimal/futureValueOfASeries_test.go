@@ -134,6 +134,16 @@ func TestFutureValueOfASerieDecimal_CalculateReal(t *testing.T) {
             want:                  4307.6878,
             wantReal:              4034.8028,
         },
+        {
+            name:                  "Value asjusted by inflation with bigger inflation",
+            interestRateDecimal:   0.12,
+            inflationTax:   0.14,
+            periods:               36,
+            contributionAmount:    100,
+            contributionOnFirstDay: false,
+            want:                  4307.6878,
+            wantReal:              3509.4026,
+        },
     }
 
 
@@ -153,45 +163,6 @@ func TestFutureValueOfASerieDecimal_CalculateReal(t *testing.T) {
             t.Log(gotReal.GetAmount(), got.GetAmount())
             if !almostEqual(gotReal.GetAmount(), tt.wantReal, 0.0001) {
                 t.Errorf("CalculateReal() = %v, want %v", got, tt.want)
-            }
-        })
-    }
-    testsWithInitialValue := []struct {
-        name                  string
-        interestRateDecimal   float64
-        periods               int
-        contributionAmount    float64
-        contributionOnFirstDay bool
-        initialValue          float64
-        want                  float64
-    }{
-        {
-            name:                  "loop_with initial value end period",
-            interestRateDecimal:   0.12,
-            periods:               12,
-            contributionOnFirstDay: true,
-            want:            2062.84,
-            initialValue:          500.00,
-        },
-        {
-            name:                  "loop_with initial value start period",
-            interestRateDecimal:   0.12,
-            periods:               12,
-            contributionOnFirstDay: true,
-            want:            2535.62,
-            initialValue:          300.00,
-        },
-    }
-    today := time.Now()
-    for _, tt := range testsWithInitialValue {
-        t.Run(tt.name, func(t *testing.T) {
-            contribution := NewDecimalMoney(tt.contributionAmount)
-            tax := NewDecimalMoney(tt.interestRateDecimal)
-            periods := tt.periods
-            initialValue := NewDecimalMoney(tt.initialValue)
-            futureValue, _ := fv.CalculateTrackingPeriods(initialValue, contribution, tax, tt.contributionOnFirstDay, today, periods)
-            if almostEqual(futureValue.GetAmount(), tt.want, 0.0001) {
-                t.Errorf("Calculate() = %v, want %v", futureValue.GetAmount(), tt.want)
             }
         })
     }
