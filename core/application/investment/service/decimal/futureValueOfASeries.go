@@ -67,6 +67,9 @@ func (self FutureValueOfASerieDecimal) PredictContribution(finalValue, taxDecima
     result := finalValue.Divide(growthFactor)
     return result
 }
+func (self FutureValueOfASerieDecimal) PredictContributionRealValue(finalValue, taxDecimal, inflationTax, initialValue valueobjects.Money, contributionOnFirstDay bool, periods int) (valueobjects.Money) {
+    return self.PredictContribution(finalValue, self.taxAdjusted(taxDecimal, inflationTax), initialValue, contributionOnFirstDay, periods)
+}
 func NewFutureValueOfASerieDecimal() investment.FutureValueOfASeries {
     return &FutureValueOfASerieDecimal{}
 }
