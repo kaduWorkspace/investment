@@ -33,6 +33,8 @@ jobs:
          echo "${{ secrets.DEV_ENV }}" >> .env
      - name: Copy env to project
        run: scp .env deployer@172.17.0.2:~/investment/.env
+     - name: copy dev environment
+       run: ./scripts/copy_env.sh
 
   tests:
     runs-on: [ self-hosted, linux ]
