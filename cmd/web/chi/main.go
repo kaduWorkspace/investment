@@ -8,5 +8,5 @@ func Run() {
     server := interface_chi.ServerChi{}
     server.Setup()
 
-    server.Start(":3000")
+    server.Start(":8989")
 }
