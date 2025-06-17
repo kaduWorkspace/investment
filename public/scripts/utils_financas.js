@@ -3,17 +3,6 @@ const mover_para_resultados = () => {
         document.getElementById("resultados_container").scrollIntoView({  behavior: 'smooth' });
     }
 }
-
-
-
-
-
-
-
-
-
-
-
 const main = () => {
     mover_para_resultados();
 }

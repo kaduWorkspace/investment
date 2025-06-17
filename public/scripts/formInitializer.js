@@ -24,7 +24,9 @@ import setupFormValidation from './predict_form.js';
         const valorAporte = document.getElementById('contribution');
         const valorInicial = document.getElementById('initial_value');
         const valorTaxaAnual = document.getElementById('tax_decimal');
+        const valorTaxaAnualInflation = document.getElementById('tax_decimal_inflation');
 
+        if (valorTaxaAnualInflation) valorTaxaAnualInflation.addEventListener('input', CurrencyUtils.handleCurrencyInput);
         if (valorAporte) valorAporte.addEventListener('input', CurrencyUtils.handleCurrencyInput);
         if (valorInicial) valorInicial.addEventListener('input', CurrencyUtils.handleCurrencyInput);
         if (valorTaxaAnual) valorTaxaAnual.addEventListener('input', CurrencyUtils.handleCurrencyInput);

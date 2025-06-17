@@ -24,7 +24,14 @@
                             <p class="text-lg font-bold text-white">R$ {{ .contribution_needed }}</p>
                         </div>
                     </div>
-                </div>            </div>
+                    <div class="bg-green-700 hover:bg-green-600 transition-all duration-300  rounded-lg p-3 col-span-1 md:col-span-2">
+                        <div class="flex items-center justify-between">
+                            <p class="text-white text-sm">Aporte Mensal Necessário Corrigido Pela Inflação</p>
+                            <p class="text-lg font-bold text-white">R$ {{ .contribution_needed_real }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="mt-4 p-3 card bg-yellow-800/50 text-white rounded-lg shadow-md w-full flex items-start">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">

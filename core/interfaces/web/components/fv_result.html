@@ -44,8 +44,8 @@
                         <tr>
                             <th class="p-3 text-left text-sm font-medium text-teal-400">Mês</th>
                             <th class="p-3 text-left text-sm font-medium text-teal-400">Aporte</th>
-                            <th class="p-3 text-left text-sm font-medium text-teal-400">Juros</th>
-                            <th class="p-3 text-left text-sm font-medium text-teal-400">Valor Acumulado</th>
+                            <th class="p-3 text-left text-sm font-medium text-teal-400">Juros Nominal / Real</th>
+                            <th class="p-3 text-left text-sm font-medium text-teal-400">Valor Acumulado Nominal / Real</th>
                         </tr>
                     </thead>
                     <!-- Corpo da tabela -->
@@ -60,8 +60,8 @@
                         <tr class="border-b border-gray-700 hover:bg-gray-800 transition-all duration-300">
                             <td class="p-3 text-sm">{{ $valor.DateFormated }}</td>
                             <td class="p-3 text-sm">R$ {{ $.contribution }}</td>
-                            <td class="p-3 text-sm">R$ {{ $valor.InterestFormated }}</td>
-                            <td class="p-3 text-sm">R$ {{ $valor.AccruedFormated }}</td>
+                            <td class="p-3 text-sm">R$ {{ $valor.InterestFormated }} / <span class="text-gray-500">{{ (index $.periodsTrackerReal $chave).InterestFormated }}</span></td>
+                            <td class="p-3 text-sm">R$ {{ $valor.AccruedFormated }} / <span class="text-gray-500">{{  (index $.periodsTrackerReal $chave).AccruedFormated  }}</span></td>
                         </tr>
                         {{ end }}
                     </tbody>
