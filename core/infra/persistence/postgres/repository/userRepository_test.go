@@ -14,21 +14,21 @@ import (
 )
 
 func TestUserRepository_Save(t *testing.T) {
-    err := godotenv.Load("/home/deployer/investment/.env.development")
+    err := godotenv.Load("../../../../.env.development")
     if err != nil {
         fmt.Println(err)
         log.Fatal("Error loading .env file")
     }
 
-	// Setup test database connection
+	/ Setup test database connection
 	ctx := context.Background()
     conn := pg_connection.NewPgxConnection()
 	defer conn.Conn.Close()
 
-	// Create repository
+	/ Create repository
 	repo := NewUserRepository(conn)
 
-	// Clean up test data
+	/ Clean up test data
 	defer func() {
 		_, _ = conn.Conn.Exec(ctx, "DELETE FROM users WHERE email LIKE 'test_%' or email like 'duplicate_%'")
 	}()
@@ -44,7 +44,7 @@ func TestUserRepository_Save(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Greater(t, id, 0)
 
-		// Verify the record exists
+		/ Verify the record exists
 		var dbID int
 		err = conn.Conn.QueryRow(ctx, "SELECT id FROM users WHERE email = $1", testUser.Email).Scan(&dbID)
 		assert.NoError(t, err)
@@ -58,31 +58,31 @@ func TestUserRepository_Save(t *testing.T) {
 			Password: "password",
 		}
 
-		// First insert should succeed
+		/ First insert should succeed
 		_, err := repo.Save(testUser)
 		assert.NoError(t, err)
 
-		// Second insert should fail
+		/ Second insert should fail
 		_, err = repo.Save(testUser)
 		assert.Error(t, err)
 	})
 }
 func TestUserRepository_Get(t *testing.T) {
-    err := godotenv.Load("/home/deployer/investment/.env.development")
+    err := godotenv.Load("../../../../.env.development")
     if err != nil {
         fmt.Println(err)
         log.Fatal("Error loading .env file")
     }
 
-    // Setup test database connection
+    / Setup test database connection
     ctx := context.Background()
     conn := pg_connection.NewPgxConnection()
     defer conn.Conn.Close()
 
-    // Create repository
+    / Create repository
     repo := NewUserRepository(conn)
 
-    // Create test user
+    / Create test user
     testUser := user.User{
         Name:     "Test Get User",
         Email:    "test_get_user@example.com",
@@ -91,7 +91,7 @@ func TestUserRepository_Get(t *testing.T) {
     id, err := repo.Save(testUser)
     assert.NoError(t, err)
 
-    // Clean up test data
+    / Clean up test data
     defer func() {
         _, _ = conn.Conn.Exec(ctx, "DELETE FROM users WHERE email = $1", testUser.Email)
     }()
@@ -133,7 +133,7 @@ func TestUserRepository_Get(t *testing.T) {
     })
 }
 func TestUserRepository_Update(t *testing.T) {
-    err := godotenv.Load("/home/deployer/investment/.env.development")
+    err := godotenv.Load("../../../../.env.development")
     if err != nil {
         log.Fatal("Error loading .env file")
     }
@@ -144,7 +144,7 @@ func TestUserRepository_Update(t *testing.T) {
 
     repo := NewUserRepository(conn)
 
-    // Create test user
+    / Create test user
     testUser := user.User{
         Name:     "Test Update User",
         Email:    "test_update_user@example.com",
@@ -168,7 +168,7 @@ func TestUserRepository_Update(t *testing.T) {
         err := repo.Update(updatedUser)
         assert.NoError(t, err)
 
-        // Verify update
+        / Verify update
         result, err := repo.Get(user.User{Id: id})
         assert.NoError(t, err)
         assert.Equal(t, updatedUser.Name, result.Name)
@@ -189,7 +189,7 @@ func TestUserRepository_Update(t *testing.T) {
 }
 
 func TestUserRepository_Delete(t *testing.T) {
-    err := godotenv.Load("/home/deployer/investment/.env.development")
+    err := godotenv.Load("../../../../.env.development")
     if err != nil {
         log.Fatal("Error loading .env file")
     }
@@ -200,7 +200,7 @@ func TestUserRepository_Delete(t *testing.T) {
 
     repo := NewUserRepository(conn)
 
-    // Create test user
+    / Create test user
     testUser := user.User{
         Name:     "Test Delete User",
         Email:    "test_delete_user@example.com",
@@ -217,7 +217,7 @@ func TestUserRepository_Delete(t *testing.T) {
         err := repo.Delete(user.User{Id: id})
         assert.NoError(t, err)
 
-        // Verify deletion
+        / Verify deletion
         var deletedAt *time.Time
         err = conn.Conn.QueryRow(ctx,
             "SELECT deleted_at FROM users WHERE id = $1", id).Scan(&deletedAt)
