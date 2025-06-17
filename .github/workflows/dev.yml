@@ -24,15 +24,6 @@ jobs:
     runs-on: [ self-hosted, linux ]
     needs: checkout
     steps:
-     - name: Create environment
-       run: |
-         touch .env
-         echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
-     - name: Copy variables to env
-       run: |
-         echo "${{ secrets.DEV_ENV }}" >> .env
-     - name: Copy env to project
-       run: scp .env deployer@172.17.0.2:~/investment/.env
      - name: copy dev environment
        run: ./scripts/copy_env.sh
 
