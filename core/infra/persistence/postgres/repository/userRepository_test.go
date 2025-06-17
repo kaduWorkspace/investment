@@ -14,7 +14,7 @@ import (
 )
 
 func TestUserRepository_Save(t *testing.T) {
-    err := godotenv.Load("~/investment/.env.development")
+    err := godotenv.Load("/home/deployer/investment/.env.development")
     if err != nil {
         fmt.Println(err)
         log.Fatal("Error loading .env file")
@@ -68,7 +68,7 @@ func TestUserRepository_Save(t *testing.T) {
 	})
 }
 func TestUserRepository_Get(t *testing.T) {
-    err := godotenv.Load("~/investment/.env.development")
+    err := godotenv.Load("/home/deployer/investment/.env.development")
     if err != nil {
         fmt.Println(err)
         log.Fatal("Error loading .env file")
@@ -133,7 +133,7 @@ func TestUserRepository_Get(t *testing.T) {
     })
 }
 func TestUserRepository_Update(t *testing.T) {
-    err := godotenv.Load("~/investment/.env.development")
+    err := godotenv.Load("/home/deployer/investment/.env.development")
     if err != nil {
         log.Fatal("Error loading .env file")
     }
@@ -189,7 +189,7 @@ func TestUserRepository_Update(t *testing.T) {
 }
 
 func TestUserRepository_Delete(t *testing.T) {
-    err := godotenv.Load("~/investment/.env.development")
+    err := godotenv.Load("/home/deployer/investment/.env.development")
     if err != nil {
         log.Fatal("Error loading .env file")
     }
