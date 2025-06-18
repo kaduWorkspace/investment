@@ -6,20 +6,23 @@ import (
 	"kaduhod/fin_v3/core/domain/user"
 	"kaduhod/fin_v3/core/infra/persistence/postgres/connection"
 	"log"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
-
-func TestUserRepository_Save(t *testing.T) {
-    err := godotenv.Load("../../../../.env.development")
+func TestMain(m *testing.M) {
+    err := godotenv.Load("../../../../../.env.development")
     if err != nil {
-        fmt.Println(err)
-        log.Fatal("Error loading .env file")
+        log.Fatal("Erro ao carregar .env:", err)
     }
 
+    os.Exit(m.Run())
+}
+
+func TestUserRepository_Save(t *testing.T) {
 	ctx := context.Background()
     conn := pg_connection.NewPgxConnection()
 	defer conn.Conn.Close()
@@ -62,12 +65,6 @@ func TestUserRepository_Save(t *testing.T) {
 	})
 }
 func TestUserRepository_Get(t *testing.T) {
-    err := godotenv.Load("../../../../.env.development")
-    if err != nil {
-        fmt.Println(err)
-        log.Fatal("Error loading .env file")
-    }
-
     ctx := context.Background()
     conn := pg_connection.NewPgxConnection()
     defer conn.Conn.Close()
@@ -123,11 +120,6 @@ func TestUserRepository_Get(t *testing.T) {
     })
 }
 func TestUserRepository_Update(t *testing.T) {
-    err := godotenv.Load("../../../../.env.development")
-    if err != nil {
-        log.Fatal("Error loading .env file")
-    }
-
     ctx := context.Background()
     conn := pg_connection.NewPgxConnection()
     defer conn.Conn.Close()
@@ -177,11 +169,6 @@ func TestUserRepository_Update(t *testing.T) {
 }
 
 func TestUserRepository_Delete(t *testing.T) {
-    err := godotenv.Load("../../../../.env.development")
-    if err != nil {
-        log.Fatal("Error loading .env file")
-    }
-
     ctx := context.Background()
     conn := pg_connection.NewPgxConnection()
     defer conn.Conn.Close()
