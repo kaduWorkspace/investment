@@ -2,7 +2,6 @@ package pg_repository
 
 import (
 	"context"
-	"fmt"
 	"kaduhod/fin_v3/core/domain/user"
 	"kaduhod/fin_v3/core/infra/persistence/postgres/connection"
 	"log"
