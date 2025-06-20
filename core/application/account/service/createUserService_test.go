@@ -15,7 +15,11 @@ import (
 
 func setupDB(t *testing.T) *pg_connection.PgxConnextion {
 	t.Helper()
-    godotenv.Load("../../../../../.env.development")
+    err := godotenv.Load("../../../../../.env.development")
+    if err != nil {
+        t.Error(err)
+        t.Fail()
+    }
 
 	conn := pg_connection.NewPgxConnection()
 	return conn
