@@ -2,6 +2,7 @@ package pg_connection
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -18,6 +19,7 @@ func NewPgxConnection() *PgxConnextion {
     port := os.Getenv("DATABASE_PORT")
     db := os.Getenv("DATABASE_DB")
     url := "postgres://" + user + ":" + pass + "@" + host + ":" + port + "/" + db
+    fmt.Println(url)
     conn, err := pgxpool.New(ctx, url)
     if err != nil {
         panic(err)
