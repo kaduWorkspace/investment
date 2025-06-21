@@ -29,7 +29,7 @@ jobs:
 
   create_env_prod:
     runs-on: [ self-hosted, linux ]
-    needs: checkout
+    needs: tests
     steps:
      - name: copy prod environment
        run: |
