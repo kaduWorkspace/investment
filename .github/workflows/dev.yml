@@ -27,18 +27,6 @@ jobs:
      - name: copy dev environment
        run: ./scripts/copy_env.sh
 
-  create_env_prod:
-    runs-on: [ self-hosted, linux ]
-    needs: tests
-    steps:
-     - name: copy prod environment
-       run: |
-          cat <<EOF > .env
-          ${{ secrets.PROD_CSRF_TOKEN }}
-          ${{ secrets.PROD_ADMIN_TOKEN}}
-          ${{ secrets.PROD_HASH }}
-          EOF
-
   tests:
     runs-on: [ self-hosted, linux ]
     needs: create_env
