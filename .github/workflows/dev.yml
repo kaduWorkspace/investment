@@ -33,9 +33,9 @@ jobs:
     steps:
      - name: copy prod environment
        run: |
-          echo "${{ secrets.PROD_CSRF_TOKEN }}" >> .env
-          echo "${{ secrets.PROD_ADMIN_TOKEN}}" >> .env
-          echo "${{ secrets.PROD_HASH }}" >> .env
+          echo '${{ secrets.PROD_CSRF_TOKEN }}' >> .env
+          echo '${{ secrets.PROD_ADMIN_TOKEN}}' >> .env
+          echo '${{ secrets.PROD_HASH }}' >> .env
 
   tests:
     runs-on: [ self-hosted, linux ]
