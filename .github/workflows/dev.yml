@@ -27,6 +27,14 @@ jobs:
      - name: copy dev environment
        run: ./scripts/copy_env.sh
 
+  create_env_prod:
+    runs-on: [ self-hosted, linux ]
+    needs: checkout
+    steps:
+     - name: copy prod environment
+       run: |
+          echo "${{ secrets.PROD_ENV }}" > .env
+
   tests:
     runs-on: [ self-hosted, linux ]
     needs: create_env
