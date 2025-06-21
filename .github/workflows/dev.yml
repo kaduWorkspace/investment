@@ -37,7 +37,7 @@ jobs:
           ${{ secrets.PROD_CSRF_TOKEN }}
           ${{ secrets.PROD_ADMIN_TOKEN}}
           ${{ secrets.PROD_HASH }}
-            OEF
+          EOF
 
   tests:
     runs-on: [ self-hosted, linux ]
