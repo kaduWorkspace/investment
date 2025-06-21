@@ -36,7 +36,7 @@ jobs:
 
   build_image:
     runs-on: [ self-hosted, linux ]
-    needs: create_env_prod
+    needs: tests
     steps:
       - name: Run build
         run: ./scripts/build_image.sh
