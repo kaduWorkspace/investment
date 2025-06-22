@@ -4,5 +4,5 @@ ssh -t deployer <<EOF
     docker pull kaduhod/fin
     docker stop cdb || true
     docker rm cdb || true
-    docker run --name cdb -d -p 3000:3000 kaduhod/fin
+    docker run --name cdb -d -p 3000:8989 kaduhod/fin
 EOF
