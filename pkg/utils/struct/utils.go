@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -65,47 +64,6 @@ func HttpRequest(url string, method string, headers map[string]string, body stri
 		return "", fmt.Errorf("erro ao ler a resposta: %w", err)
 	}
 	return string(respBody), nil
-}
-type IpcaApiRespopnse struct {
-    Data string `json:"data"`
-    Valor string `json:"valor"`
-}
-func MediaIpcaApi() (float64) {
-    url := "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados?formato=json&dataInicial=01/01/2000"
-    res, err := HttpRequest(url, "GET", map[string]string{"content-type":"text/plain"}, "")
-    defaultIpca := 4.5
-    if err != nil {
-        fmt.Println(err)
-        return defaultIpca
-    }
-    err, parsedResponse := FromJson[[]IpcaApiRespopnse]([]byte(res))
-    if err != nil {
-        fmt.Println(err)
-        return defaultIpca
-    }
-    dateLayout := "02/01/2006"
-    years := 0
-    ipcaAccrued := 0.0
-    ipcas := []float64{}
-    for _, data := range parsedResponse {
-        date, err := time.Parse(dateLayout, data.Data)
-        if err != nil {
-            fmt.Println(err)
-            return defaultIpca
-        }
-        if date.Month() == time.December {
-            years++
-            f, err := strconv.ParseFloat(data.Valor, 64)
-            if err != nil {
-                fmt.Println(err)
-                return defaultIpca
-            }
-            ipcas = append(ipcas, f)
-            ipcaAccrued += f
-        }
-    }
-    resultMedia := ipcaAccrued / float64(years)
-    return resultMedia
 }
 func EhMobile(userAgent string) bool {
 	mobileKeywords := []string{

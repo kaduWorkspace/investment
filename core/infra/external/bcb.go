@@ -59,7 +59,6 @@ func (s *BcbService) GetSelic() (float64, error) {
     }
     s.data.Selic = valueSelic
     s.data.SelicLastMonthSearched = time.Now().Month()
-    fmt.Println("Salvando dado novo de media")
     return valueSelic, err
 }
 func (s *BcbService) GetMediaIpca() (float64, error) {
@@ -106,6 +105,5 @@ func (s *BcbService) GetMediaIpca() (float64, error) {
     resultMedia := ipcaAccrued / float64(years)
     s.data.MediaIpca = resultMedia
     s.data.IpcaLastYearSearched = lastYear
-    fmt.Println("Salvando dado novo de media")
     return resultMedia, nil
 }
