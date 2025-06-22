@@ -63,7 +63,6 @@
                     <input type="hidden" name="_csrf" value="{{ .csrf }}">
                 </div>
             </div>
-
             <!-- Segunda linha - Taxa anual e Data de resgate -->
             <div class="grid md:grid-cols-2 gap-6">
                 <div class="form-group">
@@ -98,6 +97,8 @@
                     </div>
                     <span class="text-red-400 text-xs mt-1 hidden" id="error_tax_decimal_inflation"></span>
                 </div>
+            </div>
+            <div class="grid md:grid-cols-1 gap-6">
                 <div class="form-group">
                     <label for="periods" class="block text-gray-300 text-sm font-medium mb-2">
                         Data do resgate
@@ -155,35 +156,8 @@
                     </div>
                     <span class="text-red-400 text-xs mt-1 hidden" id="error_periods"></span>
                 </div>
-                <div class="form-group">
-                    <label for="data_final" class="block text-gray-300 text-sm font-medium mb-2">
-                        Data Específica
-                    </label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                            <i class="fas fa-calendar"></i>
-                        </span>
-                        <input id="data_final" type="date" name="data_final"
-                            class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
-                            value="">
-                    </div>
-                    <span class="text-red-400 text-xs mt-1 hidden" id="error_data_final"></span>
-                </div>
             </div>
-
-            <!-- Campos ocultos -->
-            <div class="flex flex-col m-1 w-full hidden">
-                <label for="dias_liquidez_por_ano" class="text-gray-300 text-sm mb-1">
-                    Quantidade de dias de liquidez por ano
-                </label>
-                <select name="dias_liquidez_por_ano" id="tipo_dias_liquidez_por_ano"
-                    class="bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 px-3 text-gray-200 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200">
-                    <option value="12">12 - Todo mês</option>
-                </select>
-            </div>
-
             <input id="initial_date" type="hidden" name="initial_date" value="">
-
             <!-- Botão Simular -->
             <div class="">
                 <button id="calcular" type="submit" class="flex items-center justify-center rounded-lg mx-1 w-full card py-3 px-4 font-medium hover:bg-teal-400/10 hover:text-teal-400 transition-all duration-300 shadow-md border border-teal-400/30">

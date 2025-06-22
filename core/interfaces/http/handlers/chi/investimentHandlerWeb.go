@@ -276,6 +276,7 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
         time.Now(),
         userInput.Periods,
     )
+    periodsReal = setupItensFromPeriods(periodsReal, struct_utils.EhMobile(r.UserAgent()))
     b, err = json.Marshal(periodsReal)
     var tableReal string
     if err != nil {
@@ -283,7 +284,6 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
     } else {
         tableReal = string(b)
     }
-    periodsReal = setupItensFromPeriods(periodsReal, struct_utils.EhMobile(r.UserAgent()))
     totalInvested := periodsD.Multiply(contribution).Add(initialValue)
     var initialValueOrOne valueobjects.Money
     if userInput.InitialValue < 1 {

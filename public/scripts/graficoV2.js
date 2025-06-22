@@ -35,8 +35,11 @@ if(typeof montar_grafico_v2 === 'undefined') {
         const labels = dados.y;
         const data = dados.x;
         const datasets = [
-            { label: "Juros", data: data[0] },
+            { label: "Júros", data: data[0] },
             { label: "Acumulado", data: data[1] },
+            { label: "Júros Real", data: data[2] },
+            { label: "Acumulado Real", data: data[3] },
+
         ];
         window.grafico_canva = new Chart(ctx, {
             type: "line",
@@ -54,12 +57,16 @@ if(typeof montar_grafico_v2 === 'undefined') {
 if (typeof main_local !== "function"){
     function main_local() {
         const dados_tabela = window.dados_tabela;
+        const dados_tabela_real = window.dados_tabela_real;
         if (!dados_tabela) return;
         const meses = dados_tabela.map((item) => item.date);
         const juros = dados_tabela.map((item) => Number(item.interest.replaceAll(".", "").replaceAll(",", ".")));
         const acumulado = dados_tabela.map((item) => Number(item.accrued.replaceAll(".", "").replaceAll(",", ".")));
+
+        const juros_real = dados_tabela_real.map((item) => Number(item.interest.replaceAll(".", "").replaceAll(",", ".")));
+        const acumulado_real = dados_tabela_real.map((item) => Number(item.accrued.replaceAll(".", "").replaceAll(",", ".")));
         const grafico_container = document.getElementById("grafico_container");
-        montar_grafico_v2("chartjs", { y: meses, x: [juros, acumulado] });
+        montar_grafico_v2("chartjs", { y: meses, x: [juros, acumulado, juros_real, acumulado_real] });
 
         document
             .getElementById("botao_ativar_grafico")

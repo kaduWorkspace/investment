@@ -195,7 +195,7 @@ export const FormUtils = {
         const taxDecimalInflationInput = document.getElementById('tax_decimal_inflation_input');
 
         if (!valorTaxaAnual || !valorTaxaAnualInput || !valorAporte || !valorAporteInput ||
-            !valorInicial || !valorInicialInput || !dataFinalOpcoes || !dataFinalEspecificoInput || !taxDecimalInflationInput) {
+            !valorInicial || !valorInicialInput || !dataFinalOpcoes || !taxDecimalInflationInput) {
             console.error('Required form elements not found');
             return;
         }
@@ -205,13 +205,6 @@ export const FormUtils = {
         const valorAporteValue = CurrencyUtils.toNumber(valorAporte.value);
         const valorInicialValue = CurrencyUtils.toNumber(valorInicial.value);
         const taxaAnualInflationValue = CurrencyUtils.toNumber(taxDecimalInflation.value);
-
-        // Handle date based on selection
-        if (dataFinalOpcoes.value !== "data_especifica") {
-            const tipo = dataFinalOpcoes.value === "6" ? "meses" : "anos";
-            const dataResultado = DateUtils.increment(parseInt(dataFinalOpcoes.value), tipo);
-            dataFinalEspecificoInput.value = dataResultado;
-        }
 
         // Update hidden inputs with calculated values
         valorAporteInput.value = valorAporteValue || 0;
