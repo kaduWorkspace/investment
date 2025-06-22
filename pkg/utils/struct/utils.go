@@ -52,10 +52,10 @@ func HttpRequest(url string, method string, headers map[string]string, body stri
 	}
 	client := &http.Client{}
 	resp, err := client.Do(req)
+	defer resp.Body.Close()
 	if err != nil {
 		return "", fmt.Errorf("erro ao realizar a requisição: %w", err)
 	}
-	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("erro ao ler a resposta: %w", err)

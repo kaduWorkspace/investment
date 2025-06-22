@@ -5,22 +5,26 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"kaduhod/fin_v3/core/domain/investment"
 	app_investment_decimal "kaduhod/fin_v3/core/application/investment/service/decimal"
+	"kaduhod/fin_v3/core/domain/external"
+	core_http "kaduhod/fin_v3/core/domain/http"
+	"kaduhod/fin_v3/core/domain/investment"
 	validators_dto "kaduhod/fin_v3/core/interfaces/http/dto/validators"
 	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
-    core_http "kaduhod/fin_v3/core/domain/http"
 	"net/http"
+	"strings"
 	"time"
 )
 type InvestmentHandlerChi struct {
+    bcbService external.BcbI
     CompoundInterestService investment.CompoundInterest
     FutureValueOfASeriesService investment.FutureValueOfASeries
 }
-func NewInvestmentHandler(compoundInterestService investment.CompoundInterest, futureValueOfASeriesService investment.FutureValueOfASeries) core_http.InvestmentHandler {
+func NewInvestmentHandler(bcbService external.BcbI, compoundInterestService investment.CompoundInterest, futureValueOfASeriesService investment.FutureValueOfASeries) core_http.InvestmentHandler {
     return &InvestmentHandlerChi{
         CompoundInterestService: compoundInterestService,
         FutureValueOfASeriesService: futureValueOfASeriesService,
+        bcbService: bcbService,
     }
 }
 func (h InvestmentHandlerChi) BadRequestResponse(err error, w http.ResponseWriter) {
@@ -233,4 +237,22 @@ func (h *InvestmentHandlerChi) FutureValueOfASeriesWithTrackingApi(w http.Respon
     }
     h.SuccessJsonResponse(w, res)
     return
+}
+func (h *InvestmentHandlerChi) getTaxaSelic() string {
+    vlr, err := h.bcbService.GetSelic()
+    if err != nil {
+        fmt.Println(err)
+    }
+    valueSelic := fmt.Sprintf("%.2f", vlr)
+    valueSelic = strings.ReplaceAll(valueSelic, ".", ",")
+    return valueSelic
+}
+func (h *InvestmentHandlerChi) getMediaIpca() string {
+    vlr, err := h.bcbService.GetMediaIpca()
+    if err != nil {
+        fmt.Println(err)
+    }
+    valueIpca := fmt.Sprintf("%.2f", vlr)
+    valueIpca = strings.ReplaceAll(valueIpca, ".", ",")
+    return valueIpca
 }

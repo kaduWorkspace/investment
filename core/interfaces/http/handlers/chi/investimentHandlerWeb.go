@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	app_investment_decimal "kaduhod/fin_v3/core/application/investment/service/decimal"
+	"kaduhod/fin_v3/core/domain/external"
 	core_http "kaduhod/fin_v3/core/domain/http"
 	"kaduhod/fin_v3/core/domain/investment"
 	valueobjects "kaduhod/fin_v3/core/domain/valueObjects"
@@ -15,20 +16,21 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
 )
 type InvestmentHandlerChiWeb struct {
+    bcbService external.BcbI
     CompoundInterestService investment.CompoundInterest
     FutureValueOfASeriesService investment.FutureValueOfASeries
     Renderer *renderer.Renderer
     sessionService core_http.SessionService
 }
-func NewInvestmentHandlerChiWeb(sessionService core_http.SessionService ,compoundInterestService investment.CompoundInterest, futureValueOfASeriesService investment.FutureValueOfASeries, renderer *renderer.Renderer) core_http.InvestmentHandlerWeb {
+func NewInvestmentHandlerChiWeb(bcb external.BcbI ,sessionService core_http.SessionService ,compoundInterestService investment.CompoundInterest, futureValueOfASeriesService investment.FutureValueOfASeries, renderer *renderer.Renderer) core_http.InvestmentHandlerWeb {
     return &InvestmentHandlerChiWeb{
         CompoundInterestService: compoundInterestService,
         FutureValueOfASeriesService: futureValueOfASeriesService,
         Renderer: renderer,
         sessionService: sessionService,
+        bcbService: bcb,
     }
 }
 func (h *InvestmentHandlerChiWeb) Index(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +65,8 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictFormPage(w http.Res
     }
     data := map[string]any{
         "csrf": csrf,
-        "selic_tax": h.GetTaxaSelic(),
+        "selic_tax": h.getTaxaSelic(),
+        "ipca_media": h.getMediaIpca(),
     }
     if err := h.Renderer.Render(w, "fv_predict_form_result_page", data); err != nil {
         fmt.Println(err)
@@ -129,7 +132,8 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictResultPage(w http.R
         w.Header().Set("HX-Retarget", "#form_container")
         h.Renderer.Render(w, "fv_predict_form", map[string]any{
             "csrf": csrf,
-            "selic_tax": h.GetTaxaSelic(),
+            "selic_tax": h.getTaxaSelic(),
+            "ipca_media": h.getMediaIpca(),
             "errs": errs,
         })
         return
@@ -158,7 +162,8 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictResultPage(w http.R
     taxReal := one.Add(taxDecimal).Divide(one.Add(taxInflation)).Subtract(one).Multiply(hundred).Formatted()
     data := map[string]any{
         "csrf": csrf,
-        "selic_tax": h.GetTaxaSelic(),
+        "selic_tax": h.getTaxaSelic(),
+        "ipca_media": h.getMediaIpca(),
         "final_value": finalValue.Formatted(),
         "contribution_needed": contribution.Formatted(),
         "contribution_needed_real": contributionReal.Formatted(),
@@ -179,7 +184,8 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesFormPage(w http.ResponseWr
     }
     data := map[string]any{
         "csrf": csrf,
-        "selic_tax": h.GetTaxaSelic(),
+        "selic_tax": h.getTaxaSelic(),
+        "ipca_media": h.getMediaIpca(),
     }
     if err := h.Renderer.Render(w, "fv_form_result_page", data); err != nil {
         fmt.Println(err)
@@ -250,7 +256,8 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
         w.Header().Set("HX-Retarget", "#form_container")
         h.Renderer.Render(w, "fv_form", map[string]any{
             "csrf": csrf,
-            "selic_tax": h.GetTaxaSelic(),
+            "selic_tax": h.getTaxaSelic(),
+            "ipca_media": h.getMediaIpca(),
             "errs": errs,
         })
         return
@@ -311,7 +318,8 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
     netGainReal := resultReal.Subtract(periodsD.Multiply(contribution))
     data := map[string]any{
         "csrf": csrf,
-        "selic_tax": h.GetTaxaSelic(),
+        "selic_tax": h.getTaxaSelic(),
+        "ipca_media": h.getMediaIpca(),
         "periods_json": table,
         "periods_real_json": tableReal,
         "roi": roi.Formatted(),// return of investment | valorizacao
@@ -362,29 +370,21 @@ func setupItensFromPeriods(periods []investment.PeriodTracker, for_mobile bool) 
     }
     return adjusted_table
 }
-func (h *InvestmentHandlerChiWeb) GetTaxaSelic() string {
-    valueSelic := "13,25" // default
-    result, err := struct_utils.HttpRequest("https://www.bcb.gov.br/api/servico/sitebcb//taxaselic/ultima?withCredentials=true", "GET",
-        map[string]string{"content-type":"text/plain"}, "")
+func (h *InvestmentHandlerChiWeb) getTaxaSelic() string {
+    vlr, err := h.bcbService.GetSelic()
     if err != nil {
-        return valueSelic
+        fmt.Println(err)
     }
-    var response map[string]interface{}
-    err, response = struct_utils.FromJson[map[string]interface{}]([]byte(result))
-    if err != nil {
-        return valueSelic
-    }
-    content, ok := response["conteudo"].([]interface{})
-    if !ok || len(content) == 0 {
-        return valueSelic
-    }
-    firstItem, ok := content[0].(map[string]interface{})
-    if !ok {
-        return valueSelic
-    }
-    if metaSelic, ok := firstItem["MetaSelic"].(float64); ok {
-        valueSelic = fmt.Sprintf("%.2f", metaSelic)
-        valueSelic = strings.ReplaceAll(valueSelic, ".", ",")
-    }
+    valueSelic := fmt.Sprintf("%.2f", vlr)
+    valueSelic = strings.ReplaceAll(valueSelic, ".", ",")
     return valueSelic
+}
+func (h *InvestmentHandlerChiWeb) getMediaIpca() string {
+    vlr, err := h.bcbService.GetMediaIpca()
+    if err != nil {
+        fmt.Println(err)
+    }
+    valueIpca := fmt.Sprintf("%.2f", vlr)
+    valueIpca = strings.ReplaceAll(valueIpca, ".", ",")
+    return valueIpca
 }
