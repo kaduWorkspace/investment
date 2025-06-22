@@ -58,7 +58,7 @@
         <h2 class="text-2xl font-bold text-white mb-6 text-center">Precisão Matemática</h2>
 
         <p class="text-gray-300 mb-6 leading-relaxed">
-            Não tenho background em exatas, sou apenas um curioso desenvolvendo uma aplicaçãoem seu tempo livre. Desde já aviso que é importante validar as simulações feitas na plataforma com um profissional.
+        Não tenho background em exatas, sou apenas um curioso desenvolvendo uma aplicaçãoem seu tempo livre. Desde já aviso que é importante validar as simulações feitas na plataforma com um profissional.
         </p>
         <div class="grid md:grid-cols-2 gap-8">
             <div>
@@ -70,7 +70,6 @@
                     <div class="flex justify-center my-4">
                         <img src="public/images/formula-fv.png" alt="Fórmula do Valor Futuro" class="max-w-full rounded-md shadow-lg border border-teal-400/20">
                     </div>
-
                     <p>Onde:</p>
                     <ul>
                         <li>r = Taxa de juros anual</li>
@@ -167,6 +166,55 @@
             <i class="fas fa-play mr-2"></i>
             Começar Simulação de aporte
         </a>
+    </div>
+    <div class="card p-8 rounded-xl mb-8 animate-fade-in bg-gray-900/50 backdrop-blur-sm border border-gray-700/50">
+        <h2 class="text-2xl font-bold text-white mb-6 text-center">Taxa Real de Investimento</h2>
+        <p class="text-gray-300 mb-6 leading-relaxed">
+        A taxa real de investimento considera o impacto da inflação no poder de compra dos seus rendimentos. Utilizo o IPCA como índice de referência para calcular quanto seu dinheiro realmente cresceu em termos de poder de compra.
+        </p>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold text-teal-400 mb-3 flex items-center">
+                    <i class="fas fa-chart-line mr-2"></i> Fórmula da Taxa Real
+                </h3>
+                <div class="bg-gray-800 p-4 rounded-lg mb-4">
+                    <!-- Bloco de imagem para fórmula -->
+                    <div class="flex justify-center my-4">
+                        <img src="public/images/formula-taxa-real.png" alt="Fórmula da Taxa Real de Investimento" class="max-w-full rounded-md shadow-lg border border-teal-400/20">
+                    </div>
+                    <p class="text-gray-300 mb-2">Onde:</p>
+                    <ul class="text-gray-300 space-y-1">
+                        <li>Taxa Real = Taxa de retorno descontada da inflação</li>
+                        <li>Taxa Nominal = Taxa de juros do investimento</li>
+                        <li>IPCA = Índice de inflação acumulada</li>
+                    </ul>
+                </div>
+                <a class="text-teal-300 text-sm hover:text-teal-200 transition-colors" target="_blank" href="https://www.bcb.gov.br/controleinflacao/historicometas">Referência IPCA - Banco Central</a>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-teal-400 mb-3 flex items-center">
+                    <i class="fas fa-balance-scale mr-2"></i> Comparativo Real vs Nominal
+                </h3>
+                <ul class="space-y-3 text-gray-300">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-teal-400 mt-1 mr-2"></i>
+                        <span>Valores nominais mostram o crescimento bruto do investimento</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-teal-400 mt-1 mr-2"></i>
+                        <span>Valores reais revelam o ganho efetivo de poder de compra</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-teal-400 mt-1 mr-2"></i>
+                        <span>Comparação baseada no IPCA para análise precisa</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-400 mt-1 mr-2"></i>
+                        <span>Fundamental para decisões de investimento a longo prazo</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
 {{ end }}

@@ -107,6 +107,17 @@
     <div class="card p-6 rounded-xl bg-gradient-to-r from-neutral-900 to-neutral-800 shadow-lg text-gray-200">
         <h3 class="text-lg font-medium text-green-400 mb-4 text-center">Resumo Comparativo</h3>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-1">
+            <div class="text-center p-4 rounded-lg bg-neutral-800">
+                <div class="text-sm text-gray-400 mb-1">Taxa de Júros</div>
+                <div class="text-lg font-bold text-blue-400">% {{ .tax }}</div>
+            </div>
+
+            <div class="text-center p-4 rounded-lg bg-neutral-800">
+                <div class="text-sm text-gray-400 mb-1">Taxa de Júros Real</div>
+                <div class="text-lg font-bold text-orange-400">% {{ .tax_real }}</div>
+            </div>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="text-center p-4 rounded-lg bg-neutral-800">
                 <div class="text-sm text-gray-400 mb-1">Ganho Nominal</div>
