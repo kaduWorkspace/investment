@@ -83,8 +83,8 @@
                 </div>
                 <div class="form-group">
                     <label for="tax_decimal_inflation" class="block text-gray-300 text-sm font-medium mb-2">
-                        Taxa de Inflação Anual (IPCA)
-                        <span class="text-teal-400 text-xs ml-1">(Ex.: 4,5%)</span>
+                        IPCA (Inflação anual)
+                        <span class="text-teal-400 text-xs ml-1">(Ex.: %{{ .ipca_media }} :: Média do século)</span>
                     </label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -93,7 +93,7 @@
                         <input type="hidden" name="tax_decimal_inflation" id="tax_decimal_inflation_input">
                         <input id="tax_decimal_inflation" type="text" step="any"
                         class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
-                        placeholder="Insira a taxa de inflação" value="4,5">
+                        placeholder="Insira a taxa de inflação" value="{{ .ipca_media }}">
                     </div>
                     <span class="text-red-400 text-xs mt-1 hidden" id="error_tax_decimal_inflation"></span>
                 </div>

@@ -4,6 +4,7 @@ import (
 	app_investment_decimal "kaduhod/fin_v3/core/application/investment/service/decimal"
 	domain_http "kaduhod/fin_v3/core/domain/http"
 	auth_std "kaduhod/fin_v3/core/infra/auth/std"
+	infra_external "kaduhod/fin_v3/core/infra/external"
 	"kaduhod/fin_v3/core/infra/session/memory"
 	http_middleware "kaduhod/fin_v3/core/interfaces/http/middlewares/http"
 	"kaduhod/fin_v3/core/interfaces/web/renderer"
@@ -34,9 +35,10 @@ func (s *ServerChi) Setup() {
     if err != nil {
         panic(err)
     }
-    investmentHandler := NewInvestmentHandler(compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal)
+    bcbService := infra_external.NewBcbService()
+    investmentHandler := NewInvestmentHandler(bcbService, compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal)
     inMemorySessionService := memory.NewInMemorySession()
-    investmentHandlerWeb := NewInvestmentHandlerChiWeb(inMemorySessionService ,compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal, rndr)
+    investmentHandlerWeb := NewInvestmentHandlerChiWeb(bcbService, inMemorySessionService ,compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal, rndr)
     sessionMidlewareHandler := http_middleware.NewSessionHandlerMiddleware(inMemorySessionService)
     csrfMiddlewareHandler := http_middleware.NewCsrfHandlerMiddleware(inMemorySessionService)
     r := chi.NewRouter()
