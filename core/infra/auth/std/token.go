@@ -27,6 +27,7 @@ func (a AuthToken) Authenticate(user core_http.Identity) (bool, error) {
         fmt.Println(err)
         return false, err
     }
+    fmt.Println(os.Getenv("APP_ADMIN_HASH"))
     if err := bcrypt.CompareHashAndPassword([]byte(os.Getenv("APP_ADMIN_HASH")), []byte(headerToken.(string))); err != nil {
         fmt.Println(err)
         return false, err

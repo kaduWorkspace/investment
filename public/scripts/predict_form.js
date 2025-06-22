@@ -25,8 +25,10 @@ function validateField(fieldId, isRequired = true) {
 }
 function processInputsPredict() {
     const valorFuturoInput = document.getElementById('final_value_input');
+    const taxDecimalInflationInput = document.getElementById('tax_decimal_inflation_input');
     const taxaJurosInput = document.getElementById('tax_decimal_input');
     const valorInicialInput = document.getElementById('initial_value_input');
+    taxDecimalInflationInput.value = CurrencyUtils.toNumber(document.getElementById('tax_decimal_inflation').value);
     valorFuturoInput.value = CurrencyUtils.toNumber(document.getElementById('final_value').value);
     taxaJurosInput.value = CurrencyUtils.toNumber(document.getElementById('tax_decimal').value);
     valorInicialInput.value = CurrencyUtils.toNumber(document.getElementById('initial_value').value) || 0;
@@ -34,10 +36,11 @@ function processInputsPredict() {
 
 // Main validation function
 function validateForm() {
+    const isTaxDecimalInflationValid = validateField('tax_decimal_inflation', false);
     const isValorFuturoValid = validateField('final_value');
     const isTaxaJurosValid = validateField('tax_decimal');
     const isValorInicialValid = validateField('initial_value', false);
-    return isValorFuturoValid && isTaxaJurosValid && isValorInicialValid;
+    return isValorFuturoValid && isTaxaJurosValid && isValorInicialValid && isTaxDecimalInflationValid;
 }
 
 // Set up event listeners for real-time validation
@@ -49,6 +52,7 @@ export default function setupFormValidation() {
     document.getElementById('final_value').addEventListener('input', () => validateField('final_value'));
     document.getElementById('tax_decimal').addEventListener('input', () => validateField('tax_decimal'));
     document.getElementById('initial_value').addEventListener('input', () => validateField('initial_value', false));
+    document.getElementById('tax_decimal_inflation').addEventListener('input', () => validateField('tax_decimal_inflation', false));
 
     // Validate before HTMX request
     form.addEventListener('htmx:beforeRequest', function(event) {

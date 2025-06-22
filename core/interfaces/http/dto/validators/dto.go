@@ -39,6 +39,10 @@ func (i HttpInput) FormatValidationError(err error, language string) map[string]
             "pt": "deve ser maior que",
             "en": "must be greater than",
         },
+        "atleastone": {
+            "pt": "pelo menos um entre contribution ou initial_value deve ser maior que zero",
+            "en": "at least one between contribution or initial_value must be greater than zero",
+        },
     }
 
     result := make(map[string]string)
@@ -80,10 +84,17 @@ func (I HttpInput) Validate(dto interface{}) (error) {
         _, err := time.Parse("02/01/2006", fl.Field().String())
         return err == nil
     })
+    validate.RegisterValidation("atleastone", func(fl validator.FieldLevel) bool {
+        if fv, ok := fl.Parent().Interface().(FutureValueOfASeriesWithPeriodsInput); ok {
+            return fv.Contribution > 0 || fv.InitialValue > 0
+        }
+        return true
+    })
     err := validate.Struct(dto)
     if err == nil {
         return nil
     }
+    fmt.Println(err)
     var invalidValidationError *validator.InvalidValidationError
     if errors.As(err, &invalidValidationError) {
         return err
@@ -105,6 +116,7 @@ type CoumpoundInterestInput struct {
     HttpInput
     Periods int `json:"periods" form:"periods" validate:"required,gte=1,number"`
     TaxDecimal float64 `json:"tax_decimal" form:"tax_decimal" validate:"required,gt=0,number"`
+    TaxDecimalInflation float64 `json:"tax_decimal_inflation" form:"tax_decimal_inflation" validate:"gt=-1,number"`
     InitialValue float64 `json:"initial_value" form:"initial_value" validate:"number,required,gte=1"`
 }
 
@@ -114,15 +126,17 @@ type FutureValueOfASeriesInput struct {
     TaxDecimal float64 `json:"tax_decimal" form:"tax_decimal" validate:"required,gt=0,number"`
     FirstDay bool `json:"first_day" form:"first_day" validate:"boolean"`
     Contribution float64 `json:"contribution" form:"contribution" validate:"gt=0,number"`
+    TaxDecimalInflation float64 `json:"tax_decimal_inflation" form:"tax_decimal_inflation" validate:"gt=-1,number"`
 }
 
 type FutureValueOfASeriesWithPeriodsInput struct {
     HttpInput
     Periods int `json:"periods" form:"periods" validate:"required,gte=1,number"`
     TaxDecimal float64 `json:"tax_decimal" form:"tax_decimal" validate:"required,gt=0,number"`
+    TaxDecimalInflation float64 `json:"tax_decimal_inflation" form:"tax_decimal_inflation" validate:"gt=-1,number"`
     FirstDay bool `json:"first_day" form:"first_day" validate:"boolean"`
-    Contribution float64 `json:"contribution" form:"contribution" validate:"number"`
-    InitialValue float64 `json:"initial_value" form:"initial_value" validate:"gte=1,number"`
+    Contribution float64 `json:"contribution" form:"contribution" validate:"atleastone,number"`
+    InitialValue float64 `json:"initial_value" form:"initial_value" validate:"atleastone,gte=0,number"`
     InitialDate string `json:"initial_date" form:"initial_date" validate:"required,datetime"`
 }
 
@@ -130,6 +144,7 @@ type PredictContributionFVSInput struct {
     HttpInput
     Periods int `json:"periods" form:"periods" validate:"required,gte=1,number"`
     TaxDecimal float64 `json:"tax_decimal" form:"tax_decimal" validate:"required,gt=0,number"`
+    TaxDecimalInflation float64 `json:"tax_decimal_inflation" form:"tax_decimal_inflation" validate:"gt=-1,number"`
     FinalValue float64 `json:"final_value" form:"final_value" validate:"required,gte=1,gtfield=InitialValue,number"`
     InitialValue float64 `json:"initial_value" form:"initial_value" validate:"gte=0,number"`
     ContributionOnFirstDay bool `json:"first_day" form:"contribution_on_first_day" validate:"boolean"`

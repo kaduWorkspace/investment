@@ -1,174 +1,123 @@
 {{ define "fv_result_data" }}
 <div class="w-11/12 md:w-5/6 mx-auto mt-6 animate-fade-in">
-    <h2 class="text-center text-xl sm:text-2xl font-semibold text-teal-400 mb-4">
+    <h2 class="text-center text-xl sm:text-2xl font-semibold text-teal-400 mb-6">
         Resumo Financeiro
     </h2>
 
-    <!-- Compact card list -->
-    <div class="card space-y-2 p-8 rounded-xl bg-neutral-900 shadow-lg text-gray-200">
-        <!-- Card 1 -->
-        <div class="flex items-center justify-between p-2 hover:bg-neutral-800 transition-all duration-300">
-            <div class="flex items-center">
-                <img class="w-5 h-5 mr-2" src="/public/images/pilha-dinheiro.svg" alt="Rentabilidade">
-                <span class="text-gray-400 text-sm">Rendimento Bruto:</span>
-            </div>
-            <span id="display_valorizacao" class="text-sm font-semibold text-white">R$ {{ .roi }}</span>
-        </div>
+    <!-- Seção de Dados Comuns -->
+    <div class="card space-y-2 p-6 rounded-xl bg-neutral-900 shadow-lg text-gray-200 mb-4">
+        <h3 class="text-lg font-medium text-gray-300 mb-3 border-b border-neutral-700 pb-2">Dados do Investimento</h3>
 
-        <!-- Card 2 -->
         <div class="flex items-center justify-between p-2 hover:bg-neutral-800 transition-all duration-300">
             <div class="flex items-center">
                 <img class="w-5 h-5 mr-2" src="/public/images/icons8-money-with-wings-48.png" alt="Investido">
-                <span class="text-gray-400 text-sm">Investido:</span>
+                <span class="text-gray-400 text-sm">Total Investido:</span>
             </div>
-            <span id="display_valor_investido" class="text-sm font-semibold text-white">R$ {{ .total_invested }}</span>
+            <span class="text-sm font-semibold text-white">R$ {{ .total_invested }}</span>
         </div>
 
-        <!-- Card 3 -->
         <div class="flex items-center justify-between p-2 hover:bg-neutral-800 transition-all duration-300">
             <div class="flex items-center">
                 <img class="w-5 h-5 mr-2" src="/public/images/icons8-race-flag-64.png" alt="Valor inicial">
                 <span class="text-gray-400 text-sm">Valor Inicial:</span>
             </div>
-            <span id="display_valor_inicial" class="text-sm font-semibold text-white">R$ {{ .initial_value }}</span>
+            <span class="text-sm font-semibold text-white">R$ {{ .initial_value }}</span>
+        </div>
+    </div>
+
+    <!-- Seção Comparativa: Nominal vs Real -->
+    <div class="gap-4 mb-4 grid grid-cols-1 md:grid-cols-2">
+
+        <!-- Coluna Nominal -->
+        <div class="card space-y-2 p-6 rounded-xl bg-neutral-900 shadow-lg text-gray-200">
+            <h3 class="text-lg font-medium text-blue-400 mb-3 border-b border-neutral-700 pb-2">Valores Nominais</h3>
+
+            <div class="flex items-center justify-between p-2 hover:bg-neutral-800 transition-all duration-300">
+                <div class="flex items-center">
+                    <img class="w-5 h-5 mr-2" src="/public/images/pilha-dinheiro.svg" alt="Rentabilidade">
+                    <span class="text-gray-400 text-sm">Rendimento Bruto:</span>
+                </div>
+                <span class="text-sm font-semibold text-white">R$ {{ .roi }}</span>
+            </div>
+
+            <div class="flex items-center justify-between p-2 hover:bg-neutral-800 transition-all duration-300">
+                <div class="flex items-center">
+                    <img class="w-5 h-5 mr-2" src="/public/images/icons8-up-64.png" alt="Porcentagem">
+                    <span class="text-gray-400 text-sm">Aumento de Caixa:</span>
+                </div>
+                <span class="text-sm font-semibold text-white">{{ .roi_porcentage }}%</span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-md bg-neutral-800 hover:bg-neutral-700 transition-all duration-300">
+                <div class="flex items-center">
+                    <img class="w-6 h-6 mr-2" src="/public/images/saco-dinheiro.svg" alt="Juros">
+                    <span class="text-gray-400">Juros:</span>
+                </div>
+                <span class="font-bold text-white">R$ {{ .net_gain }}</span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-md bg-blue-700 hover:bg-blue-600 transition-all duration-300">
+                <div class="flex items-center">
+                    <img class="w-6 h-6 mr-2" src="/public/images/icons8-money-48.png" alt="Valor final">
+                    <span class="text-white">Valor Final:</span>
+                </div>
+                <span class="font-bold text-white">R$ {{ .final_value }}</span>
+            </div>
         </div>
 
-        <!-- Card 4 -->
-        <div class="flex items-center justify-between p-2 hover:bg-neutral-800 transition-all duration-300">
-            <div class="flex items-center">
-                <img class="w-5 h-5 mr-2" src="/public/images/icons8-up-64.png" alt="Porcentagem de Aumento">
-                <span class="text-gray-400 text-sm">Aumento de Caixa:</span>
-            </div>
-            <span id="display_porcentagem_aumento" class="text-sm font-semibold text-white">{{ .roi_porcentage }} %</span>
-        </div>
+        <!-- Coluna Corrigida pela Inflação -->
+        <div class="card space-y-2 p-6 rounded-xl bg-neutral-900 shadow-lg text-gray-200">
+            <h3 class="text-lg font-medium text-orange-400 mb-3 border-b border-neutral-700 pb-2">Corrigido pela Inflação</h3>
 
-        <!-- Card 5 -->
-        <div class="flex items-center justify-between p-3 rounded-md bg-neutral-800 hover:bg-neutral-700 transition-all duration-300">
-            <div class="flex items-center">
-                <img class="w-6 h-6 mr-2" src="/public/images/saco-dinheiro.svg" alt="Juros Rendido">
-                <span class="text-gray-400">Juros:</span>
+            <div class="flex items-center justify-between p-2 hover:bg-neutral-800 transition-all duration-300">
+                <div class="flex items-center">
+                    <img class="w-5 h-5 mr-2" src="/public/images/pilha-dinheiro.svg" alt="Rentabilidade">
+                    <span class="text-gray-400 text-sm">Rendimento Bruto:</span>
+                </div>
+                <span class="text-sm font-semibold text-white">R$ {{ .roi_real }}</span>
             </div>
-            <span id="display_juros_rendido" class="font-bold text-white">R$ {{ .net_gain }}</span>
-        </div>
 
-        <!-- Card 6 -->
-        <div class="flex items-center justify-between p-3 rounded-md bg-green-700 hover:bg-green-600 transition-all duration-300">
-            <div class="flex items-center">
-                <img class="w-6 h-6 mr-2" src="/public/images/icons8-money-48.png" alt="Valor final">
-                <span class="text-white">Valor Final:</span>
+            <div class="flex items-center justify-between p-2 hover:bg-neutral-800 transition-all duration-300">
+                <div class="flex items-center">
+                    <img class="w-5 h-5 mr-2" src="/public/images/icons8-up-64.png" alt="Porcentagem">
+                    <span class="text-gray-400 text-sm">Aumento de Caixa:</span>
+                </div>
+                <span class="text-sm font-semibold text-white">{{ .roi_porcentage_real }}%</span>
             </div>
-            <span id="display_valor_final" class="font-bold text-white">R$ {{ .final_value }}</span>
+
+            <div class="flex items-center justify-between p-3 rounded-md bg-neutral-800 hover:bg-neutral-700 transition-all duration-300">
+                <div class="flex items-center">
+                    <img class="w-6 h-6 mr-2" src="/public/images/saco-dinheiro.svg" alt="Juros">
+                    <span class="text-gray-400">Juros:</span>
+                </div>
+                <span class="font-bold text-white">R$ {{ .net_gain_real }}</span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-md bg-orange-700 hover:bg-orange-600 transition-all duration-300">
+                <div class="flex items-center">
+                    <img class="w-6 h-6 mr-2" src="/public/images/icons8-money-48.png" alt="Valor final">
+                    <span class="text-white">Valor Final:</span>
+                </div>
+                <span class="font-bold text-white">R$ {{ .final_value_real }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumo Comparativo -->
+    <div class="card p-6 rounded-xl bg-gradient-to-r from-neutral-900 to-neutral-800 shadow-lg text-gray-200">
+        <h3 class="text-lg font-medium text-green-400 mb-4 text-center">Resumo Comparativo</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="text-center p-4 rounded-lg bg-neutral-800">
+                <div class="text-sm text-gray-400 mb-1">Ganho Nominal</div>
+                <div class="text-lg font-bold text-blue-400">R$ {{ .net_gain }}</div>
+            </div>
+
+            <div class="text-center p-4 rounded-lg bg-neutral-800">
+                <div class="text-sm text-gray-400 mb-1">Ganho Real</div>
+                <div class="text-lg font-bold text-orange-400">R$ {{ .net_gain_real }}</div>
+            </div>
         </div>
     </div>
 </div>
-{{ if .dados_processados }}
-<div id="meses_resultado_processado" class="flex hidden justify-around sm:flex-col flex-row">
-    <div class="flex flex-col w-full sm:flex-row sm:mb-2 sm:justify-center gap-4">
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/pilha-dinheiro.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado_info">{{ .dados_processados.Mes.MaiorValorizacao.Valorizacao }}</span>
-            <span class="text-gray-400 text-sm">Maior rentabilidade</span>
-        </div>
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/saco-dinheiro.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado_info">{{ .dados_processados.Mes.MaiorValorizacao.ResultadoComValorizacao  }}</span>
-            <span class="text-gray-400 text-sm">Caixa</span>
-        </div>
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/calendario.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado">{{ .dados_processados.Mes.MaiorValorizacao.Data }}</span>
-            <span class="text-gray-400 text-sm">Data</span>
-        </div>
-    </div>
-    <div class="flex flex-col w-full sm:flex-row sm:justify-center gap-4">
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/pilha-pouco-dinheiro.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado_info">{{ .dados_processados.Mes.MenorValorizacao.Valorizacao }}</span>
-            <span class="text-gray-400 text-sm">Menor rentabilidade</span>
-        </div>
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/saco-dinheiro.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado_info">{{ .dados_processados.Mes.MenorValorizacao.ResultadoComValorizacao  }}</span>
-            <span class="text-gray-400 text-sm">Caixa</span>
-        </div>
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/calendario.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado">{{ .dados_processados.Mes.MenorValorizacao.Data }}</span>
-            <span class="text-gray-400 text-sm">Data</span>
-        </div>
-    </div>
-</div>
-<div id="semestres_resultado_processado" class="flex hidden justify-around sm:flex-col flex-row">
-    <div class="flex flex-col w-full sm:flex-row sm:mb-2 sm:justify-center gap-4">
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/pilha-dinheiro.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado_info">{{ .dados_processados.Semestre.MaiorValorizacao.Valorizacao }}</span>
-            <span class="text-gray-400 text-sm">Maior rentabilidade</span>
-        </div>
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/saco-dinheiro.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado_info">{{ .dados_processados.Semestre.MaiorValorizacao.ResultadoComValorizacao  }}</span>
-            <span class="text-gray-400 text-sm">Caixa</span>
-        </div>
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/calendario.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado">{{ .dados_processados.Semestre.MaiorValorizacao.Data }}</span>
-            <span class="text-gray-400 text-sm">Data</span>
-        </div>
-    </div>
-    <div class="flex flex-col w-full sm:flex-row sm:justify-center gap-4">
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/pilha-pouco-dinheiro.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado_info">{{ .dados_processados.Semestre.MenorValorizacao.Valorizacao }}</span>
-            <span class="text-gray-400 text-sm">Menor rentabilidade</span>
-        </div>
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/saco-dinheiro.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado_info">{{ .dados_processados.Semestre.MenorValorizacao.ResultadoComValorizacao  }}</span>
-            <span class="text-gray-400 text-sm">Caixa</span>
-        </div>
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/calendario.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado">{{ .dados_processados.Semestre.MenorValorizacao.Data }}</span>
-            <span class="text-gray-400 text-sm">Data</span>
-        </div>
-    </div>
-</div>
-<div id="anos_resultado_processado" class="flex hidden justify-around sm:flex-col flex-row">
-    <div class="flex flex-col w-full sm:flex-row sm:mb-2 sm:justify-center gap-4">
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/pilha-dinheiro.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado_info">{{ .dados_processados.Ano.MaiorValorizacao.Valorizacao }}</span>
-            <span class="text-gray-400 text-sm">Maior rentabilidade</span>
-        </div>
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/saco-dinheiro.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado_info">{{ .dados_processados.Ano.MaiorValorizacao.ResultadoComValorizacao  }}</span>
-            <span class="text-gray-400 text-sm">Caixa</span>
-        </div>
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/calendario.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado">{{ .dados_processados.Ano.MaiorValorizacao.Data }}</span>
-            <span class="text-gray-400 text-sm">Data</span>
-        </div>
-    </div>
-    <div class="flex flex-col w-full sm:flex-row sm:justify-center gap-4">
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/pilha-pouco-dinheiro.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado_info">{{ .dados_processados.Ano.MenorValorizacao.Valorizacao }}</span>
-            <span class="text-gray-400 text-sm">Menor rentabilidade</span>
-        </div>
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/saco-dinheiro.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold valor_resultado_info">{{ .dados_processados.Ano.MenorValorizacao.ResultadoComValorizacao  }}</span>
-            <span class="text-gray-400 text-sm">Caixa</span>
-        </div>
-        <div class="flex flex-col w-full items-center bg-gray-700 p-4 rounded-md animate-fade-in">
-            <img class="w-8 h-8 mb-2" src="/public/images/calendario.svg" alt="placeholder">
-            <span class="text-white text-lg font-semibold">{{ .dados_processados.Ano.MenorValorizacao.Data }}</span>
-            <span class="text-gray-400 text-sm">Data</span>
-        </div>
-    </div>
-</div>
-{{ end }}
 {{ end }}

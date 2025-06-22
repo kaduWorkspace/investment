@@ -45,8 +45,31 @@
                     </div>
                     <span class="text-red-400 text-xs mt-1 hidden" id="error_final_value"></span>
                 </div>
+                <!-- Valor inicial (opcional) -->
+                <div class="form-group">
+                    <label for="initial_value" class="block text-gray-300 text-sm font-medium mb-2">
+                        Valor inicial (opcional)
+                        <span class="text-teal-400 text-xs ml-1">(Ex.: 5.000)</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-dollar-sign"></i>
+                        </span>
+                        <input type="hidden" id="initial_value_input" name="initial_value" value="">
+                        <input id="initial_value" type="text" step="any"
+                        class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
+                        placeholder="Insira o valor" value="0,0">
+                    </div>
+                    <span class="text-red-400 text-xs mt-1 hidden" id="error_initial_value"></span>
+                </div>
 
                 <!-- Taxa de juros anual -->
+
+            </div>
+
+            <!-- Segunda linha: Taxa de Inflação -->
+            <div class="grid md:grid-cols-2 gap-6">
+
                 <div class="form-group">
                     <label for="tax_decimal" class="block text-gray-300 text-sm font-medium mb-2">
                         Taxa de juros anual
@@ -63,11 +86,48 @@
                     </div>
                     <span class="text-red-400 text-xs mt-1 hidden" id="error_tax_decimal"></span>
                 </div>
+                <div class="form-group">
+                    <label for="tax_decimal_inflation" class="block text-gray-300 text-sm font-medium mb-2">
+                        Taxa de inflação anual
+                        <span class="text-teal-400 text-xs ml-1">(Ex.: 4,5%)</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-percentage"></i>
+                        </span>
+                        <input type="hidden" name="tax_decimal_inflation" id="tax_decimal_inflation_input">
+                        <input id="tax_decimal_inflation" type="text" step="any"
+                        class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
+                        placeholder="Insira a taxa de inflação" value="4,5">
+                    </div>
+                    <span class="text-red-400 text-xs mt-1 hidden" id="error_tax_decimal_inflation"></span>
+                </div>
             </div>
 
-            <!-- Segunda linha: Período, Contribuição Inicial e Valor Inicial -->
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- Período de investimento -->
+            <!-- Terceira linha: Período, Contribuição Inicial e Valor Inicial -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Contribuição no início do período -->
+                <div class="form-group">
+                    <label for="first_day" class="block text-gray-300 text-sm font-medium mb-2">
+                        Contribuição no início do mês?
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-calendar-check"></i>
+                        </span>
+                        <select id="first_day" name="first_day"
+                            class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 appearance-none focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200">
+                            <option value="true">Sim</option>
+                            <option value="false">Não</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Taxa de inflação anual -->
                 <div class="form-group">
                     <label for="periods" class="block text-gray-300 text-sm font-medium mb-2">
                         Data do resgate
@@ -92,45 +152,7 @@
                     <span class="text-red-400 text-xs mt-1 hidden" id="error_periods"></span>
                 </div>
 
-                <!-- Contribuição no início do período -->
-                <div class="form-group">
-                    <label for="first_day" class="block text-gray-300 text-sm font-medium mb-2">
-                        Contribuição no início do mês?
-                    </label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                            <i class="fas fa-calendar-check"></i>
-                        </span>
-                        <select id="first_day" name="first_day"
-                            class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 appearance-none focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200">
-                            <option value="true">Sim</option>
-                            <option value="false">Não</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Valor inicial (opcional) -->
-                <div class="form-group">
-                    <label for="initial_value" class="block text-gray-300 text-sm font-medium mb-2">
-                        Valor inicial (opcional)
-                        <span class="text-teal-400 text-xs ml-1">(Ex.: 5.000)</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                            <i class="fas fa-dollar-sign"></i>
-                        </span>
-                        <input type="hidden" id="initial_value_input" name="initial_value" value="">
-                        <input id="initial_value" type="text" step="any"
-                        class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
-                        placeholder="Insira o valor" value="0,0">
-                    </div>
-                    <span class="text-red-400 text-xs mt-1 hidden" id="error_initial_value"></span>
-                </div>
             </div>
 
             <!-- Botão Simular -->

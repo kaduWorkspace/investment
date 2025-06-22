@@ -82,7 +82,22 @@
                     </div>
                     <span class="text-red-400 text-xs mt-1 hidden" id="error_tax_decimal"></span>
                 </div>
-
+                <div class="form-group">
+                    <label for="tax_decimal_inflation" class="block text-gray-300 text-sm font-medium mb-2">
+                        Taxa de inflação anual
+                        <span class="text-teal-400 text-xs ml-1">(Ex.: 4,5%)</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-percentage"></i>
+                        </span>
+                        <input type="hidden" name="tax_decimal_inflation" id="tax_decimal_inflation_input">
+                        <input id="tax_decimal_inflation" type="text" step="any"
+                        class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200"
+                        placeholder="Insira a taxa de inflação" value="4,5">
+                    </div>
+                    <span class="text-red-400 text-xs mt-1 hidden" id="error_tax_decimal_inflation"></span>
+                </div>
                 <div class="form-group">
                     <label for="periods" class="block text-gray-300 text-sm font-medium mb-2">
                         Data do resgate
@@ -111,9 +126,35 @@
                     <span class="text-red-400 text-xs mt-1 hidden" id="error_periods"></span>
                 </div>
             </div>
-
             <!-- Data específica (inicialmente oculta) -->
             <div class="hidden" id="data_especifica_wrapper">
+                <div class="form-group">
+                    <label for="periods" class="block text-gray-300 text-sm font-medium mb-2">
+                        Data do resgate
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="far fa-calendar-alt"></i>
+                        </span>
+                        <select data-ignore_input="1" id="periods" name="periods"
+                            class="w-full bg-gray-800 bg-opacity-50 border border-gray-700 rounded-lg py-3 pl-10 pr-3 text-gray-200 appearance-none focus:ring-2 focus:ring-teal-400 focus:border-transparent focus:outline-none transition-all duration-200">
+                            <option value="6" selected>6 meses</option>
+                            <option value="12">1 ano</option>
+                            <option value="24">2 anos</option>
+                            <option value="36">3 anos</option>
+                            <option value="48">4 anos</option>
+                            <option value="60">5 anos</option>
+                            <option value="120">10 anos</option>
+                            <option value="240">20 anos</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="text-red-400 text-xs mt-1 hidden" id="error_periods"></span>
+                </div>
                 <div class="form-group">
                     <label for="data_final" class="block text-gray-300 text-sm font-medium mb-2">
                         Data Específica

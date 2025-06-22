@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e  # Exit immediately if any command fails
 BRANCH=${1:-master}
-ssh -t deployer@172.17.0.2 <<EOF
+ssh -t deployer@172.18.0.2 <<EOF
     REPO_DIR="investment"
 
     if [ -d "investment" ]; then

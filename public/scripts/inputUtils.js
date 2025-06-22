@@ -106,6 +106,7 @@ export const Validators = {
         // Get DOM elements only when needed
         const valorInicial = document.getElementById('initial_value');
         const valorAporte = document.getElementById('contribution');
+        const taxInflation = document.getElementById('tax_decimal_inflation');
         //const dataFinal = document.getElementById('data_final');
 
         if (!valorInicial || !valorAporte) {
@@ -117,7 +118,7 @@ export const Validators = {
         const valorAporteNum = CurrencyUtils.toNumber(valorAporte.value);
 
         // Validate initial value
-        if (valorInicialNum < 0 || (validarNull && ["", null, false].includes(valorInicial.value))) {
+        if (valorInicialNum < 0 || (validarNull && ["", null, false].includes(valorInicial.value.trim()))) {
             erros.push(["error_initial_value", "Valor inicial inválido"]);
         }
 
@@ -190,9 +191,11 @@ export const FormUtils = {
         const valorInicialInput = document.getElementById('initial_value_input');
         const dataFinalOpcoes = document.getElementById('periods');
         const dataFinalEspecificoInput = document.getElementById('data_final');
+        const taxDecimalInflation = document.getElementById('tax_decimal_inflation');
+        const taxDecimalInflationInput = document.getElementById('tax_decimal_inflation_input');
 
         if (!valorTaxaAnual || !valorTaxaAnualInput || !valorAporte || !valorAporteInput ||
-            !valorInicial || !valorInicialInput || !dataFinalOpcoes || !dataFinalEspecificoInput) {
+            !valorInicial || !valorInicialInput || !dataFinalOpcoes || !dataFinalEspecificoInput || !taxDecimalInflationInput) {
             console.error('Required form elements not found');
             return;
         }
@@ -201,6 +204,7 @@ export const FormUtils = {
         const taxaAnualValue = CurrencyUtils.toNumber(valorTaxaAnual.value);
         const valorAporteValue = CurrencyUtils.toNumber(valorAporte.value);
         const valorInicialValue = CurrencyUtils.toNumber(valorInicial.value);
+        const taxaAnualInflationValue = CurrencyUtils.toNumber(taxDecimalInflation.value);
 
         // Handle date based on selection
         if (dataFinalOpcoes.value !== "data_especifica") {
@@ -213,6 +217,7 @@ export const FormUtils = {
         valorAporteInput.value = valorAporteValue || 0;
         valorTaxaAnualInput.value = taxaAnualValue || 0;
         valorInicialInput.value = valorInicialValue || 0;
+        taxDecimalInflationInput.value = taxaAnualInflationValue || 0;
     },
 
     handleErrorsEvent(e) {

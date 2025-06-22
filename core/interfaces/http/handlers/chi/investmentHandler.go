@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"kaduhod/fin_v3/core/domain/investment"
-	infra_investment "kaduhod/fin_v3/core/infra/investment/decimal"
+	app_investment_decimal "kaduhod/fin_v3/core/application/investment/service/decimal"
 	validators_dto "kaduhod/fin_v3/core/interfaces/http/dto/validators"
 	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
     core_http "kaduhod/fin_v3/core/domain/http"
@@ -95,13 +95,21 @@ func (h *InvestmentHandlerChi) CompoundInterestApi(w http.ResponseWriter, r *htt
         return
     }
     cp := h.CompoundInterestService.Calculate(
-        infra_investment.NewDecimalMoney(cpInput.InitialValue),
-        infra_investment.NewDecimalMoney(cpInput.TaxDecimal),
+        app_investment_decimal.NewDecimalMoney(cpInput.InitialValue),
+        app_investment_decimal.NewDecimalMoney(cpInput.TaxDecimal),
+        cpInput.Periods,
+    )
+    cpReal := h.CompoundInterestService.CalculateRealValue(
+        app_investment_decimal.NewDecimalMoney(cpInput.InitialValue),
+        app_investment_decimal.NewDecimalMoney(cpInput.TaxDecimal),
+        app_investment_decimal.NewDecimalMoney(cpInput.TaxDecimalInflation),
         cpInput.Periods,
     )
     res := map[string]any{
         "compound_interest": cp.GetAmount(),
         "compound_interest_money": cp.Formatted(),
+        "compound_interest_real": cpReal.GetAmount(),
+        "compound_interest_real_money": cpReal.Formatted(),
         "parameters": cpInput,
     }
     h.SuccessJsonResponse(w, res)
@@ -123,13 +131,21 @@ func (h *InvestmentHandlerChi) FutureValueOfASeriesApi(w http.ResponseWriter, r 
         return
     }
     fv := h.FutureValueOfASeriesService.Calculate(
-        infra_investment.NewDecimalMoney(fvInput.Contribution),
-        infra_investment.NewDecimalMoney(fvInput.TaxDecimal),
+        app_investment_decimal.NewDecimalMoney(fvInput.Contribution),
+        app_investment_decimal.NewDecimalMoney(fvInput.TaxDecimal),
+        fvInput.FirstDay, fvInput.Periods,
+    )
+    fvReal := h.FutureValueOfASeriesService.CalculateRealValue(
+        app_investment_decimal.NewDecimalMoney(fvInput.Contribution),
+        app_investment_decimal.NewDecimalMoney(fvInput.TaxDecimal),
+        app_investment_decimal.NewDecimalMoney(fvInput.TaxDecimalInflation),
         fvInput.FirstDay, fvInput.Periods,
     )
     res := map[string]any{
         "future_value": fv.GetAmount(),
+        "future_value_real": fvReal.GetAmount(),
         "future_value_money": fv.Formatted(),
+        "future_value_real_money": fvReal.Formatted(),
         "parameters": fvInput,
     }
     h.SuccessJsonResponse(w, res)
@@ -151,15 +167,25 @@ func (h InvestmentHandlerChi) PredictFV(w http.ResponseWriter, r *http.Request) 
         return
     }
     contribution := h.FutureValueOfASeriesService.PredictContribution(
-        infra_investment.NewDecimalMoney(predictInput.FinalValue),
-        infra_investment.NewDecimalMoney(predictInput.TaxDecimal),
-        infra_investment.NewDecimalMoney(predictInput.InitialValue),
+        app_investment_decimal.NewDecimalMoney(predictInput.FinalValue),
+        app_investment_decimal.NewDecimalMoney(predictInput.TaxDecimal),
+        app_investment_decimal.NewDecimalMoney(predictInput.InitialValue),
+        predictInput.ContributionOnFirstDay,
+        predictInput.Periods,
+    )
+    contributionReal := h.FutureValueOfASeriesService.PredictContributionRealValue(
+        app_investment_decimal.NewDecimalMoney(predictInput.FinalValue),
+        app_investment_decimal.NewDecimalMoney(predictInput.TaxDecimal),
+        app_investment_decimal.NewDecimalMoney(predictInput.TaxDecimalInflation),
+        app_investment_decimal.NewDecimalMoney(predictInput.InitialValue),
         predictInput.ContributionOnFirstDay,
         predictInput.Periods,
     )
     res := map[string]any{
         "contribution": contribution.GetAmount(),
+        "contribution_real": contributionReal.GetAmount(),
         "contribution_money": contribution.Formatted(),
+        "contribution_real_money": contributionReal.Formatted(),
         "parameters": predictInput,
     }
     h.SuccessJsonResponse(w, res)
@@ -183,15 +209,26 @@ func (h *InvestmentHandlerChi) FutureValueOfASeriesWithTrackingApi(w http.Respon
     date_layout := "02/01/2006"
     parsedDate, _ := time.Parse(date_layout, fvInput.InitialDate)
     fv, periods := h.FutureValueOfASeriesService.CalculateTrackingPeriods(
-        infra_investment.NewDecimalMoney(fvInput.InitialValue),
-        infra_investment.NewDecimalMoney(fvInput.Contribution),
-        infra_investment.NewDecimalMoney(fvInput.TaxDecimal),
+        app_investment_decimal.NewDecimalMoney(fvInput.InitialValue),
+        app_investment_decimal.NewDecimalMoney(fvInput.Contribution),
+        app_investment_decimal.NewDecimalMoney(fvInput.TaxDecimal),
         fvInput.FirstDay, parsedDate, fvInput.Periods,
     )
+    fvReal, periodsReal := h.FutureValueOfASeriesService.CalculateTrackingPeriodsRealValue(
+        app_investment_decimal.NewDecimalMoney(fvInput.InitialValue),
+        app_investment_decimal.NewDecimalMoney(fvInput.Contribution),
+        app_investment_decimal.NewDecimalMoney(fvInput.TaxDecimal),
+        app_investment_decimal.NewDecimalMoney(fvInput.TaxDecimalInflation),
+        fvInput.FirstDay, parsedDate, fvInput.Periods,
+    )
+
     res := map[string]any{
         "future_value": fv.GetAmount(),
         "future_value_money": fv.Formatted(),
         "periods": periods,
+        "future_value_real": fvReal.GetAmount(),
+        "future_value_money_real": fvReal.Formatted(),
+        "periods_real": periodsReal,
         "parameters": fvInput,
     }
     h.SuccessJsonResponse(w, res)
