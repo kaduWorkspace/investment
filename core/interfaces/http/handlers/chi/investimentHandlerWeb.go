@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
 )
 type InvestmentHandlerChiWeb struct {
     CompoundInterestService investment.CompoundInterest
@@ -143,14 +144,18 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictResultPage(w http.R
         userInput.ContributionOnFirstDay,
         userInput.Periods,
     )
+    taxInflation := app_investment_decimal.NewDecimalMoney(userInput.TaxDecimalInflation)
     contributionReal := h.FutureValueOfASeriesService.PredictContributionRealValue(
         finalValue,
         taxDecimal,
-        app_investment_decimal.NewDecimalMoney(userInput.TaxDecimalInflation),
+        taxInflation,
         initialValue,
         userInput.ContributionOnFirstDay,
         userInput.Periods,
     )
+    one := app_investment_decimal.NewDecimalMoney(1.0)
+    hundred := app_investment_decimal.NewDecimalMoney(100.0)
+    taxReal := one.Add(taxDecimal).Divide(one.Add(taxInflation)).Subtract(one).Multiply(hundred).Formatted()
     data := map[string]any{
         "csrf": csrf,
         "selic_tax": h.GetTaxaSelic(),
@@ -158,6 +163,8 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictResultPage(w http.R
         "contribution_needed": contribution.Formatted(),
         "contribution_needed_real": contributionReal.Formatted(),
         "initial_value": initialValue.Formatted(),
+        "tax": taxDecimal.Multiply(hundred).Formatted(),
+        "tax_real": taxReal,
     }
     if err := h.Renderer.Render(w, "predict_result", data); err != nil {
         fmt.Println(err)
@@ -251,10 +258,11 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
     initialValue := app_investment_decimal.NewDecimalMoney(userInput.InitialValue)
     contribution := app_investment_decimal.NewDecimalMoney(userInput.Contribution)
     periodsD := app_investment_decimal.NewDecimalMoney(float64(userInput.Periods))
+    taxDecimal := app_investment_decimal.NewDecimalMoney(userInput.TaxDecimal)
     result, periods := h.FutureValueOfASeriesService.CalculateTrackingPeriods(
         initialValue,
         contribution,
-        app_investment_decimal.NewDecimalMoney(userInput.TaxDecimal),
+        taxDecimal,
         userInput.FirstDay,
         time.Now(),
         userInput.Periods,
@@ -267,15 +275,17 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
     } else {
         table = string(b)
     }
+    taxInflation := app_investment_decimal.NewDecimalMoney(userInput.TaxDecimalInflation)
     resultReal, periodsReal := h.FutureValueOfASeriesService.CalculateTrackingPeriodsRealValue(
         initialValue,
         contribution,
-        app_investment_decimal.NewDecimalMoney(userInput.TaxDecimal),
-        app_investment_decimal.NewDecimalMoney(userInput.TaxDecimalInflation),
+        taxDecimal,
+        taxInflation,
         userInput.FirstDay,
         time.Now(),
         userInput.Periods,
     )
+    periodsReal = setupItensFromPeriods(periodsReal, struct_utils.EhMobile(r.UserAgent()))
     b, err = json.Marshal(periodsReal)
     var tableReal string
     if err != nil {
@@ -283,7 +293,6 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
     } else {
         tableReal = string(b)
     }
-    periodsReal = setupItensFromPeriods(periodsReal, struct_utils.EhMobile(r.UserAgent()))
     totalInvested := periodsD.Multiply(contribution).Add(initialValue)
     var initialValueOrOne valueobjects.Money
     if userInput.InitialValue < 1 {
@@ -291,6 +300,9 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
     } else {
         initialValueOrOne = initialValue
     }
+    one := app_investment_decimal.NewDecimalMoney(1.0)
+    hundred := app_investment_decimal.NewDecimalMoney(100.0)
+    taxReal := one.Add(taxDecimal).Divide(one.Add(taxInflation)).Subtract(one).Multiply(hundred).Formatted()
     roi := result.Subtract(app_investment_decimal.NewDecimalMoney(userInput.InitialValue))
     roiReal := resultReal.Subtract(app_investment_decimal.NewDecimalMoney(userInput.InitialValue))
     roiPorcentage := roi.Divide(initialValueOrOne).Multiply(app_investment_decimal.NewDecimalMoney(100))
@@ -315,6 +327,8 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
         "contribution": contribution.Formatted(),
         "periodsTracker": periods,
         "periodsTrackerReal": periodsReal,
+        "tax_real": taxReal,
+        "tax": taxDecimal.Multiply(hundred).Formatted(),
     }
     if err := h.Renderer.Render(w, "fv_result", data); err != nil {
         fmt.Println(err)

@@ -2,7 +2,6 @@
 <div id="resultados_container" class="flex flex-col justify-center items-center mb-4 w-full">
     <div class="flex flex-col w-5/6">
         <div id="predictionInfo" class="flex flex-col w-full justify-around">
-
             <!-- Seção de Dados Base -->
             <div class="card rounded-lg shadow-md p-6 mb-4">
                 <h2 class="text-xl font-bold text-white mb-4 text-center">Resultado da Previsão</h2>
@@ -25,7 +24,23 @@
                 <!-- Seção Comparativa: Aportes Nominal vs Real -->
                 <div class="border-t border-neutral-700 pt-4">
                     <h3 class="text-lg font-medium text-gray-300 mb-3 text-center">Aportes Necessários</h3>
+                    <div class="flex flex-col md:flex-row gap-4 mb-1">
+                        <!-- Aporte Nominal -->
+                        <div class="flex-1 bg-blue-700 hover:bg-blue-600 transition-all duration-300 rounded-lg p-4">
+                            <div class="text-center">
+                                <p class="text-blue-200 text-sm mb-1">Taxa Nominal</p>
+                                <p class="text-xl font-bold text-white">% {{ .tax }}</p>
+                            </div>
+                        </div>
 
+                        <!-- Aporte Corrigido -->
+                        <div class="flex-1 bg-orange-700 hover:bg-orange-600 transition-all duration-300 rounded-lg p-4">
+                            <div class="text-center">
+                                <p class="text-orange-200 text-sm mb-1">Taxa Real</p>
+                                <p class="text-xl font-bold text-white">% {{ .tax_real }}</p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="flex flex-col md:flex-row gap-4">
                         <!-- Aporte Nominal -->
                         <div class="flex-1 bg-blue-700 hover:bg-blue-600 transition-all duration-300 rounded-lg p-4">
