@@ -13,7 +13,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 func TestMain(m *testing.M) {
-    err := godotenv.Load("../../../../../.env.development")
+
+    enviroment := os.Args[len(os.Args) - 1]
+    envFile := ".env.development"
+    if enviroment == "local" {
+        envFile = ".env.local"
+    }
+    err := godotenv.Load("../../../../../" + envFile)
     if err != nil {
         log.Fatal("Erro ao carregar .env:", err)
     }

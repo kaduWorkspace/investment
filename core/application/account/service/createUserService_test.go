@@ -2,6 +2,7 @@ package app_account_service_test
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	app_account_dto "kaduhod/fin_v3/core/application/account/dto"
@@ -15,7 +16,12 @@ import (
 
 func setupDB(t *testing.T) *pg_connection.PgxConnextion {
 	t.Helper()
-    err := godotenv.Load("../../../../.env.development")
+    enviroment := os.Args[len(os.Args) - 1]
+    envFile := ".env.development"
+    if enviroment == "local" {
+        envFile = ".env.local"
+    }
+    err := godotenv.Load("../../../../" + envFile)
     if err != nil {
         t.Error(err)
         t.Fail()
@@ -83,4 +89,13 @@ func cleanupTestUsers(t *testing.T, conn *pg_connection.PgxConnextion) {
 	if err != nil {
 		t.Logf("Warning: failed to clean up test users: %v", err)
 	}
+    /*input := app_account_dto.CreateUserInput{
+        Name:     "Admin User",
+        Email:    "admin@admin.com",
+        Password: os.Getenv("APP_ADMIN_TOKEN"),
+    }
+	userRepo := pg_repository.NewUserRepository(conn)
+	userService := app_account_service.NewCreateUserService(userRepo)
+    userService.Create(input)*/
+
 }
