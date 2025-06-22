@@ -56,9 +56,6 @@ func HttpRequest(url string, method string, headers map[string]string, body stri
 	if err != nil {
 		return "", fmt.Errorf("erro ao realizar a requisição: %w", err)
 	}
-    if resp.StatusCode !=  200 {
-		return "", fmt.Errorf("erro ao realizar a requisição: %w", "status code is not 200")
-    }
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("erro ao ler a resposta: %w", err)
