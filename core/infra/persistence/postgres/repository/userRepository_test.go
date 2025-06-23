@@ -171,6 +171,9 @@ func TestUserRepository_Update(t *testing.T) {
         assert.Error(t, err)
         assert.Contains(t, err.Error(), "failed to update user")
     })
+    _, _ = conn.Conn.Exec(ctx, "DELETE FROM users WHERE email = 'updated_email@example.com'")
+    _, _ = conn.Conn.Exec(ctx, "DELETE FROM users WHERE email = 'test_update_user@example.com'")
+
 }
 
 func TestUserRepository_Delete(t *testing.T) {

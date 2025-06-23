@@ -75,8 +75,8 @@ func (r *UserRepository) Get(filters user.User) (user.User, error) {
     whereClause.WriteString("WHERE ")
     whereClause.WriteString(strings.Join(conditions, " AND "))
 
-    query := "SELECT id, name, email FROM users " + whereClause.String()
-    err := r.pgx.Conn.QueryRow(ctx, query, args...).Scan(&user.Id, &user.Name, &user.Email)
+    query := "SELECT id, name, email, password FROM users " + whereClause.String()
+    err := r.pgx.Conn.QueryRow(ctx, query, args...).Scan(&user.Id, &user.Name, &user.Email, &user.Password)
     if err != nil {
         return user, fmt.Errorf("failed to get user: %w", err)
     }

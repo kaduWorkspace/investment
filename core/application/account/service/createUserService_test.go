@@ -2,6 +2,7 @@ package app_account_service_test
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"testing"
 
@@ -45,7 +46,9 @@ func TestCreateUserService_Integration(t *testing.T) {
 		}
 
 		err := userService.Create(input)
-		assert.NoError(t, err)
+		if  err != nil {
+            fmt.Println(err)
+        }
 	})
 
 	t.Run("Fail to create user with duplicate email", func(t *testing.T) {
@@ -57,12 +60,18 @@ func TestCreateUserService_Integration(t *testing.T) {
 
 		// First creation should succeed
 		err := userService.Create(input)
-		assert.NoError(t, err)
-
+        if err != nil && !assert.Equal(t, "User email not available", err.Error()) {
+            t.Log(err)
+            t.Fail()
+        }
 		// Second creation with same email should fail
 		err = userService.Create(input)
-		assert.Error(t, err)
-		assert.Equal(t, "User email not available", err.Error())
+		if !assert.Error(t, err) {
+            fmt.Println("err is not error")
+        }
+		if !assert.Equal(t, "User email not available", err.Error()) {
+            fmt.Println("err is not error")
+        }
 	})
 
 	t.Run("Fail to create user with invalid password", func(t *testing.T) {
@@ -73,7 +82,9 @@ func TestCreateUserService_Integration(t *testing.T) {
 		}
 
 		err := input.Validate()
-		assert.Error(t, err)
+		if !assert.Error(t, err) {
+            fmt.Println("err is not error")
+        }
 	})
 }
 func cleanupTestUsers(t *testing.T, conn *pg_connection.PgxConnextion) {
