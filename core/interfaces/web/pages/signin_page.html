@@ -12,7 +12,7 @@
         </div>
 
         <!-- Formulário de login -->
-        <form hx-post="/web/login" hx-target="main" hx-swap="innerHTML" class="space-y-6">
+        <form hx-post="/web/login" id="signin-form" hx-target="main" hx-swap="innerHTML" class="space-y-6">
             <input type="hidden" name="_csrf" value="{{ .csrf }}">
             <!-- Campo Email ou Username -->
             <div>
@@ -45,7 +45,7 @@
                     >
                     <button
                         type="button"
-                        onclick="togglePassword('password')"
+                        id="toggle-password"
                         class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-teal-400 transition-colors"
                     >
                         <i class="fas fa-eye" id="password-eye"></i>
@@ -53,19 +53,7 @@
                 </div>
             </div>
 
-            <!-- Lembrar-me e Esqueci a senha -->
             <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <input
-                        id="remember"
-                        name="remember"
-                        type="checkbox"
-                        class="h-4 w-4 text-teal-400 bg-gray-800 border-gray-600 rounded focus:ring-teal-400 focus:ring-2"
-                    >
-                    <label for="remember" class="ml-2 text-sm text-gray-300">
-                        Lembrar-me
-                    </label>
-                </div>
                 <div>
                     <a hx-get="/auth/forgot-password" hx-target="main" hx-swap="innerHTML" class="text-sm text-teal-400 hover:text-teal-300 cursor-pointer transition-colors">
                         Esqueci minha senha
@@ -96,16 +84,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Link para registro -->
-        <div class="text-center">
-            <p class="text-gray-400">
-                Não possui uma conta?
-                <a hx-get="/web/signup" hx-target="main" hx-swap="innerHTML" class="text-teal-400 hover:text-teal-300 font-medium cursor-pointer transition-colors ml-1">
-                    Criar conta gratuita
-                </a>
-            </p>
-        </div>
     </div>
 
     <!-- Card de recursos -->
@@ -134,29 +112,8 @@
         </ul>
     </div>
 </div>
-
-<script>
-function togglePassword(fieldId) {
-    const field = document.getElementById(fieldId);
-    const eyeIcon = document.getElementById(fieldId + '-eye');
-
-    if (field.type === 'password') {
-        field.type = 'text';
-        eyeIcon.classList.remove('fa-eye');
-        eyeIcon.classList.add('fa-eye-slash');
-    } else {
-        field.type = 'password';
-        eyeIcon.classList.remove('fa-eye-slash');
-        eyeIcon.classList.add('fa-eye');
-    }
-}
-
-// Auto-focus no primeiro campo
-document.addEventListener('DOMContentLoaded', function() {
-    const loginField = document.getElementById('login');
-    if (loginField) {
-        loginField.focus();
-    }
-});
+<script type="module">
+    import { setup } from '/public/scripts/signinPage.js';
+    setup();
 </script>
 {{ end }}
