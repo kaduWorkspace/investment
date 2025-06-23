@@ -160,6 +160,7 @@ export const StorageUtils = {
         const inputs = form.querySelectorAll('input');
         inputs.forEach(input => {
             const storedValue = sessionStorage.getItem(input.name || input.id);
+            if (input.name == "_csrf") return;
             if (storedValue) {
                 input.value = storedValue;
             }

@@ -13,7 +13,7 @@
 
         <!-- Formulário de login -->
         <form hx-post="/web/login" hx-target="main" hx-swap="innerHTML" class="space-y-6">
-            <input type="hidden" name="csrf" value="{{ .csrf }}">
+            <input type="hidden" name="_csrf" value="{{ .csrf }}">
             <!-- Campo Email ou Username -->
             <div>
                 <label for="login" class="block text-sm font-medium text-gray-300 mb-2">
