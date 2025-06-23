@@ -1,7 +1,6 @@
 package validators_dto
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -233,7 +232,6 @@ func TestFutureValueOfASeriesWithPeriodsInput_Validate(t *testing.T) {
             if tt.wantErr {
                 enMessages := tt.input.FormatValidationError(err, "en")
                 for key, value := range tt.messagesEn {
-                    fmt.Println("DEBUG", key, value)
                     if enMessages[key] != value {
                         t.Errorf("%s[en]: wrong message for %s, got: %s, want: %s", tt.name, key, enMessages[key], value)
                     }

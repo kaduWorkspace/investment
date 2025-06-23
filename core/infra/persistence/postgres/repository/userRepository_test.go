@@ -13,7 +13,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 func TestMain(m *testing.M) {
-    err := godotenv.Load("../../../../../.env.development")
+
+    enviroment := os.Args[len(os.Args) - 1]
+    envFile := ".env.development"
+    if enviroment == "local" {
+        envFile = ".env.local"
+    }
+    err := godotenv.Load("../../../../../" + envFile)
     if err != nil {
         log.Fatal("Erro ao carregar .env:", err)
     }
@@ -165,6 +171,9 @@ func TestUserRepository_Update(t *testing.T) {
         assert.Error(t, err)
         assert.Contains(t, err.Error(), "failed to update user")
     })
+    _, _ = conn.Conn.Exec(ctx, "DELETE FROM users WHERE email = 'updated_email@example.com'")
+    _, _ = conn.Conn.Exec(ctx, "DELETE FROM users WHERE email = 'test_update_user@example.com'")
+
 }
 
 func TestUserRepository_Delete(t *testing.T) {
