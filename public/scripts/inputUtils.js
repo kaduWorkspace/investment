@@ -150,7 +150,8 @@ export const StorageUtils = {
 
         const inputs = form.querySelectorAll('input');
         inputs.forEach(input => {
-            sessionStorage.setItem(input.name || input.id, input.value);
+            if (input.name == "_csrf") return;
+            sessionStorage.setItem((input.name || input.id) + "::" + form.id, input.value);
         });
     },
 
@@ -159,7 +160,7 @@ export const StorageUtils = {
 
         const inputs = form.querySelectorAll('input');
         inputs.forEach(input => {
-            const storedValue = sessionStorage.getItem(input.name || input.id);
+            const storedValue = sessionStorage.getItem((input.name || input.id ) + "::" + form.id);
             if (input.name == "_csrf") return;
             if (storedValue) {
                 input.value = storedValue;

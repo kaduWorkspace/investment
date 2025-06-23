@@ -1,4 +1,4 @@
-import { CurrencyUtils } from './inputUtils.js';
+import { CurrencyUtils, StorageUtils } from './inputUtils.js';
 
 // Function to validate individual fields
 function validateField(fieldId, isRequired = true) {
@@ -21,6 +21,7 @@ function validateField(fieldId, isRequired = true) {
 
     errorElement.classList.add('hidden');
     processInputsPredict();
+    StorageUtils.saveInputValues(document.getElementById('formulario_prever'));
     return true;
 }
 function processInputsPredict() {
@@ -48,6 +49,7 @@ export default function setupFormValidation() {
     const form = document.getElementById('formulario_prever');
     if (!form) return;
     processInputsPredict();
+    StorageUtils.loadInputValues(form);
     // Validate on input change
     document.getElementById('final_value').addEventListener('input', () => validateField('final_value'));
     document.getElementById('tax_decimal').addEventListener('input', () => validateField('tax_decimal'));
