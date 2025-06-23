@@ -150,7 +150,8 @@ export const StorageUtils = {
 
         const inputs = form.querySelectorAll('input');
         inputs.forEach(input => {
-            if (input.name == "_csrf") return;
+            const skip = ["_csrf", "password", "password_confirm"];
+            if (skip.includes(input.name)) return;
             sessionStorage.setItem((input.name || input.id) + "::" + form.id, input.value);
         });
     },
@@ -171,6 +172,24 @@ export const StorageUtils = {
 
 // Form processing functions
 export const FormUtils = {
+    validatePassword(pwd) {
+        const regex = /^(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$/;
+        return regex.test(pwd);
+    },
+    togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const eyeIcon = document.getElementById(fieldId + '-eye');
+
+        if (field.type === 'password') {
+            field.type = 'text';
+            eyeIcon.classList.remove('fa-eye');
+            eyeIcon.classList.add('fa-eye-slash');
+        } else {
+            field.type = 'password';
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+        }
+    },
     processInputs(form) {
         if (!form) return;
 

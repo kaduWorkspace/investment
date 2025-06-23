@@ -12,7 +12,7 @@
         </div>
 
         <!-- Formulário de registro -->
-        <form hx-post="/web/signup" hx-target="main" hx-swap="innerHTML" class="space-y-6">
+        <form hx-post="/web/signup" id="signup-form" hx-target="main" hx-swap="innerHTML" class="space-y-6">
             <!-- Campo Nome -->
             <input type="hidden" name="_csrf" value="{{ .csrf }}">
             <div>
@@ -75,8 +75,8 @@
                         placeholder="Digite uma senha segura"
                     >
                     <button
+                        id="toggle-password"
                         type="button"
-                        onclick="togglePassword('password')"
                         class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-teal-400 transition-colors"
                     >
                         <i class="fas fa-eye" id="password-eye"></i>
@@ -84,7 +84,7 @@
                 </div>
                 <div class="mt-2">
                     <div class="text-xs text-gray-400">
-                        A senha deve ter pelo menos 8 caracteres
+                        A senha deve ter pelo menos 8 caracteres um número e um símbolo
                     </div>
                 </div>
             </div>
@@ -106,7 +106,8 @@
                     >
                     <button
                         type="button"
-                        onclick="togglePassword('password_confirm')"
+                        id="toggle-password-confirm"
+                        onclick="StorageUtils.togglePassword('password_confirm')"
                         class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-teal-400 transition-colors"
                     >
                         <i class="fas fa-eye" id="password_confirm-eye"></i>
@@ -163,44 +164,8 @@
         </ul>
     </div>
 </div>
-
-<script>
-function togglePassword(fieldId) {
-    const field = document.getElementById(fieldId);
-    const eyeIcon = document.getElementById(fieldId + '-eye');
-
-    if (field.type === 'password') {
-        field.type = 'text';
-        eyeIcon.classList.remove('fa-eye');
-        eyeIcon.classList.add('fa-eye-slash');
-    } else {
-        field.type = 'password';
-        eyeIcon.classList.remove('fa-eye-slash');
-        eyeIcon.classList.add('fa-eye');
-    }
-}
-
-// Validação de senha em tempo real
-document.addEventListener('DOMContentLoaded', function() {
-    const password = document.getElementById('password');
-    const passwordConfirm = document.getElementById('password_confirm');
-
-    function validatePasswords() {
-        if (password.value && passwordConfirm.value) {
-            if (password.value === passwordConfirm.value) {
-                passwordConfirm.classList.remove('border-red-500');
-                passwordConfirm.classList.add('border-green-500');
-            } else {
-                passwordConfirm.classList.remove('border-green-500');
-                passwordConfirm.classList.add('border-red-500');
-            }
-        } else {
-            passwordConfirm.classList.remove('border-red-500', 'border-green-500');
-        }
-    }
-
-    password.addEventListener('input', validatePasswords);
-    passwordConfirm.addEventListener('input', validatePasswords);
-});
+<script type="module">
+    import { setup } from '/public/scripts/signupPage.js';
+    setup();
 </script>
 {{ end }}
