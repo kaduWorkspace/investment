@@ -1,0 +1,162 @@
+{{ define "signin_page" }}
+<div class="max-w-md mx-auto mt-8">
+    <!-- Card principal de login -->
+    <div class="card p-8 rounded-xl animate-fade-in bg-gray-900/50 backdrop-blur-sm border border-gray-700/50">
+        <!-- Cabeçalho -->
+        <div class="text-center mb-8">
+            <div class="text-teal-400 text-5xl mb-4">
+                <i class="fas fa-sign-in-alt"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-white mb-2">Entrar</h1>
+            <p class="text-gray-300">Acesse sua conta e continue simulando seus investimentos</p>
+        </div>
+
+        <!-- Formulário de login -->
+        <form hx-post="/web/login" hx-target="main" hx-swap="innerHTML" class="space-y-6">
+            <input type="hidden" name="csrf" value="{{ .csrf }}">
+            <!-- Campo Email ou Username -->
+            <div>
+                <label for="login" class="block text-sm font-medium text-gray-300 mb-2">
+                    <i class="fas fa-user mr-2 text-teal-400"></i>E-mail ou Nome de Usuário
+                </label>
+                <input
+                    type="text"
+                    id="login"
+                    name="login"
+                    required
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all duration-300"
+                    placeholder="Digite seu e-mail ou nome de usuário"
+                >
+            </div>
+
+            <!-- Campo Senha -->
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+                    <i class="fas fa-lock mr-2 text-teal-400"></i>Senha
+                </label>
+                <div class="relative">
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                        class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all duration-300 pr-12"
+                        placeholder="Digite sua senha"
+                    >
+                    <button
+                        type="button"
+                        onclick="togglePassword('password')"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-teal-400 transition-colors"
+                    >
+                        <i class="fas fa-eye" id="password-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lembrar-me e Esqueci a senha -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input
+                        id="remember"
+                        name="remember"
+                        type="checkbox"
+                        class="h-4 w-4 text-teal-400 bg-gray-800 border-gray-600 rounded focus:ring-teal-400 focus:ring-2"
+                    >
+                    <label for="remember" class="ml-2 text-sm text-gray-300">
+                        Lembrar-me
+                    </label>
+                </div>
+                <div>
+                    <a hx-get="/auth/forgot-password" hx-target="main" hx-swap="innerHTML" class="text-sm text-teal-400 hover:text-teal-300 cursor-pointer transition-colors">
+                        Esqueci minha senha
+                    </a>
+                </div>
+            </div>
+
+            <!-- Botão de login -->
+            <div class="pt-4">
+                <button
+                    type="submit"
+                    class="w-full bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:ring-offset-gray-900"
+                >
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Entrar
+                </button>
+            </div>
+        </form>
+
+        <!-- Divisor -->
+        <div class="mt-8 mb-6">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-600"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-gray-900 text-gray-400">ou</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Link para registro -->
+        <div class="text-center">
+            <p class="text-gray-400">
+                Não possui uma conta?
+                <a hx-get="/web/signup" hx-target="main" hx-swap="innerHTML" class="text-teal-400 hover:text-teal-300 font-medium cursor-pointer transition-colors ml-1">
+                    Criar conta gratuita
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Card de recursos -->
+    <div class="card p-6 rounded-xl mt-6 animate-fade-in bg-gray-900/30 backdrop-blur-sm border border-gray-700/30">
+        <h3 class="text-lg font-semibold text-white mb-4 text-center">
+            <i class="fas fa-rocket text-teal-400 mr-2"></i>
+            Acesse seus recursos
+        </h3>
+        <ul class="space-y-3 text-gray-300">
+            <li class="flex items-start">
+                <i class="fas fa-chart-line text-teal-400 mt-1 mr-3"></i>
+                <span>Suas simulações salvas e histórico de cálculos</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-bookmark text-teal-400 mt-1 mr-3"></i>
+                <span>Cenários de investimento personalizados</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-bell text-teal-400 mt-1 mr-3"></i>
+                <span>Notificações sobre mudanças nas taxas</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-analytics text-teal-400 mt-1 mr-3"></i>
+                <span>Relatórios detalhados e comparativos</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const eyeIcon = document.getElementById(fieldId + '-eye');
+
+    if (field.type === 'password') {
+        field.type = 'text';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+    } else {
+        field.type = 'password';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+    }
+}
+
+// Auto-focus no primeiro campo
+document.addEventListener('DOMContentLoaded', function() {
+    const loginField = document.getElementById('login');
+    if (loginField) {
+        loginField.focus();
+    }
+});
+</script>
+{{ end }}
