@@ -6,6 +6,7 @@ import (
 	app_account_dto "kaduhod/fin_v3/core/application/account/dto"
 	core_http "kaduhod/fin_v3/core/domain/http"
 	"kaduhod/fin_v3/core/domain/user"
+	validators_dto "kaduhod/fin_v3/core/interfaces/http/dto/validators"
 	"kaduhod/fin_v3/core/interfaces/web/renderer"
 	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
 	"net/http"
@@ -50,8 +51,21 @@ func (h UserHandlerWeb) SignUpForm(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusInternalServerError)
         return
     }
+    userInput := validators_dto.NewCreateUserInput(
+        r.FormValue("name"),
+        r.FormValue("email"),
+        r.FormValue("password"),
+        r.FormValue("password_confirm"),
+    )
     data := map[string]any{
         "csrf": csrf,
+    }
+    if err := userInput.Validate(); err != nil {
+        errorMessages := userInput.FormatValidationError(err, "pt")
+        data["errors"] = errorMessages
+        if err := h.renderer.Render(w, "signup_page", data); err != nil {
+            fmt.Println(err)
+        }
     }
     if err := h.renderer.Render(w, "signup_page", data); err != nil {
         fmt.Println(err)
