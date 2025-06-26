@@ -70,6 +70,8 @@ func (s *ServerChi) Setup() {
         r.Use(sessionMidlewareHandler.CheckSessionMiddleware)
         r.Get("/signin", userHandlerWeb.SignInForm)
         r.Get("/signup", userHandlerWeb.SignUpForm)
+        r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signin", userHandlerWeb.SignIn)
+        r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signup", userHandlerWeb.SignIn)
         r.Route("/investments", func(r chi.Router) {
             r.Get("/fv", investmentHandlerWeb.FutureValueOfASeriesFormPage)
             r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/fv", investmentHandlerWeb.FutureValueOfASeriesResultPage)

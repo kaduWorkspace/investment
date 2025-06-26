@@ -4,16 +4,16 @@ import (
 	"errors"
 	"fmt"
 	"kaduhod/fin_v3/core/domain/dto"
+	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
+
 	"github.com/go-playground/validator/v10"
 )
-
 type CreateUserInput struct {
     Email string `json:"email" validate:"required,email"`
-    Name  string `json:"name" validate:"required"`
+    Name  string `json:"name" validate:"required,min=3"`
     Password string `json:"password" validate:"required,min=6,containsany=!@#$%^&*(),containsany=0123456789"`
     ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=Password"`
 }
-
 func NewCreateUserInput(Email, Name, Password, ConfirmPassword string) dto.Dto {
     return CreateUserInput{
         Email: Email,
@@ -22,7 +22,6 @@ func NewCreateUserInput(Email, Name, Password, ConfirmPassword string) dto.Dto {
         ConfirmPassword: ConfirmPassword,
     }
 }
-
 func (i CreateUserInput) FormatValidationError(err error, language string) map[string]string {
     var validationMessages = map[string]map[string]string{
         "required": {
@@ -68,7 +67,6 @@ func (i CreateUserInput) FormatValidationError(err error, language string) map[s
             }
         }
     }
-
     if len(result) == 0 {
         if language == "pt" {
             result["_error"] = "dados da requisição inválidos"
@@ -78,8 +76,8 @@ func (i CreateUserInput) FormatValidationError(err error, language string) map[s
     }
     return result
 }
-
 func (i CreateUserInput) Validate() error {
     validate := validator.New()
+    validate.RegisterValidation("min", struct_utils.MinStringLength)
     return validate.Struct(i)
 }

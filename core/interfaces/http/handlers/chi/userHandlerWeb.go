@@ -51,18 +51,32 @@ func (h UserHandlerWeb) SignUpForm(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusInternalServerError)
         return
     }
+    data := map[string]any{
+        "csrf": csrf,
+    }
+    if err := h.renderer.Render(w, "signup_page", data); err != nil {
+        fmt.Println(err)
+    }
+}
+func (h UserHandlerWeb) SignIn(w http.ResponseWriter, r *http.Request) {
+    csrf, err := h.getCsrfToken(r)
+    if err != nil {
+        fmt.Println(err)
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+    data := map[string]any{
+        "csrf": csrf,
+    }
     userInput := validators_dto.NewCreateUserInput(
         r.FormValue("name"),
         r.FormValue("email"),
         r.FormValue("password"),
         r.FormValue("password_confirm"),
     )
-    data := map[string]any{
-        "csrf": csrf,
-    }
     if err := userInput.Validate(); err != nil {
         errorMessages := userInput.FormatValidationError(err, "pt")
-        data["errors"] = errorMessages
+        data["errs"] = errorMessages
         if err := h.renderer.Render(w, "signup_page", data); err != nil {
             fmt.Println(err)
         }
@@ -70,8 +84,6 @@ func (h UserHandlerWeb) SignUpForm(w http.ResponseWriter, r *http.Request) {
     if err := h.renderer.Render(w, "signup_page", data); err != nil {
         fmt.Println(err)
     }
-}
-func (h UserHandlerWeb) SignIn(w http.ResponseWriter, r *http.Request) {
 }
 func (h UserHandlerWeb) SignUp(w http.ResponseWriter, r *http.Request) {
 }
