@@ -18,7 +18,7 @@ func NewCreateUserService(repository repository.Repository[user.User]) user.Crea
     }
 }
 func (s *CreateUserService) Create(usr app_account_dto.CreateUserInput) error {
-    fmt.Println(usr.Password)
+    fmt.Println(usr.Password, "Aquiii")
     hash , err := bcrypt.GenerateFromPassword([]byte(usr.Password), bcrypt.DefaultCost)
     if err != nil {
         fmt.Println(err)
@@ -26,6 +26,7 @@ func (s *CreateUserService) Create(usr app_account_dto.CreateUserInput) error {
     }
     dbUser, err := s.repository.Get(user.User{Email: usr.Email})
     if err != nil && err.Error() != "failed to get user: no rows in result set" {
+        fmt.Println(err)
         return err
     }
     if dbUser.Email != "" {
@@ -40,5 +41,6 @@ func (s *CreateUserService) Create(usr app_account_dto.CreateUserInput) error {
         fmt.Println(err)
         return err
     }
+    fmt.Println("Created user")
     return nil
 }

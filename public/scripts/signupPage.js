@@ -16,10 +16,11 @@ function validatePasswords() {
     if(!FormUtils.validatePassword(password.value)){
         password.classList.remove('border-green-500');
         password.classList.add('border-red-500');
-    }else{
-        password.classList.remove('border-red-500');
-        password.classList.add('border-green-500');
+        return true
     }
+    password.classList.remove('border-red-500');
+    password.classList.add('border-green-500');
+    return false
 }
 function setupPasswordValidation() {
     const password = document.getElementById('password');
@@ -31,7 +32,13 @@ function setupPasswordValidation() {
     password.addEventListener('input', validatePasswords);
     passwordConfirm.addEventListener('input', validatePasswords);
 }
-
+function validateForm(e) {
+    e.preventDefault();
+    document.getElementById('email').value = document.getElementById('email').value.toLowerCase();
+    if (validatePasswords()) {
+        e.submit()
+    }
+}
 export function setup() {
     setupPasswordValidation();
     const form = document.getElementById('signup-form');
@@ -39,4 +46,5 @@ export function setup() {
     form.addEventListener("input", _ => {
         StorageUtils.saveInputValues(form);
     })
+    form.addEventListener("submit", validateForm)
 }

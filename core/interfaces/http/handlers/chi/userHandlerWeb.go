@@ -5,10 +5,10 @@ import (
 	"fmt"
 	app_account_dto "kaduhod/fin_v3/core/application/account/dto"
 	core_http "kaduhod/fin_v3/core/domain/http"
-	"kaduhod/fin_v3/core/domain/user"
 	validators_dto "kaduhod/fin_v3/core/interfaces/http/dto/validators"
-	"kaduhod/fin_v3/core/interfaces/web/renderer"
 	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
+	"kaduhod/fin_v3/core/domain/user"
+	"kaduhod/fin_v3/core/interfaces/web/renderer"
 	"net/http"
 )
 
@@ -58,7 +58,7 @@ func (h UserHandlerWeb) SignUpForm(w http.ResponseWriter, r *http.Request) {
         fmt.Println(err)
     }
 }
-func (h UserHandlerWeb) SignIn(w http.ResponseWriter, r *http.Request) {
+func (h UserHandlerWeb) SignUp(w http.ResponseWriter, r *http.Request) {
     csrf, err := h.getCsrfToken(r)
     if err != nil {
         fmt.Println(err)
@@ -69,23 +69,59 @@ func (h UserHandlerWeb) SignIn(w http.ResponseWriter, r *http.Request) {
         "csrf": csrf,
     }
     userInput := validators_dto.NewCreateUserInput(
-        r.FormValue("name"),
         r.FormValue("email"),
+        r.FormValue("name"),
         r.FormValue("password"),
         r.FormValue("password_confirm"),
-    )
+    ).(validators_dto.CreateUserInput)
     if err := userInput.Validate(); err != nil {
         errorMessages := userInput.FormatValidationError(err, "pt")
         data["errs"] = errorMessages
         if err := h.renderer.Render(w, "signup_page", data); err != nil {
             fmt.Println(err)
         }
+        return
     }
-    if err := h.renderer.Render(w, "signup_page", data); err != nil {
+    createUserInput := app_account_dto.NewCreateUserInput(userInput.Name, userInput.Email, userInput.Password).(app_account_dto.CreateUserInput)
+    fmt.Println(createUserInput)
+    if err := h.createUserService.Create(createUserInput); err != nil {
+        if err := h.renderer.Render(w, "signup_page", data); err != nil {
+            fmt.Println(err)
+        } else {
+            w.WriteHeader(http.StatusInternalServerError)
+        }
+        return
+    }
+    data["message"] = "success"
+    if err := h.renderer.Render(w, "signin_page", data); err != nil {
         fmt.Println(err)
     }
 }
-func (h UserHandlerWeb) SignUp(w http.ResponseWriter, r *http.Request) {
+func (h UserHandlerWeb) SignIn(w http.ResponseWriter, r *http.Request) {
+    csrf, err := h.getCsrfToken(r)
+    if err != nil {
+        fmt.Println(err)
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+    data := map[string]any{
+        "csrf": csrf,
+    }
+    userInput := validators_dto.NewSignInInput(
+        r.FormValue("email"),
+        r.FormValue("password"),
+    )
+    if err := userInput.Validate(); err != nil {
+        errorMessages := userInput.FormatValidationError(err, "pt")
+        data["errs"] = errorMessages
+        if err := h.renderer.Render(w, "signin_page", data); err != nil {
+            fmt.Println(err)
+        }
+        return
+    }
+    if err := h.renderer.Render(w, "signin_page", data); err != nil {
+        fmt.Println(err)
+    }
 }
 func (h *UserHandlerWeb) getSession(r *http.Request) (core_http.SessionData, error) {
     session, err := h.sessionService.Get(struct_utils.GetCookie(r).Value)
