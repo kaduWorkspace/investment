@@ -18,7 +18,6 @@ func NewCreateUserService(repository repository.Repository[user.User]) user.Crea
     }
 }
 func (s *CreateUserService) Create(usr app_account_dto.CreateUserInput) error {
-    fmt.Println(usr.Password, "Aquiii")
     hash , err := bcrypt.GenerateFromPassword([]byte(usr.Password), bcrypt.DefaultCost)
     if err != nil {
         fmt.Println(err)

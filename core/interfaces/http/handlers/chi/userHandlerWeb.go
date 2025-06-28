@@ -5,11 +5,12 @@ import (
 	"fmt"
 	app_account_dto "kaduhod/fin_v3/core/application/account/dto"
 	core_http "kaduhod/fin_v3/core/domain/http"
-	validators_dto "kaduhod/fin_v3/core/interfaces/http/dto/validators"
-	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
 	"kaduhod/fin_v3/core/domain/user"
+	validators_dto "kaduhod/fin_v3/core/interfaces/http/dto/validators"
 	"kaduhod/fin_v3/core/interfaces/web/renderer"
+	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
 	"net/http"
+	"strings"
 )
 
 type UserHandlerWeb struct {
@@ -83,10 +84,10 @@ func (h UserHandlerWeb) SignUp(w http.ResponseWriter, r *http.Request) {
         return
     }
     createUserInput := app_account_dto.NewCreateUserInput(userInput.Name, userInput.Email, userInput.Password).(app_account_dto.CreateUserInput)
-    fmt.Println(createUserInput)
     if err := h.createUserService.Create(createUserInput); err != nil {
         if err := h.renderer.Render(w, "signup_page", data); err != nil {
             fmt.Println(err)
+            w.WriteHeader(http.StatusBadRequest)
         } else {
             w.WriteHeader(http.StatusInternalServerError)
         }
@@ -94,6 +95,7 @@ func (h UserHandlerWeb) SignUp(w http.ResponseWriter, r *http.Request) {
     }
     data["message"] = "success"
     if err := h.renderer.Render(w, "signin_page", data); err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
         fmt.Println(err)
     }
 }
@@ -108,18 +110,38 @@ func (h UserHandlerWeb) SignIn(w http.ResponseWriter, r *http.Request) {
         "csrf": csrf,
     }
     userInput := validators_dto.NewSignInInput(
-        r.FormValue("email"),
+        strings.ToLower(r.FormValue("email")),
         r.FormValue("password"),
     )
     if err := userInput.Validate(); err != nil {
         errorMessages := userInput.FormatValidationError(err, "pt")
         data["errs"] = errorMessages
+        fmt.Println(errorMessages)
         if err := h.renderer.Render(w, "signin_page", data); err != nil {
             fmt.Println(err)
         }
         return
     }
-    if err := h.renderer.Render(w, "signin_page", data); err != nil {
+    if err := h.signInService.Signin(user.User{
+        Email: strings.ToLower(r.FormValue("email")),
+    }, r.FormValue("password")); err != nil {
+        fmt.Println(err)
+        if err.Error() == "User not found" {
+            data["errs"] = []string{"Account not found"}
+            if err := h.renderer.Render(w, "signin_page", data); err != nil {
+                fmt.Println(err)
+            }
+        } else if err.Error() == "Invalid password" {
+            data["errs"] = []string{"Invalid password"}
+            if err := h.renderer.Render(w, "signin_page", data); err != nil {
+                fmt.Println(err)
+            }
+        } else {
+            w.WriteHeader(http.StatusInternalServerError)
+        }
+        return
+    }
+    if err := h.renderer.Render(w, "home", data); err != nil {
         fmt.Println(err)
     }
 }

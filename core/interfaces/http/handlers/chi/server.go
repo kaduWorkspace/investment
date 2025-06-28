@@ -19,11 +19,14 @@ import (
 )
 type ServerChi struct {
     handler http.Handler
+    Conn *pg_connection.PgxConnextion
 }
 func NewServer() domain_http.Server {
     return &ServerChi{}
 }
-
+func (s *ServerChi) Shutdown() {
+    s.Conn.Conn.Close()
+}
 func (s *ServerChi) Start(port string) {
     err := http.ListenAndServe(port, s.handler)
     if err != nil {
@@ -42,9 +45,7 @@ func (s *ServerChi) Setup() {
     investmentHandler := NewInvestmentHandler(bcbService, compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal)
     inMemorySessionService := memory.NewInMemorySession()
     investmentHandlerWeb := NewInvestmentHandlerChiWeb(bcbService, inMemorySessionService ,compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal, rndr)
-    conn := pg_connection.NewPgxConnection()
-    defer conn.Conn.Close()
-    userRepo := pg_repository.NewUserRepository(conn)
+    userRepo := pg_repository.NewUserRepository(s.Conn)
     createUserService := app_account_service.NewCreateUserService(userRepo)
     signInService := app_account_service.NewSigninService(userRepo)
     userHandlerWeb := NewUserHandlerWeb(createUserService, signInService, inMemorySessionService, rndr)
@@ -71,7 +72,7 @@ func (s *ServerChi) Setup() {
         r.Get("/signin", userHandlerWeb.SignInForm)
         r.Get("/signup", userHandlerWeb.SignUpForm)
         r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signin", userHandlerWeb.SignIn)
-        r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signup", userHandlerWeb.SignIn)
+        r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signup", userHandlerWeb.SignUp)
         r.Route("/investments", func(r chi.Router) {
             r.Get("/fv", investmentHandlerWeb.FutureValueOfASeriesFormPage)
             r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/fv", investmentHandlerWeb.FutureValueOfASeriesResultPage)
