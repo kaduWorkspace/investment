@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
@@ -119,4 +122,17 @@ func GetCookie(r *http.Request) *http.Cookie {
         return nil
     }
     return cookie
+}
+func MinStringLength(fl validator.FieldLevel) bool {
+	val := fl.Field()
+	if val.Kind() != reflect.String {
+		return false
+	}
+	str := val.String()
+	param := fl.Param()
+	minLen, err := strconv.Atoi(param)
+	if err != nil {
+		return false
+	}
+	return len(str) >= minLen
 }

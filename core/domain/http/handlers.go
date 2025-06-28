@@ -20,3 +20,11 @@ type InvestmentHandlerWeb interface {
     FutureValueOfASeriesResultPage(w http.ResponseWriter, r *http.Request)
     FutureValueOfASeriesPredictResultPage(w http.ResponseWriter, r *http.Request)
 }
+
+type UserHandlerWeb interface {
+    Handler
+    SignInForm(w http.ResponseWriter, r *http.Request)
+    SignUpForm(w http.ResponseWriter, r *http.Request)
+    SignIn(w http.ResponseWriter, r *http.Request)
+    SignUp(w http.ResponseWriter, r *http.Request)
+}

@@ -1,0 +1,184 @@
+{{ define "signup_page" }}
+<div class="max-w-md mx-auto mt-8">
+    <!-- Card principal de registro -->
+    <div class="card p-8 rounded-xl animate-fade-in bg-gray-900/50 backdrop-blur-sm border border-gray-700/50">
+        <!-- Cabeçalho -->
+        <div class="text-center mb-8">
+            <div class="text-teal-400 text-5xl mb-4">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-white mb-2">Criar Conta</h1>
+            <p class="text-gray-300">Junte-se a nós e comece a simular seus investimentos</p>
+        </div>
+        <!-- Mensagens de Erro -->
+        <div id="form_errors_htmx" class="fade-out bg-red-900 bg-opacity-20 border border-red-800 text-red-200 p-4 rounded-lg mb-6 {{ if not .errs }}hidden{{ end }}">
+            <div class="flex items-center mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="font-medium">Por favor, corrija os seguintes erros:</span>
+            </div>
+            <ul class="list-disc pl-5 space-y-1 text-sm">
+                {{ range $chave, $valor := .errs }}
+                <li>{{ $chave }}:  {{ $valor }}</li>
+                {{ end }}
+            </ul>
+        </div>
+        <!-- Formulário de registro -->
+        <form hx-post="/web/signup" id="signup-form" hx-target="main" hx-swap="innerHTML" class="space-y-6">
+            <!-- Campo Nome -->
+            <input type="hidden" name="_csrf" value="{{ .csrf }}">
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-300 mb-2">
+                    <i class="fas fa-user mr-2 text-teal-400"></i>Nome Completo
+                </label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all duration-300"
+                    placeholder="Digite seu nome completo"
+                >
+            </div>
+
+            <!-- Campo Username
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-300 mb-2">
+                    <i class="fas fa-at mr-2 text-teal-400"></i>Nome de Usuário
+                </label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    required
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all duration-300"
+                    placeholder="Escolha um nome de usuário"
+                >
+            </div> -->
+
+            <!-- Campo Email -->
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+                    <i class="fas fa-envelope mr-2 text-teal-400"></i>E-mail
+                </label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all duration-300"
+                    placeholder="Digite seu e-mail"
+                >
+            </div>
+
+            <!-- Campo Senha -->
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+                    <i class="fas fa-lock mr-2 text-teal-400"></i>Senha
+                </label>
+                <div class="relative">
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                        minlength="8"
+                        class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all duration-300 pr-12"
+                        placeholder="Digite uma senha segura"
+                    >
+                    <button
+                        id="toggle-password"
+                        type="button"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-teal-400 transition-colors"
+                    >
+                        <i class="fas fa-eye" id="password-eye"></i>
+                    </button>
+                </div>
+                <div class="mt-2">
+                    <div class="text-xs text-gray-400">
+                        A senha deve ter pelo menos 8 caracteres um número e um símbolo
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campo Confirmação de Senha -->
+            <div>
+                <label for="password_confirm" class="block text-sm font-medium text-gray-300 mb-2">
+                    <i class="fas fa-lock mr-2 text-teal-400"></i>Confirmar Senha
+                </label>
+                <div class="relative">
+                    <input
+                        type="password"
+                        id="password_confirm"
+                        name="password_confirm"
+                        required
+                        minlength="8"
+                        class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all duration-300 pr-12"
+                        placeholder="Confirme sua senha"
+                    >
+                    <button
+                        type="button"
+                        id="toggle-password-confirm"
+                        onclick="StorageUtils.togglePassword('password_confirm')"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-teal-400 transition-colors"
+                    >
+                        <i class="fas fa-eye" id="password_confirm-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Botão de registro -->
+            <div class="pt-4">
+                <button
+                    type="submit"
+                    class="w-full bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:ring-offset-gray-900"
+                >
+                    <i class="fas fa-user-plus mr-2"></i>
+                    Criar Conta
+                </button>
+            </div>
+        </form>
+
+        <!-- Link para login -->
+        <div class="mt-8 text-center">
+            <p class="text-gray-400">
+                Já possui uma conta?
+                <a hx-get="/web/signin" hx-target="main" hx-swap="innerHTML" class="text-teal-400 hover:text-teal-300 font-medium cursor-pointer transition-colors ml-1">
+                    Fazer Login
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Card de benefícios -->
+    <div class="card p-6 rounded-xl mt-6 animate-fade-in bg-gray-900/30 backdrop-blur-sm border border-gray-700/30">
+        <h3 class="text-lg font-semibold text-white mb-4 text-center">
+            <i class="fas fa-star text-teal-400 mr-2"></i>
+            Benefícios da sua conta
+        </h3>
+        <ul class="space-y-3 text-gray-300">
+            <li class="flex items-start">
+                <i class="fas fa-check-circle text-teal-400 mt-1 mr-3"></i>
+                <span>Simule investimentos com precisão matemática avançada</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-check-circle text-teal-400 mt-1 mr-3"></i>
+                <span>Salve e gerencie múltiplas simulações</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-check-circle text-teal-400 mt-1 mr-3"></i>
+                <span>Acesse gráficos e relatórios detalhados</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-check-circle text-teal-400 mt-1 mr-3"></i>
+                <span>Receba atualizações sobre taxas de juros</span>
+            </li>
+        </ul>
+    </div>
+</div>
+<script type="module">
+    import { setup } from '/public/scripts/signupPage.js';
+    setup();
+</script>
+{{ end }}

@@ -108,5 +108,4 @@ func cleanupTestUsers(t *testing.T, conn *pg_connection.PgxConnextion) {
 	userRepo := pg_repository.NewUserRepository(conn)
 	userService := app_account_service.NewCreateUserService(userRepo)
     userService.Create(input)*/
-
 }

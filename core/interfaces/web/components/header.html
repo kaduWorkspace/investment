@@ -15,24 +15,32 @@
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
             </div>
-            <!-- Rest of your navigation links remain the same -->
+            <!-- Navigation links -->
             <a hx-get="/"
                hx-target="main"
                hx-swap="innerHTML"
                hx-indicator="#htmx-indicator-header"
                class="nav-link text-sm md:text-base text-gray-300 cursor-pointer hover:text-teal-400 transition-colors duration-300">Home</a>
-
             <a hx-get="/web/investments/fv"
                hx-target="main"
                hx-swap="innerHTML"
                hx-indicator="#htmx-indicator-header"
                class="nav-link text-sm md:text-base cursor-pointer text-gray-300 hover:text-teal-400 transition-colors duration-300">Simular</a>
-
             <a hx-get="/web/investments/fv/predict"
                hx-target="main"
                hx-swap="innerHTML"
                hx-indicator="#htmx-indicator-header"
                class="nav-link text-sm md:text-base cursor-pointer text-gray-300 hover:text-teal-400 transition-colors duration-300">Previsão</a>
+            <a hx-get="/web/signup"
+               hx-target="main"
+               hx-swap="innerHTML"
+               hx-indicator="#htmx-indicator-header"
+               class="nav-link text-sm md:text-base cursor-pointer text-gray-300 hover:text-teal-400 transition-colors duration-300">Registrar</a>
+            <a hx-get="/web/signin"
+               hx-target="main"
+               hx-swap="innerHTML"
+               hx-indicator="#htmx-indicator-header"
+               class="nav-link text-sm md:text-base cursor-pointer text-gray-300 hover:text-teal-400 transition-colors duration-300">Login</a>
         </nav>
     </div>
 </header>

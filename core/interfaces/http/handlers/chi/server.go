@@ -1,10 +1,13 @@
 package interface_chi
 
 import (
+	app_account_service "kaduhod/fin_v3/core/application/account/service"
 	app_investment_decimal "kaduhod/fin_v3/core/application/investment/service/decimal"
 	domain_http "kaduhod/fin_v3/core/domain/http"
 	auth_std "kaduhod/fin_v3/core/infra/auth/std"
 	infra_external "kaduhod/fin_v3/core/infra/external"
+	pg_connection "kaduhod/fin_v3/core/infra/persistence/postgres/connection"
+	pg_repository "kaduhod/fin_v3/core/infra/persistence/postgres/repository"
 	"kaduhod/fin_v3/core/infra/session/memory"
 	http_middleware "kaduhod/fin_v3/core/interfaces/http/middlewares/http"
 	"kaduhod/fin_v3/core/interfaces/web/renderer"
@@ -16,11 +19,14 @@ import (
 )
 type ServerChi struct {
     handler http.Handler
+    Conn *pg_connection.PgxConnextion
 }
 func NewServer() domain_http.Server {
     return &ServerChi{}
 }
-
+func (s *ServerChi) Shutdown() {
+    s.Conn.Conn.Close()
+}
 func (s *ServerChi) Start(port string) {
     err := http.ListenAndServe(port, s.handler)
     if err != nil {
@@ -39,6 +45,10 @@ func (s *ServerChi) Setup() {
     investmentHandler := NewInvestmentHandler(bcbService, compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal)
     inMemorySessionService := memory.NewInMemorySession()
     investmentHandlerWeb := NewInvestmentHandlerChiWeb(bcbService, inMemorySessionService ,compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal, rndr)
+    userRepo := pg_repository.NewUserRepository(s.Conn)
+    createUserService := app_account_service.NewCreateUserService(userRepo)
+    signInService := app_account_service.NewSigninService(userRepo)
+    userHandlerWeb := NewUserHandlerWeb(createUserService, signInService, inMemorySessionService, rndr)
     sessionMidlewareHandler := http_middleware.NewSessionHandlerMiddleware(inMemorySessionService)
     csrfMiddlewareHandler := http_middleware.NewCsrfHandlerMiddleware(inMemorySessionService)
     r := chi.NewRouter()
@@ -59,6 +69,10 @@ func (s *ServerChi) Setup() {
     })
     r.Route("/web", func(r chi.Router) {
         r.Use(sessionMidlewareHandler.CheckSessionMiddleware)
+        r.Get("/signin", userHandlerWeb.SignInForm)
+        r.Get("/signup", userHandlerWeb.SignUpForm)
+        r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signin", userHandlerWeb.SignIn)
+        r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signup", userHandlerWeb.SignUp)
         r.Route("/investments", func(r chi.Router) {
             r.Get("/fv", investmentHandlerWeb.FutureValueOfASeriesFormPage)
             r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/fv", investmentHandlerWeb.FutureValueOfASeriesResultPage)
