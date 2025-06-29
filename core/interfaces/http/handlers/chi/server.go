@@ -49,10 +49,9 @@ func (s *ServerChi) Setup() {
     createUserService := app_account_service.NewCreateUserService(userRepo)
     signInService := app_account_service.NewSigninService(userRepo)
     userHandlerWeb := NewUserHandlerWeb(userRepo, createUserService, signInService, inMemorySessionService, rndr)
-    dashboardHandlerWeb := NewDashboardHandlerWeb(userRepo, inMemorySessionService, rndr)
+    dashboardHandlerWeb := NewDashboardHandlerWeb(futureValueOfASeriesServiceDecimal, bcbService, userRepo, inMemorySessionService, rndr)
     sessionMidlewareHandler := http_middleware.NewSessionHandlerMiddleware(inMemorySessionService)
     csrfMiddlewareHandler := http_middleware.NewCsrfHandlerMiddleware(inMemorySessionService)
-    loggedMidlewareHandler := http_middleware.NewLoggedHandlerMiddleware(inMemorySessionService)
     r := chi.NewRouter()
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
@@ -74,24 +73,29 @@ func (s *ServerChi) Setup() {
             r.Post("/future-value-of-a-series/predict-contribution", investmentHandler.PredictFV)
         })
     })
-    r.Route("/web", func(r chi.Router) {
+    r.Group(func(r chi.Router) {
+        r.Use(sessionMidlewareHandler.CreateSessionMiddleware)
         r.Use(sessionMidlewareHandler.CheckSessionMiddleware)
-        r.Get("/signin", userHandlerWeb.SignInForm)
-        r.Get("/signup", userHandlerWeb.SignUpForm)
-        r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signin", userHandlerWeb.SignIn)
-        r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signup", userHandlerWeb.SignUp)
-        r.Get("/logout", userHandlerWeb.SignOut)
-        r.Route("/investments", func(r chi.Router) {
-            r.Get("/fv", investmentHandlerWeb.FutureValueOfASeriesFormPage)
-            r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/fv", investmentHandlerWeb.FutureValueOfASeriesResultPage)
-            r.Get("/fv/predict", investmentHandlerWeb.FutureValueOfASeriesPredictFormPage)
-            r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/fv/predict", investmentHandlerWeb.FutureValueOfASeriesPredictResultPage)
-        })
-        r.Route("/dashboard", func(r chi.Router) {
-            r.Use(loggedMidlewareHandler.ValidateSession)
-            r.Get("/", dashboardHandlerWeb.Dashboard)
+        r.Get("/", investmentHandlerWeb.Index)
+        r.Route("/web", func(r chi.Router) {
+            r.Get("/signin", userHandlerWeb.SignInForm)
+            r.Get("/signup", userHandlerWeb.SignUpForm)
+            r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signin", userHandlerWeb.SignIn)
+            r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signup", userHandlerWeb.SignUp)
+            r.Route("/investments", func(r chi.Router) {
+                r.Get("/fv", investmentHandlerWeb.FutureValueOfASeriesFormPage)
+                r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/fv", investmentHandlerWeb.FutureValueOfASeriesResultPage)
+                r.Get("/fv/predict", investmentHandlerWeb.FutureValueOfASeriesPredictFormPage)
+                r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/fv/predict", investmentHandlerWeb.FutureValueOfASeriesPredictResultPage)
+            })
+            r.Route("/dashboard", func(r chi.Router) {
+                r.Get("/logout", userHandlerWeb.SignOut)
+                r.Get("/", dashboardHandlerWeb.Dashboard)
+                r.Get("/main", dashboardHandlerWeb.Index)
+                r.Get("/fv", dashboardHandlerWeb.FVSDashboard)
+                r.Get("/predict", dashboardHandlerWeb.PredictDashboard)
+            })
         })
     })
-    r.With(sessionMidlewareHandler.CreateSessionMiddleware).Get("/", investmentHandlerWeb.Index)
     s.handler = r
 }
