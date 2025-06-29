@@ -1,6 +1,6 @@
 {{ define "base" }}
 <!DOCTYPE html>
-<html lang="pt-BR" hx-boost="true">
+<html lang="pt-BR" hx-boost="false">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,81 +9,6 @@
         <link href="/public/css/financas.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-            .htmx-indicator-header{
-                display:none;
-            }
-            .htmx-request .htmx-indicator-header{
-                display:inline;
-            }
-            .htmx-request.htmx-indicator-header{
-                display:inline;
-            }
-            body {
-                font-family: 'Poppins', sans-serif;
-            }
-
-            .bg-gradient {
-                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            }
-
-            .card {
-                background: rgba(255, 255, 255, 0.05);
-                backdrop-filter: blur(10px);
-                border-radius: 12px;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-            }
-
-            .nav-link {
-                position: relative;
-            }
-
-            .nav-link:after {
-                content: '';
-                position: absolute;
-                width: 0;
-                height: 2px;
-                bottom: -3px;
-                left: 0;
-                background-color: #4fd1c5;
-                transition: width 0.3s ease;
-            }
-
-            .nav-link:hover:after {
-                width: 100%;
-            }
-
-            @keyframes fade-in {
-                0% { opacity: 0; transform: scale(0.9); }
-                100% { opacity: 1; transform: scale(1); }
-            }
-
-            .animate-fade-in {
-                animation: fade-in 0.8s ease-out forwards;
-            }
-
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
-            @keyframes fadeOut {
-                from { opacity: 1; }
-                to {
-                    opacity: 0;
-                    display: none;
-                }
-            }
-            .fade-out {
-                animation: fadeOut 0.1s forwards;
-                animation-delay: 5s;
-            }
-            .card {
-                background: rgba(15, 23, 42, 0.7);
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-            }
-        </style>
     </head>
     <body class="bg-gradient text-gray-200 flex flex-col min-h-screen">
         <!-- Header com Navegação -->

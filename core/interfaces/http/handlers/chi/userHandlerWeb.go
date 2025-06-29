@@ -20,7 +20,6 @@ type UserHandlerWeb struct {
     signInService core_http.SigninServiceI
     renderer *renderer.Renderer
     sessionService core_http.SessionService
-
 }
 func NewUserHandlerWeb(userRepo repository.Repository[user.User] ,createUserService user.CreateUserServiceI[app_account_dto.CreateUserInput], signInService core_http.SigninServiceI, sessionService core_http.SessionService, renderer *renderer.Renderer) core_http.UserHandlerWeb {
     return &UserHandlerWeb{
@@ -154,8 +153,6 @@ func (h UserHandlerWeb) SignIn(w http.ResponseWriter, r *http.Request) {
         return
     }
     session, err := h.getSession(r)
-    session.Usr = u
-    h.sessionService.Store(struct_utils.GetCookie(r).Value, session)
     if err != nil {
         fmt.Println(err)
         if err := h.renderer.Render(w, "home", data); err != nil {
@@ -163,10 +160,18 @@ func (h UserHandlerWeb) SignIn(w http.ResponseWriter, r *http.Request) {
         }
         return
     }
-    if err := h.renderer.Render(w, "home_logged", data); err != nil {
-        fmt.Println(err)
-    }
+    session.Usr = u
+    h.sessionService.Store(struct_utils.GetCookie(r).Value, session)
+    w.Header().Set("HX-Redirect", "/web/dashboard")
     return
+}
+func (h *UserHandlerWeb) SignOut(w http.ResponseWriter, r *http.Request) {
+    if err := h.sessionService.Destroy(struct_utils.GetCookie(r).Value); err != nil {
+        fmt.Println(err)
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+    http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 func (h *UserHandlerWeb) getSession(r *http.Request) (core_http.SessionData, error) {
     session, err := h.sessionService.Get(struct_utils.GetCookie(r).Value)

@@ -11,6 +11,7 @@ import (
 	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -82,16 +83,23 @@ func (m *SessionHandlerMiddleware) CreateSessionMiddleware(next http.Handler) ht
 func (m *SessionHandlerMiddleware) CheckSessionMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         session, err := m.getSession(r);
+        var validSession bool
+        if err == nil {
+            validSession = m.validateSession(session)
+        }
         if err != nil && (err.Error() != "Cookie is nil" && err.Error() != "Id not found"){
             w.WriteHeader(http.StatusInternalServerError)
             return
         }
-        if m.validateSession(session) {
+        if validSession {
+            fmt.Println("session ok", r.URL.Path, strings.Contains(r.URL.Path, "/web/dashboard"), session.Usr.Id)
+            if !strings.Contains(r.URL.Path, "/web/dashboard") && session.Usr.Id > 0 {
+                http.Redirect(w, r, "/web/dashboard", http.StatusSeeOther)
+                return
+            }
             next.ServeHTTP(w, r)
             return
         }
-        w.Header().Set("HX-Redirect", "/")
-        w.WriteHeader(303)
         http.Redirect(w, r, "/", http.StatusSeeOther)
     })
 }

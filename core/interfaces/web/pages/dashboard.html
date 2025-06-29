@@ -1,0 +1,150 @@
+{{ define "dashboard" }}
+<div class="w-11/12 md:w-5/6 mx-auto mt-6 animate-fade-in">
+    <!-- Header do Dashboard -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl sm:text-4xl font-bold text-teal-400 mb-2">
+            Dashboard Financeiro
+        </h1>
+        <p class="text-gray-400 text-sm sm:text-base">
+            Gerencie seus investimentos e simulações financeiras
+        </p>
+    </div>
+
+    <!-- Cards de Ações Principais -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+        <!-- Card Simular Investimento -->
+        <a class="card p-6 rounded-xl bg-gradient-to-br from-blue-900 to-blue-800 shadow-lg text-white hover:from-blue-800 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 cursor-pointer"
+             hx-get="/web/dashboard/fv"
+             hx-swap="innerHTML"
+             hx-target="main">
+
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
+                    <img class="w-8 h-8" src="/public/images/icons8-money-48.png" alt="Simular">
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-white mb-1">Simular Investimento</h3>
+                    <p class="text-blue-200 text-sm">Calcule rendimentos futuros</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-orange-200 text-sm">Clique para simular</span>
+                <img class="w-5 h-5" src="/public/images/icons8-up-64.png" alt="Arrow">
+            </div>
+        </a>
+
+        <!-- Card Prever Aporte -->
+        <div class="card p-6 rounded-xl bg-gradient-to-br from-orange-900 to-orange-800 shadow-lg text-white hover:from-orange-800 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 cursor-pointer"
+             hx-get="/prever-aporte"
+             hx-target="#main-content">
+
+            <div class="flex items-center mb-4">
+                <div class="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center mr-4">
+                    <img class="w-8 h-8" src="/public/images/saco-dinheiro.svg" alt="Prever">
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-white mb-1">Prever Aporte</h3>
+                    <p class="text-orange-200 text-sm">Planeje seus aportes mensais</p>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <span class="text-orange-200 text-sm">Clique para começar</span>
+                <img class="w-5 h-5" src="/public/images/icons8-up-64.png" alt="Arrow">
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Estatísticas Rápidas -->
+    <div class="card p-6 rounded-xl bg-neutral-900 shadow-lg text-gray-200 mb-6">
+        <h3 class="text-lg font-medium text-green-400 mb-4 border-b border-neutral-700 pb-2">
+            Estatísticas Rápidas
+        </h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+            <div class="text-center p-4 rounded-lg bg-neutral-800 hover:bg-neutral-700 transition-all duration-300">
+                <div class="flex items-center justify-center mb-2">
+                    <img class="w-6 h-6 mr-2" src="/public/images/pilha-dinheiro.svg" alt="Simulações">
+                    <span class="text-sm text-gray-400">Simulações</span>
+                </div>
+                <div class="text-xl font-bold text-teal-400">{{ .total_simulations }}</div>
+            </div>
+
+            <div class="text-center p-4 rounded-lg bg-neutral-800 hover:bg-neutral-700 transition-all duration-300">
+                <div class="flex items-center justify-center mb-2">
+                    <img class="w-6 h-6 mr-2" src="/public/images/icons8-money-with-wings-48.png" alt="Investido">
+                    <span class="text-sm text-gray-400">Total Simulado</span>
+                </div>
+                <div class="text-xl font-bold text-blue-400">R$ {{ .total_simulated }}</div>
+            </div>
+
+            <div class="text-center p-4 rounded-lg bg-neutral-800 hover:bg-neutral-700 transition-all duration-300">
+                <div class="flex items-center justify-center mb-2">
+                    <img class="w-6 h-6 mr-2" src="/public/images/icons8-race-flag-64.png" alt="Aportes">
+                    <span class="text-sm text-gray-400">Aportes Previstos</span>
+                </div>
+                <div class="text-xl font-bold text-orange-400">{{ .total_contributions_predicted }}</div>
+            </div>
+
+            <div class="text-center p-4 rounded-lg bg-neutral-800 hover:bg-neutral-700 transition-all duration-300">
+                <div class="flex items-center justify-center mb-2">
+                    <img class="w-6 h-6 mr-2" src="/public/images/icons8-up-64.png" alt="Rendimento">
+                    <span class="text-sm text-gray-400">Melhor Rendimento</span>
+                </div>
+                <div class="text-xl font-bold text-green-400">{{ .best_return }}%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Ações Secundárias -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+
+        <!-- Histórico de Simulações -->
+        <div class="card p-4 rounded-xl bg-neutral-900 shadow-lg text-gray-200 hover:bg-neutral-800 transition-all duration-300 cursor-pointer"
+             hx-get="/historico-simulacoes"
+             hx-target="#main-content">
+
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center">
+                    <img class="w-6 h-6 mr-3" src="/public/images/icons8-money-48.png" alt="Histórico">
+                    <span class="text-sm font-medium text-gray-300">Histórico</span>
+                </div>
+                <img class="w-4 h-4" src="/public/images/icons8-up-64.png" alt="Ver mais">
+            </div>
+            <p class="text-xs text-gray-400">Ver simulações anteriores</p>
+        </div>
+
+        <!-- Comparar Investimentos -->
+        <div class="card p-4 rounded-xl bg-neutral-900 shadow-lg text-gray-200 hover:bg-neutral-800 transition-all duration-300 cursor-pointer"
+             hx-get="/comparar-investimentos"
+             hx-target="#main-content">
+
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center">
+                    <img class="w-6 h-6 mr-3" src="/public/images/pilha-dinheiro.svg" alt="Comparar">
+                    <span class="text-sm font-medium text-gray-300">Comparar</span>
+                </div>
+                <img class="w-4 h-4" src="/public/images/icons8-up-64.png" alt="Ver mais">
+            </div>
+            <p class="text-xs text-gray-400">Compare diferentes opções</p>
+        </div>
+
+        <!-- Configurações -->
+        <div class="card p-4 rounded-xl bg-neutral-900 shadow-lg text-gray-200 hover:bg-neutral-800 transition-all duration-300 cursor-pointer"
+             hx-get="/configuracoes"
+             hx-target="#main-content">
+
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center">
+                    <img class="w-6 h-6 mr-3" src="/public/images/saco-dinheiro.svg" alt="Configurações">
+                    <span class="text-sm font-medium text-gray-300">Configurações</span>
+                </div>
+                <img class="w-4 h-4" src="/public/images/icons8-up-64.png" alt="Ver mais">
+            </div>
+            <p class="text-xs text-gray-400">Personalizar preferências</p>
+        </div>
+    </div>
+</div>
+{{ end }}

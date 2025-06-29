@@ -10,4 +10,5 @@ type SessionData struct {
 type SessionService interface {
     Store(id string, data SessionData)
     Get(id string) (SessionData, error)
+    Destroy(id string) error
 }

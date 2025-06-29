@@ -1,0 +1,22 @@
+{{ define "dashboard_page" }}
+<!DOCTYPE html>
+<html lang="pt-BR" hx-boost="false">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Simular Investimento JC</title>
+        <link href="/public/css/main.css" rel="stylesheet">
+        <link href="/public/css/financas.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gradient text-gray-200 flex flex-col min-h-screen" >
+        {{ template "header" . }}
+        <main class="flex-grow pt-20" id="main-content">
+            {{ template "dashboard" . }}
+        </main>
+        {{ template "footer" }}
+    </body>
+    <script src="/public/scripts/htmx.min.js"></script>
+</html>
+{{ end }}
