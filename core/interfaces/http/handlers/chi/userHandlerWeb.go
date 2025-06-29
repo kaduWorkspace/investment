@@ -5,6 +5,7 @@ import (
 	"fmt"
 	app_account_dto "kaduhod/fin_v3/core/application/account/dto"
 	core_http "kaduhod/fin_v3/core/domain/http"
+	"kaduhod/fin_v3/core/domain/repository"
 	"kaduhod/fin_v3/core/domain/user"
 	validators_dto "kaduhod/fin_v3/core/interfaces/http/dto/validators"
 	"kaduhod/fin_v3/core/interfaces/web/renderer"
@@ -14,14 +15,16 @@ import (
 )
 
 type UserHandlerWeb struct {
+    userRepo repository.Repository[user.User]
     createUserService user.CreateUserServiceI[app_account_dto.CreateUserInput]
     signInService core_http.SigninServiceI
     renderer *renderer.Renderer
     sessionService core_http.SessionService
 
 }
-func NewUserHandlerWeb(createUserService user.CreateUserServiceI[app_account_dto.CreateUserInput], signInService core_http.SigninServiceI, sessionService core_http.SessionService, renderer *renderer.Renderer) core_http.UserHandlerWeb {
+func NewUserHandlerWeb(userRepo repository.Repository[user.User] ,createUserService user.CreateUserServiceI[app_account_dto.CreateUserInput], signInService core_http.SigninServiceI, sessionService core_http.SessionService, renderer *renderer.Renderer) core_http.UserHandlerWeb {
     return &UserHandlerWeb{
+        userRepo: userRepo,
         createUserService: createUserService,
         signInService: signInService,
         sessionService: sessionService,
@@ -109,8 +112,9 @@ func (h UserHandlerWeb) SignIn(w http.ResponseWriter, r *http.Request) {
     data := map[string]any{
         "csrf": csrf,
     }
+    email := strings.ToLower(r.FormValue("email"))
     userInput := validators_dto.NewSignInInput(
-        strings.ToLower(r.FormValue("email")),
+        email,
         r.FormValue("password"),
     )
     if err := userInput.Validate(); err != nil {
@@ -123,7 +127,7 @@ func (h UserHandlerWeb) SignIn(w http.ResponseWriter, r *http.Request) {
         return
     }
     if err := h.signInService.Signin(user.User{
-        Email: strings.ToLower(r.FormValue("email")),
+        Email: email,
     }, r.FormValue("password")); err != nil {
         fmt.Println(err)
         if err.Error() == "User not found" {
@@ -141,9 +145,28 @@ func (h UserHandlerWeb) SignIn(w http.ResponseWriter, r *http.Request) {
         }
         return
     }
-    if err := h.renderer.Render(w, "home", data); err != nil {
+    u, err := h.userRepo.Get(user.User{Email: email})
+    if err != nil {
+        fmt.Println(err)
+        if err := h.renderer.Render(w, "home", data); err != nil {
+            fmt.Println(err)
+        }
+        return
+    }
+    session, err := h.getSession(r)
+    session.Usr = u
+    h.sessionService.Store(struct_utils.GetCookie(r).Value, session)
+    if err != nil {
+        fmt.Println(err)
+        if err := h.renderer.Render(w, "home", data); err != nil {
+            fmt.Println(err)
+        }
+        return
+    }
+    if err := h.renderer.Render(w, "home_logged", data); err != nil {
         fmt.Println(err)
     }
+    return
 }
 func (h *UserHandlerWeb) getSession(r *http.Request) (core_http.SessionData, error) {
     session, err := h.sessionService.Get(struct_utils.GetCookie(r).Value)

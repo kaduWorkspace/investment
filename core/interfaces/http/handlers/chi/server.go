@@ -48,7 +48,7 @@ func (s *ServerChi) Setup() {
     userRepo := pg_repository.NewUserRepository(s.Conn)
     createUserService := app_account_service.NewCreateUserService(userRepo)
     signInService := app_account_service.NewSigninService(userRepo)
-    userHandlerWeb := NewUserHandlerWeb(createUserService, signInService, inMemorySessionService, rndr)
+    userHandlerWeb := NewUserHandlerWeb(userRepo, createUserService, signInService, inMemorySessionService, rndr)
     sessionMidlewareHandler := http_middleware.NewSessionHandlerMiddleware(inMemorySessionService)
     csrfMiddlewareHandler := http_middleware.NewCsrfHandlerMiddleware(inMemorySessionService)
     r := chi.NewRouter()
