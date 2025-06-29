@@ -35,3 +35,9 @@ func (s *InMemorySession) Store(id string, sessionData http.SessionData) {
     s.data[id] = sessionData
     s.mu.Unlock()
 }
+func (s *InMemorySession) Destroy(id string) error {
+    s.mu.Lock()
+    delete(s.data, id)
+    s.mu.Unlock()
+    return nil
+}

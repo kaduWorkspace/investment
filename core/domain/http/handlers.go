@@ -27,4 +27,10 @@ type UserHandlerWeb interface {
     SignUpForm(w http.ResponseWriter, r *http.Request)
     SignIn(w http.ResponseWriter, r *http.Request)
     SignUp(w http.ResponseWriter, r *http.Request)
+    SignOut(w http.ResponseWriter, r *http.Request)
+}
+
+type DashboardHandler interface {
+    Handler
+    Dashboard(w http.ResponseWriter, r *http.Request)
 }

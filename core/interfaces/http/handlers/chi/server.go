@@ -49,14 +49,21 @@ func (s *ServerChi) Setup() {
     createUserService := app_account_service.NewCreateUserService(userRepo)
     signInService := app_account_service.NewSigninService(userRepo)
     userHandlerWeb := NewUserHandlerWeb(userRepo, createUserService, signInService, inMemorySessionService, rndr)
+    dashboardHandlerWeb := NewDashboardHandlerWeb(userRepo, inMemorySessionService, rndr)
     sessionMidlewareHandler := http_middleware.NewSessionHandlerMiddleware(inMemorySessionService)
     csrfMiddlewareHandler := http_middleware.NewCsrfHandlerMiddleware(inMemorySessionService)
+    loggedMidlewareHandler := http_middleware.NewLoggedHandlerMiddleware(inMemorySessionService)
     r := chi.NewRouter()
     r.Use(middleware.Logger)
     r.Use(middleware.Recoverer)
+    r.Use(middleware.RedirectSlashes)
     r.Handle("/public/*", http.StripPrefix("/public/" ,http.FileServer(http.Dir(rootDir + "/public"))))
     r.Get("/health-check", func(w http.ResponseWriter, r *http.Request) {
         w.Write([]byte("ok"))
+    })
+    r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+        w.WriteHeader(http.StatusNotFound)
+        w.Write([]byte("Custom 404 Not Found"))
     })
     r.Route("/api", func(r chi.Router) {
         r.Use(auth_std.AuthTokenMiddleware)
@@ -73,11 +80,16 @@ func (s *ServerChi) Setup() {
         r.Get("/signup", userHandlerWeb.SignUpForm)
         r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signin", userHandlerWeb.SignIn)
         r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/signup", userHandlerWeb.SignUp)
+        r.Get("/logout", userHandlerWeb.SignOut)
         r.Route("/investments", func(r chi.Router) {
             r.Get("/fv", investmentHandlerWeb.FutureValueOfASeriesFormPage)
             r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/fv", investmentHandlerWeb.FutureValueOfASeriesResultPage)
             r.Get("/fv/predict", investmentHandlerWeb.FutureValueOfASeriesPredictFormPage)
             r.With(csrfMiddlewareHandler.ValidateCsrfMiddleware).Post("/fv/predict", investmentHandlerWeb.FutureValueOfASeriesPredictResultPage)
+        })
+        r.Route("/dashboard", func(r chi.Router) {
+            r.Use(loggedMidlewareHandler.ValidateSession)
+            r.Get("/", dashboardHandlerWeb.Dashboard)
         })
     })
     r.With(sessionMidlewareHandler.CreateSessionMiddleware).Get("/", investmentHandlerWeb.Index)

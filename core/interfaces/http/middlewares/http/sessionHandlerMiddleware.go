@@ -91,7 +91,6 @@ func (m *SessionHandlerMiddleware) CheckSessionMiddleware(next http.Handler) htt
             return
         }
         w.Header().Set("HX-Redirect", "/")
-        w.WriteHeader(303)
         http.Redirect(w, r, "/", http.StatusSeeOther)
     })
 }
