@@ -33,4 +33,9 @@ type UserHandlerWeb interface {
 type DashboardHandler interface {
     Handler
     Dashboard(w http.ResponseWriter, r *http.Request)
+    Index(w http.ResponseWriter, r *http.Request)
+    FVSDashboard(w http.ResponseWriter, r *http.Request)
+    PredictDashboard(w http.ResponseWriter, r *http.Request)
+    FVS(w http.ResponseWriter, r *http.Request)
+    Predict(w http.ResponseWriter, r *http.Request)
 }

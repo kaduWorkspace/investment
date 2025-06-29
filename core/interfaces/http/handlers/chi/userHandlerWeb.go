@@ -163,7 +163,7 @@ func (h UserHandlerWeb) SignIn(w http.ResponseWriter, r *http.Request) {
     session.Usr = u
     h.sessionService.Store(struct_utils.GetCookie(r).Value, session)
     w.Header().Set("HX-Redirect", "/web/dashboard")
-    http.Redirect(w, r, "/web/dashboard", http.StatusSeeOther)
+    return
 }
 func (h *UserHandlerWeb) SignOut(w http.ResponseWriter, r *http.Request) {
     if err := h.sessionService.Destroy(struct_utils.GetCookie(r).Value); err != nil {
@@ -171,7 +171,6 @@ func (h *UserHandlerWeb) SignOut(w http.ResponseWriter, r *http.Request) {
         w.WriteHeader(http.StatusInternalServerError)
         return
     }
-    w.Header().Set("HX-Redirect", "/")
     http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 func (h *UserHandlerWeb) getSession(r *http.Request) (core_http.SessionData, error) {

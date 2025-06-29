@@ -43,22 +43,12 @@
                hx-indicator="#htmx-indicator-header"
                class="nav-link text-sm md:text-base cursor-pointer text-gray-300 hover:text-teal-400 transition-colors duration-300">Login</a>
             {{ else }}
-            <a hx-get="/"
+            <a hx-get="/web/dashboard/main"
                hx-target="main"
                hx-swap="innerHTML"
                hx-indicator="#htmx-indicator-header"
                class="nav-link text-sm md:text-base text-gray-300 cursor-pointer hover:text-teal-400 transition-colors duration-300">Home</a>
-            <a hx-get="/web/investments/fv"
-               hx-target="main"
-               hx-swap="innerHTML"
-               hx-indicator="#htmx-indicator-header"
-               class="nav-link text-sm md:text-base cursor-pointer text-gray-300 hover:text-teal-400 transition-colors duration-300">Simular</a>
-            <a hx-get="/web/investments/fv/predict"
-               hx-target="main"
-               hx-swap="innerHTML"
-               hx-indicator="#htmx-indicator-header"
-               class="nav-link text-sm md:text-base cursor-pointer text-gray-300 hover:text-teal-400 transition-colors duration-300">Previsão</a>
-            <a hx-get="/web/logout"
+            <a hx-get="/web/dashboard/logout"
                hx-target="main"
                hx-swap="innerHTML"
                hx-indicator="#htmx-indicator-header"

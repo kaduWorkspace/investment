@@ -3,7 +3,9 @@ package interface_chi
 import (
 	"errors"
 	"fmt"
+	"kaduhod/fin_v3/core/domain/external"
 	core_http "kaduhod/fin_v3/core/domain/http"
+	"kaduhod/fin_v3/core/domain/investment"
 	"kaduhod/fin_v3/core/domain/repository"
 	"kaduhod/fin_v3/core/domain/user"
 	"kaduhod/fin_v3/core/interfaces/web/renderer"
@@ -11,9 +13,11 @@ import (
 	"net/http"
 )
 type DashboardHandlerWeb struct {
+    bcbService external.BcbI
     userRepo repository.Repository[user.User]
     renderer *renderer.Renderer
     sessionService core_http.SessionService
+    FutureValueOfASeriesService investment.FutureValueOfASeries
 }
 func (h *DashboardHandlerWeb) initData(r *http.Request) (map[string]any, error) {
     session, err := h.getSession(r)
@@ -30,19 +34,55 @@ func (h *DashboardHandlerWeb) initData(r *http.Request) (map[string]any, error) 
         "csrf": csrf,
     }, nil
 }
-func NewDashboardHandlerWeb(userRepo repository.Repository[user.User], sessionService core_http.SessionService, renderer *renderer.Renderer) core_http.DashboardHandler {
+func NewDashboardHandlerWeb(futureValueOfASeriesService investment.FutureValueOfASeries ,bcb external.BcbI, userRepo repository.Repository[user.User], sessionService core_http.SessionService, renderer *renderer.Renderer) core_http.DashboardHandler {
     return &DashboardHandlerWeb{
+        bcbService: bcb,
+        FutureValueOfASeriesService: futureValueOfASeriesService,
         userRepo: userRepo,
         sessionService: sessionService,
         renderer: renderer,
+    }
+}
+func (h *DashboardHandlerWeb) FVSDashboard(w http.ResponseWriter, r *http.Request) {
+    data, err := h.initData(r)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    if err := h.renderer.Render(w, "dashboard_fv", data); err != nil {
+        fmt.Println(err)
+    }
+}
+func (h *DashboardHandlerWeb) PredictDashboard(w http.ResponseWriter, r *http.Request) {
+    data, err := h.initData(r)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    if err := h.renderer.Render(w, "dashboard_predict", data); err != nil {
+        fmt.Println(err)
+    }
+}
+func (h *DashboardHandlerWeb) FVS(w http.ResponseWriter, r *http.Request) {
+
+}
+func (h *DashboardHandlerWeb) Predict(w http.ResponseWriter, r *http.Request) {
+
+}
+func (h *DashboardHandlerWeb) Index(w http.ResponseWriter, r *http.Request) {
+    data, err := h.initData(r)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    if err := h.renderer.Render(w, "dashboard", data); err != nil {
+        fmt.Println(err)
     }
 }
 func (h *DashboardHandlerWeb) Dashboard(w http.ResponseWriter, r *http.Request) {
     data, err := h.initData(r)
     if err != nil {
         fmt.Println(err)
-        w.Header().Set("HX-Redirect", "/")
-        http.Redirect(w, r, "/", http.StatusSeeOther)
         return
     }
     if err := h.renderer.Render(w, "dashboard_page", data); err != nil {
