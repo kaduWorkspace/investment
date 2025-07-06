@@ -7,14 +7,14 @@ import (
 	pg_connection "kaduhod/fin_v3/core/infra/persistence/postgres/connection"
 )
 
-type InvestmentResultServicePg struct {
+type FVSResultService struct {
     connection *pg_connection.PgxConnextion
 }
 func NewFVSResult(conn *pg_connection.PgxConnextion) investment.InvestmentResultService[investment.FutureValueOfASerieResult] {
-    return &InvestmentResultServicePg{connection: conn}
+    return &FVSResultService{connection: conn}
 }
 
-func (s *InvestmentResultServicePg) Save(result *investment.FutureValueOfASerieResult) error {
+func (s *FVSResultService) Save(result *investment.FutureValueOfASerieResult) error {
     exists, err := s.CheckIfAlreadyExists(result)
     if err != nil {
         return err
@@ -85,7 +85,7 @@ func (s *InvestmentResultServicePg) Save(result *investment.FutureValueOfASerieR
     }
     return tx.Commit(ctx)
 }
-func (s *InvestmentResultServicePg) CheckIfAlreadyExists(result *investment.FutureValueOfASerieResult) (bool, error) {
+func (s *FVSResultService) CheckIfAlreadyExists(result *investment.FutureValueOfASerieResult) (bool, error) {
     query := `
         SELECT EXISTS (
             SELECT 1 FROM investment_results
