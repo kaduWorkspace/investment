@@ -7,14 +7,14 @@ import (
 	pg_connection "kaduhod/fin_v3/core/infra/persistence/postgres/connection"
 )
 
-type FVSResultService struct {
+type FVSPredictResultService struct {
     connection *pg_connection.PgxConnextion
 }
-func NewFVSResult(conn *pg_connection.PgxConnextion) investment.InvestmentResultService[investment.FutureValueOfASerieResult] {
-    return &FVSResultService{connection: conn}
+func NewFVSPredictResult(conn *pg_connection.PgxConnextion) investment.InvestmentResultService[investment.FutureValueOfASeriePredictResult] {
+    return &FVSPredictResultService{connection: conn}
 }
 
-func (s *FVSResultService) Save(result *investment.FutureValueOfASerieResult) error {
+func (s *FVSPredictResultService) Save(result *investment.FutureValueOfASeriePredictResult) error {
     exists, err := s.CheckIfAlreadyExists(result)
     if err != nil {
         return err
@@ -23,30 +23,18 @@ func (s *FVSResultService) Save(result *investment.FutureValueOfASerieResult) er
         return nil
     }
 	query := `
-		INSERT INTO fvs_results (
+		INSERT INTO fvs_predict_results (
 			user_id,
-			roi,
-			roi_real,
-			total_invested,
 			initial_value,
 			final_value,
-			final_value_real,
-			net_gain,
-			net_gain_real,
-			roi_porcentage,
-			roi_porcentage_real,
 			contribution,
 			tax_real,
 			tax,
-			periods_json,
-			periods_real_json,
 			periods,
 			tax_inflation,
 			first_day
 		) VALUES (
-			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-			$11, $12, $13, $14, $15, $16, $17, $18,
-			$19
+			$1, $2, $3, $4, $5, $6, $7, $8, $9
 		)
 	`
     ctx := context.Background()
@@ -59,21 +47,13 @@ func (s *FVSResultService) Save(result *investment.FutureValueOfASerieResult) er
         ctx,
 		query,
 		result.UserID,
-		result.ROI,
-		result.ROIReal,
 		result.TotalInvested,
 		result.InitialValue,
 		result.FinalValue,
 		result.FinalValueReal,
-		result.NetGain,
-		result.NetGainReal,
-		result.ROIPorcentage,
-		result.ROIPorcentageReal,
 		result.Contribution,
 		result.TaxReal,
 		result.Tax,
-		result.PeriodsJSON,
-		result.PeriodsRealJSON,
         result.Periods,
 		result.TaxInflation,
         result.FirstDay,
@@ -85,10 +65,10 @@ func (s *FVSResultService) Save(result *investment.FutureValueOfASerieResult) er
     }
     return tx.Commit(ctx)
 }
-func (s *FVSResultService) CheckIfAlreadyExists(result *investment.FutureValueOfASerieResult) (bool, error) {
+func (s *FVSPredictResultService) CheckIfAlreadyExists(result *investment.FutureValueOfASeriePredictResult) (bool, error) {
     query := `
         SELECT EXISTS (
-            SELECT 1 FROM fvs_results
+            SELECT 1 FROM fvs_predict_results
             WHERE
                 initial_value = $1 AND
                 user_id = $2 AND
