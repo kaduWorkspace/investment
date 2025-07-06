@@ -12,5 +12,5 @@ func Run() {
     }
     server.Setup()
     defer server.Shutdown()
-    server.Start(":8989")
+    server.Start("0.0.0.0:8989")
 }
