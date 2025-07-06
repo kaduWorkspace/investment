@@ -1,6 +1,7 @@
 package investment
 
 import (
+	"database/sql"
 	valueobjects "kaduhod/fin_v3/core/domain/valueObjects"
 	"time"
 )
@@ -35,4 +36,32 @@ type FutureValueOfASeries interface {
     PredictContribution(finalValue, taxDecimal, initialValue valueobjects.Money, contributionOnFirstDay bool, periods int) (valueobjects.Money)
     PredictContributionRealValue(finalValue, taxDecimal, initialValue, taxInflation valueobjects.Money, contributionOnFirstDay bool, periods int) (valueobjects.Money)
 }
-
+type InvestmentResult struct {
+	ID                   int             `json:"id"`
+	UserID               int             `json:"user_id"`
+	ROI                  sql.NullFloat64 `json:"roi"`
+	ROIReal              sql.NullFloat64 `json:"roi_real"`
+	TotalInvested        sql.NullFloat64 `json:"total_invested"`
+	InitialValue         sql.NullFloat64 `json:"initial_value"`
+	FinalValue           sql.NullFloat64 `json:"final_value"`
+	FinalValueReal       sql.NullFloat64 `json:"final_value_real"`
+	NetGain              sql.NullFloat64 `json:"net_gain"`
+	NetGainReal          sql.NullFloat64 `json:"net_gain_real"`
+	ROIPorcentage        sql.NullFloat64 `json:"roi_porcentage"`
+	ROIPorcentageReal    sql.NullFloat64 `json:"roi_porcentage_real"`
+	Contribution         sql.NullFloat64 `json:"contribution"`
+	TaxReal              sql.NullFloat64 `json:"tax_real"`
+	Tax                  sql.NullFloat64 `json:"tax"`
+	PeriodsJSON          []byte          `json:"periods_json"`
+	PeriodsRealJSON      []byte          `json:"periods_real_json"`
+	Periods             int             `json:"periods"`
+	TaxInflation        sql.NullFloat64 `json:"tax_inflation"`
+	FirstDay            bool            `json:"first_day"`
+	Tags []string `json:"tags"`
+	CreatedAt time.Time    `json:"created_at"`
+	DeletedAt sql.NullTime `json:"deleted_at"`
+}
+type InvestmentResultService interface {
+    Save(result *InvestmentResult) error
+    CheckIfAlreadyExists(result *InvestmentResult) (bool, error)
+}
