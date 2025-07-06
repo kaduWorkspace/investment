@@ -43,10 +43,8 @@ func TestInvestmentResultPredictServicePg_Save(t *testing.T) {
 
 	result := &investment.FutureValueOfASeriePredictResult{
 		UserID:             userID,
-		TotalInvested:      toSqlNullFloat(10000.0),
 		InitialValue:       toSqlNullFloat(8000.0),
 		FinalValue:         toSqlNullFloat(11500.0),
-		FinalValueReal:     toSqlNullFloat(11200.0),
 		Contribution:       toSqlNullFloat(2000.0),
 		TaxReal:            toSqlNullFloat(0.05),
 		Tax:                toSqlNullFloat(0.1),

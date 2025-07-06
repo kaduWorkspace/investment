@@ -39,7 +39,7 @@ func TestInvestmentResultServicePg_Save(t *testing.T) {
 	// Garante limpeza dos dados com o mesmo user_id para não afetar outros testes
 	userID := 1218
 	cleanup := func() {
-		conn.Conn.Exec(ctx, "DELETE FROM investment_results WHERE user_id = $1", userID)
+		conn.Conn.Exec(ctx, "DELETE FROM fvs_results WHERE user_id = $1", userID)
 	}
 	cleanup() // Limpa antes
 	defer cleanup()
@@ -72,7 +72,7 @@ func TestInvestmentResultServicePg_Save(t *testing.T) {
 	// Verifica se foi salvo
 	var count int
 	err = conn.Conn.QueryRow(ctx, `
-		SELECT COUNT(*) FROM investment_results
+		SELECT COUNT(*) FROM fvs_results
 		WHERE user_id = $1 AND initial_value = $2 AND contribution = $3
 	`, result.UserID, result.InitialValue, result.Contribution).Scan(&count)
 	assert.NoError(t, err)

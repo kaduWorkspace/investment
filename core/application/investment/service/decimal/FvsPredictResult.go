@@ -47,10 +47,8 @@ func (s *FVSPredictResultService) Save(result *investment.FutureValueOfASeriePre
         ctx,
 		query,
 		result.UserID,
-		result.TotalInvested,
 		result.InitialValue,
 		result.FinalValue,
-		result.FinalValueReal,
 		result.Contribution,
 		result.TaxReal,
 		result.Tax,
@@ -87,6 +85,7 @@ func (s *FVSPredictResultService) CheckIfAlreadyExists(result *investment.Future
         result.Tax,
         result.TaxInflation,
         result.Periods,
+        result.FirstDay,
     ).Scan(&exists)
     return exists, err
 }

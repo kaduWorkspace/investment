@@ -107,6 +107,7 @@ func (s *FVSResultService) CheckIfAlreadyExists(result *investment.FutureValueOf
         result.Tax,
         result.TaxInflation,
         result.Periods,
+        result.FirstDay,
     ).Scan(&exists)
     return exists, err
 }
