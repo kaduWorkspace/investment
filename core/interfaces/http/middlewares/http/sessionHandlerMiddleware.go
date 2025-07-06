@@ -92,7 +92,13 @@ func (m *SessionHandlerMiddleware) CheckSessionMiddleware(next http.Handler) htt
             return
         }
         if validSession {
-            fmt.Println("session ok", r.URL.Path, strings.Contains(r.URL.Path, "/web/dashboard"), session.Usr.Id)
+            ignoreRoutes := []string{"/web/investments"}
+            for _, route := range ignoreRoutes {
+                if strings.Contains(r.URL.Path, route) {
+                    next.ServeHTTP(w, r)
+                    return
+                }
+            }
             if !strings.Contains(r.URL.Path, "/web/dashboard") && session.Usr.Id > 0 {
                 http.Redirect(w, r, "/web/dashboard", http.StatusSeeOther)
                 return

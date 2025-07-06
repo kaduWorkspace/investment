@@ -1,6 +1,7 @@
 package interface_chi
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 	core_http "kaduhod/fin_v3/core/domain/http"
 	"kaduhod/fin_v3/core/domain/investment"
 	valueobjects "kaduhod/fin_v3/core/domain/valueObjects"
+	pg_connection "kaduhod/fin_v3/core/infra/persistence/postgres/connection"
 	validators_dto "kaduhod/fin_v3/core/interfaces/http/dto/validators"
 	"kaduhod/fin_v3/core/interfaces/web/renderer"
 	struct_utils "kaduhod/fin_v3/pkg/utils/struct"
@@ -18,19 +20,22 @@ import (
 	"time"
 )
 type InvestmentHandlerChiWeb struct {
+    conn *pg_connection.PgxConnextion
     bcbService external.BcbI
     CompoundInterestService investment.CompoundInterest
     FutureValueOfASeriesService investment.FutureValueOfASeries
     Renderer *renderer.Renderer
     sessionService core_http.SessionService
+    InvestmentResultService investment.InvestmentResultService
 }
-func NewInvestmentHandlerChiWeb(bcb external.BcbI ,sessionService core_http.SessionService ,compoundInterestService investment.CompoundInterest, futureValueOfASeriesService investment.FutureValueOfASeries, renderer *renderer.Renderer) core_http.InvestmentHandlerWeb {
+func NewInvestmentHandlerChiWeb(investmentResultService investment.InvestmentResultService, bcb external.BcbI ,sessionService core_http.SessionService ,compoundInterestService investment.CompoundInterest, futureValueOfASeriesService investment.FutureValueOfASeries, renderer *renderer.Renderer) core_http.InvestmentHandlerWeb {
     return &InvestmentHandlerChiWeb{
         CompoundInterestService: compoundInterestService,
         FutureValueOfASeriesService: futureValueOfASeriesService,
         Renderer: renderer,
         sessionService: sessionService,
         bcbService: bcb,
+        InvestmentResultService: investmentResultService,
     }
 }
 func (h *InvestmentHandlerChiWeb) Index(w http.ResponseWriter, r *http.Request) {
@@ -274,6 +279,11 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
         time.Now(),
         userInput.Periods,
     )
+    periodsBase := periods
+    bBase, err := json.Marshal(periodsBase)
+    if err != nil {
+        bBase = []byte("[]")
+    }
     periods = setupItensFromPeriods(periods, struct_utils.EhMobile(r.UserAgent()))
     b, err := json.Marshal(periods)
     var table string
@@ -292,6 +302,11 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
         time.Now(),
         userInput.Periods,
     )
+    periodsRealBase := periodsReal
+    bRealBase, err := json.Marshal(periodsRealBase)
+    if err != nil {
+        bRealBase = []byte("[]")
+    }
     periodsReal = setupItensFromPeriods(periodsReal, struct_utils.EhMobile(r.UserAgent()))
     b, err = json.Marshal(periodsReal)
     var tableReal string
@@ -337,6 +352,41 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
         "periodsTrackerReal": periodsReal,
         "tax_real": taxReal,
         "tax": taxDecimal.Multiply(hundred).Formatted(),
+    }
+
+    session, err := h.getSession(r)
+    if err != nil {
+        fmt.Println(err, "Error getting session")
+    } else {
+        investmentResult := investment.InvestmentResult {
+            ROI: sql.NullFloat64{Float64: roi.GetAmount(), Valid: true},
+            ROIReal: sql.NullFloat64{Float64: roiReal.GetAmount(), Valid: true},
+            TotalInvested: sql.NullFloat64{Float64: totalInvested.GetAmount(), Valid: true},
+            InitialValue: sql.NullFloat64{Float64: initialValue.GetAmount(), Valid: true},
+            FinalValue: sql.NullFloat64{Float64: result.GetAmount(), Valid: true},
+            FinalValueReal: sql.NullFloat64{Float64: resultReal.GetAmount(), Valid: true},
+            NetGain: sql.NullFloat64{Float64: netGain.GetAmount(), Valid: true},
+            NetGainReal: sql.NullFloat64{Float64: netGainReal.GetAmount(), Valid: true},
+            ROIPorcentage: sql.NullFloat64{Float64: roiPorcentage.GetAmount(), Valid: true},
+            ROIPorcentageReal: sql.NullFloat64{Float64: roiPorcentageReal.GetAmount(), Valid: true},
+            Contribution: sql.NullFloat64{Float64: contribution.GetAmount(), Valid: true},
+            TaxReal: sql.NullFloat64{Float64: one.Add(taxDecimal).Divide(one.Add(taxInflation)).Subtract(one).GetAmount(), Valid: true},
+            Tax: sql.NullFloat64{Float64: taxDecimal.GetAmount(), Valid: true},
+            TaxInflation: sql.NullFloat64{Float64: taxInflation.GetAmount(), Valid: true},
+            FirstDay: userInput.FirstDay,
+            Periods: int(periodsF),
+            PeriodsJSON: bBase,
+            PeriodsRealJSON: bRealBase,
+            UserID: session.Usr.Id,
+        }
+        exists, err := h.InvestmentResultService.CheckIfAlreadyExists(&investmentResult)
+        if err != nil {
+            fmt.Println(err)
+        } else if !exists {
+            if err := h.InvestmentResultService.Save(&investmentResult); err != nil {
+                fmt.Println(err, "Err saving investment_result")
+            }
+        }
     }
     if err := h.Renderer.Render(w, "fv_result", data); err != nil {
         fmt.Println(err)
