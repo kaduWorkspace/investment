@@ -26,16 +26,16 @@ type InvestmentHandlerChiWeb struct {
     FutureValueOfASeriesService investment.FutureValueOfASeries
     Renderer *renderer.Renderer
     sessionService core_http.SessionService
-    InvestmentResultService investment.InvestmentResultService
+    FVSResultService investment.InvestmentResultService[investment.FutureValueOfASerieResult]
 }
-func NewInvestmentHandlerChiWeb(investmentResultService investment.InvestmentResultService, bcb external.BcbI ,sessionService core_http.SessionService ,compoundInterestService investment.CompoundInterest, futureValueOfASeriesService investment.FutureValueOfASeries, renderer *renderer.Renderer) core_http.InvestmentHandlerWeb {
+func NewInvestmentHandlerChiWeb(fvsResultService investment.InvestmentResultService[investment.FutureValueOfASerieResult], bcb external.BcbI ,sessionService core_http.SessionService ,compoundInterestService investment.CompoundInterest, futureValueOfASeriesService investment.FutureValueOfASeries, renderer *renderer.Renderer) core_http.InvestmentHandlerWeb {
     return &InvestmentHandlerChiWeb{
         CompoundInterestService: compoundInterestService,
         FutureValueOfASeriesService: futureValueOfASeriesService,
         Renderer: renderer,
         sessionService: sessionService,
         bcbService: bcb,
-        InvestmentResultService: investmentResultService,
+        FVSResultService: fvsResultService,
     }
 }
 func (h *InvestmentHandlerChiWeb) Index(w http.ResponseWriter, r *http.Request) {
@@ -358,7 +358,7 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
     if err != nil {
         fmt.Println(err, "Error getting session")
     } else {
-        investmentResult := investment.InvestmentResult {
+        investmentResult := investment.FutureValueOfASerieResult {
             ROI: sql.NullFloat64{Float64: roi.GetAmount(), Valid: true},
             ROIReal: sql.NullFloat64{Float64: roiReal.GetAmount(), Valid: true},
             TotalInvested: sql.NullFloat64{Float64: totalInvested.GetAmount(), Valid: true},
@@ -379,11 +379,11 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
             PeriodsRealJSON: bRealBase,
             UserID: session.Usr.Id,
         }
-        exists, err := h.InvestmentResultService.CheckIfAlreadyExists(&investmentResult)
+        exists, err := h.FVSResultService.CheckIfAlreadyExists(&investmentResult)
         if err != nil {
             fmt.Println(err)
         } else if !exists {
-            if err := h.InvestmentResultService.Save(&investmentResult); err != nil {
+            if err := h.FVSResultService.Save(&investmentResult); err != nil {
                 fmt.Println(err, "Err saving investment_result")
             }
         }

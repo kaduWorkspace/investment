@@ -10,11 +10,11 @@ import (
 type InvestmentResultServicePg struct {
     connection *pg_connection.PgxConnextion
 }
-func NewInvestmentResultServicePg(conn *pg_connection.PgxConnextion) investment.InvestmentResultService {
+func NewFVSResult(conn *pg_connection.PgxConnextion) investment.InvestmentResultService[investment.FutureValueOfASerieResult] {
     return &InvestmentResultServicePg{connection: conn}
 }
 
-func (s *InvestmentResultServicePg) Save(result *investment.InvestmentResult) error {
+func (s *InvestmentResultServicePg) Save(result *investment.FutureValueOfASerieResult) error {
     exists, err := s.CheckIfAlreadyExists(result)
     if err != nil {
         return err
@@ -85,7 +85,7 @@ func (s *InvestmentResultServicePg) Save(result *investment.InvestmentResult) er
     }
     return tx.Commit(ctx)
 }
-func (s *InvestmentResultServicePg) CheckIfAlreadyExists(result *investment.InvestmentResult) (bool, error) {
+func (s *InvestmentResultServicePg) CheckIfAlreadyExists(result *investment.FutureValueOfASerieResult) (bool, error) {
     query := `
         SELECT EXISTS (
             SELECT 1 FROM investment_results

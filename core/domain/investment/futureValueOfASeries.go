@@ -36,7 +36,7 @@ type FutureValueOfASeries interface {
     PredictContribution(finalValue, taxDecimal, initialValue valueobjects.Money, contributionOnFirstDay bool, periods int) (valueobjects.Money)
     PredictContributionRealValue(finalValue, taxDecimal, initialValue, taxInflation valueobjects.Money, contributionOnFirstDay bool, periods int) (valueobjects.Money)
 }
-type InvestmentResult struct {
+type FutureValueOfASerieResult struct {
 	ID                   int             `json:"id"`
 	UserID               int             `json:"user_id"`
 	ROI                  sql.NullFloat64 `json:"roi"`
@@ -61,7 +61,8 @@ type InvestmentResult struct {
 	CreatedAt time.Time    `json:"created_at"`
 	DeletedAt sql.NullTime `json:"deleted_at"`
 }
-type InvestmentResultService interface {
-    Save(result *InvestmentResult) error
-    CheckIfAlreadyExists(result *InvestmentResult) (bool, error)
+type InvestmentResultService[T any] interface {
+    Save(result *T) error
+    CheckIfAlreadyExists(result *T) (bool, error)
 }
+

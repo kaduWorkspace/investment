@@ -34,7 +34,7 @@ func TestInvestmentResultServicePg_Save(t *testing.T) {
     conn := pg_connection.NewPgxConnection()
 	defer conn.Conn.Close()
 
-	service := NewInvestmentResultServicePg(conn)
+	service := NewFVSResult(conn)
 
 	// Garante limpeza dos dados com o mesmo user_id para não afetar outros testes
 	userID := 1218
@@ -44,7 +44,7 @@ func TestInvestmentResultServicePg_Save(t *testing.T) {
 	cleanup() // Limpa antes
 	defer cleanup()
 
-	result := &investment.InvestmentResult{
+	result := &investment.FutureValueOfASerieResult{
 		UserID:             userID,
 		ROI:                toSqlNullFloat(0.15),
 		ROIReal:            toSqlNullFloat(0.12),
