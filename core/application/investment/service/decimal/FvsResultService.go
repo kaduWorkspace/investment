@@ -23,7 +23,7 @@ func (s *FVSResultService) Save(result *investment.FutureValueOfASerieResult) er
         return nil
     }
 	query := `
-		INSERT INTO investment_results (
+		INSERT INTO fvs_results (
 			user_id,
 			roi,
 			roi_real,
@@ -88,7 +88,7 @@ func (s *FVSResultService) Save(result *investment.FutureValueOfASerieResult) er
 func (s *FVSResultService) CheckIfAlreadyExists(result *investment.FutureValueOfASerieResult) (bool, error) {
     query := `
         SELECT EXISTS (
-            SELECT 1 FROM investment_results
+            SELECT 1 FROM fvs_results
             WHERE
                 initial_value = $1 AND
                 user_id = $2 AND

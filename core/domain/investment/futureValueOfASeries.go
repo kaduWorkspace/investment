@@ -61,6 +61,23 @@ type FutureValueOfASerieResult struct {
 	CreatedAt time.Time    `json:"created_at"`
 	DeletedAt sql.NullTime `json:"deleted_at"`
 }
+type FutureValueOfASeriePredictResult struct {
+	ID                   int             `json:"id"`
+	UserID               int             `json:"user_id"`
+	TotalInvested        sql.NullFloat64 `json:"total_invested"`
+	InitialValue         sql.NullFloat64 `json:"initial_value"`
+	FinalValue           sql.NullFloat64 `json:"final_value"`
+	FinalValueReal       sql.NullFloat64 `json:"final_value_real"`
+	Contribution         sql.NullFloat64 `json:"contribution"`
+	TaxReal              sql.NullFloat64 `json:"tax_real"`
+	Tax                  sql.NullFloat64 `json:"tax"`
+	Periods              int             `json:"periods"`
+	TaxInflation         sql.NullFloat64 `json:"tax_inflation"`
+	FirstDay             bool            `json:"first_day"`
+	Tags                 []string `json:"tags"`
+	CreatedAt            time.Time    `json:"created_at"`
+	DeletedAt            sql.NullTime `json:"deleted_at"`
+}
 type InvestmentResultService[T any] interface {
     Save(result *T) error
     CheckIfAlreadyExists(result *T) (bool, error)
