@@ -13,7 +13,7 @@
 
     <!-- Card do Botão Simular -->
     <div class="card p-8 rounded-xl bg-gradient-to-br from-blue-900 to-blue-800 shadow-lg text-white hover:from-blue-800 hover:to-blue-700 transition-all duration-300 transform hover:scale-102 cursor-pointer mb-8"
-         hx-get="/fv/simular"
+         hx-get="/web/investments/fv"
          hx-target="#main-content">
 
         <div class="flex items-center justify-center mb-4">
@@ -133,7 +133,7 @@
     </div>
 
     <!-- Loading Indicator Global -->
-    <div id="loading" class="htmx-indicator fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div id="loading" class="htmx-indicator fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-neutral-800 p-6 rounded-xl shadow-xl">
             <div class="flex items-center">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400 mr-3"></div>
