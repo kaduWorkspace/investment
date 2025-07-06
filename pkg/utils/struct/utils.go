@@ -136,3 +136,10 @@ func MinStringLength(fl validator.FieldLevel) bool {
 	}
 	return len(str) >= minLen
 }
+func PrettyPrintStruct(stru any) {
+    b, err := json.MarshalIndent(stru, "", "  ")
+    if err != nil {
+        fmt.Println("Error printing struct: " + err.Error())
+    }
+    fmt.Println(string(b))
+}
