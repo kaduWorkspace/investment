@@ -24,7 +24,7 @@
         </div>
 
         <!-- Formulário -->
-        <form id="formulario_prever" hx-post="web/investments/fv/predict" hx-target="#resultados_container" hx-swap="outerHTML" class="space-y-6">
+        <form id="formulario_prever" onload="processInputsPredict()" name="predict" hx-post="/web/investments/fv/predict" hx-target="#resultados_container" hx-swap="outerHTML" class="space-y-6">
             <!-- Primeira linha: Valor Futuro e Taxa de Juros -->
             <input type="hidden" name="_csrf" value="{{ .csrf }}">
             <div class="grid md:grid-cols-2 gap-6">

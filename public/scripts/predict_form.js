@@ -1,4 +1,4 @@
-import { CurrencyUtils, StorageUtils } from './inputUtils.js';
+import { CurrencyUtils, StorageUtils, FormUtils } from './inputUtils.js';
 
 // Function to validate individual fields
 function validateField(fieldId, isRequired = true) {
@@ -24,6 +24,14 @@ function validateField(fieldId, isRequired = true) {
     StorageUtils.saveInputValues(document.getElementById('formulario_prever'));
     return true;
 }
+// Main validation function
+function validateForm() {
+    const isTaxDecimalInflationValid = validateField('tax_decimal_inflation', false);
+    const isValorFuturoValid = validateField('final_value');
+    const isTaxaJurosValid = validateField('tax_decimal');
+    const isValorInicialValid = validateField('initial_value', false);
+    return isValorFuturoValid && isTaxaJurosValid && isValorInicialValid && isTaxDecimalInflationValid;
+}
 function processInputsPredict() {
     const valorFuturoInput = document.getElementById('final_value_input');
     const taxDecimalInflationInput = document.getElementById('tax_decimal_inflation_input');
@@ -35,21 +43,15 @@ function processInputsPredict() {
     valorInicialInput.value = CurrencyUtils.toNumber(document.getElementById('initial_value').value) || 0;
 }
 
-// Main validation function
-function validateForm() {
-    const isTaxDecimalInflationValid = validateField('tax_decimal_inflation', false);
-    const isValorFuturoValid = validateField('final_value');
-    const isTaxaJurosValid = validateField('tax_decimal');
-    const isValorInicialValid = validateField('initial_value', false);
-    return isValorFuturoValid && isTaxaJurosValid && isValorInicialValid && isTaxDecimalInflationValid;
-}
-
 // Set up event listeners for real-time validation
 export default function setupFormValidation() {
     const form = document.getElementById('formulario_prever');
     if (!form) return;
-    processInputsPredict();
+    form.addEventListener("input", e => {
+        StorageUtils.saveInputValues(form);
+    });
     StorageUtils.loadInputValues(form);
+    processInputsPredict();
     // Validate on input change
     document.getElementById('final_value').addEventListener('input', () => validateField('final_value'));
     document.getElementById('tax_decimal').addEventListener('input', () => validateField('tax_decimal'));
