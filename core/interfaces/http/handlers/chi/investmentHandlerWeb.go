@@ -27,8 +27,9 @@ type InvestmentHandlerChiWeb struct {
     Renderer *renderer.Renderer
     sessionService core_http.SessionService
     FVSResultService investment.InvestmentResultService[investment.FutureValueOfASerieResult]
+    FVSPredictResultService investment.InvestmentResultService[investment.FutureValueOfASeriePredictResult]
 }
-func NewInvestmentHandlerChiWeb(fvsResultService investment.InvestmentResultService[investment.FutureValueOfASerieResult], bcb external.BcbI ,sessionService core_http.SessionService ,compoundInterestService investment.CompoundInterest, futureValueOfASeriesService investment.FutureValueOfASeries, renderer *renderer.Renderer) core_http.InvestmentHandlerWeb {
+func NewInvestmentHandlerChiWeb(fvsPredictResultService investment.InvestmentResultService[investment.FutureValueOfASeriePredictResult] ,fvsResultService investment.InvestmentResultService[investment.FutureValueOfASerieResult], bcb external.BcbI ,sessionService core_http.SessionService ,compoundInterestService investment.CompoundInterest, futureValueOfASeriesService investment.FutureValueOfASeries, renderer *renderer.Renderer) core_http.InvestmentHandlerWeb {
     return &InvestmentHandlerChiWeb{
         CompoundInterestService: compoundInterestService,
         FutureValueOfASeriesService: futureValueOfASeriesService,
@@ -36,6 +37,7 @@ func NewInvestmentHandlerChiWeb(fvsResultService investment.InvestmentResultServ
         sessionService: sessionService,
         bcbService: bcb,
         FVSResultService: fvsResultService,
+        FVSPredictResultService: fvsPredictResultService,
     }
 }
 func (h *InvestmentHandlerChiWeb) Index(w http.ResponseWriter, r *http.Request) {
@@ -175,6 +177,30 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesPredictResultPage(w http.R
         "initial_value": initialValue.Formatted(),
         "tax": taxDecimal.Multiply(hundred).Formatted(),
         "tax_real": taxReal,
+    }
+     session, err := h.getSession(r)
+    if err != nil {
+        fmt.Println(err, "Error getting session")
+    } else {
+        investmentResult := investment.FutureValueOfASeriePredictResult{
+            InitialValue: sql.NullFloat64{Float64: initialValue.GetAmount(), Valid: true},
+            FinalValue: sql.NullFloat64{Float64: finalValue.GetAmount(), Valid: true},
+            Contribution: sql.NullFloat64{Float64: contribution.GetAmount(), Valid: true},
+            TaxReal: sql.NullFloat64{Float64: one.Add(taxDecimal).Divide(one.Add(taxInflation)).Subtract(one).GetAmount(), Valid: true},
+            Tax: sql.NullFloat64{Float64: taxDecimal.GetAmount(), Valid: true},
+            TaxInflation: sql.NullFloat64{Float64: taxInflation.GetAmount(), Valid: true},
+            FirstDay: firstDay,
+            Periods: int(periodsF),
+            UserID: session.Usr.Id,
+        }
+        exists, err := h.FVSPredictResultService.CheckIfAlreadyExists(&investmentResult)
+        if err != nil {
+            fmt.Println(err)
+        } else if !exists {
+            if err := h.FVSPredictResultService.Save(&investmentResult); err != nil {
+                fmt.Println(err, "Err saving investment_result")
+            }
+        }
     }
     if err := h.Renderer.Render(w, "predict_result", data); err != nil {
         fmt.Println(err)

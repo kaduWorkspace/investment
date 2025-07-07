@@ -59,7 +59,7 @@ func (h *DashboardHandlerWeb) PredictDashboard(w http.ResponseWriter, r *http.Re
         fmt.Println(err)
         return
     }
-    if err := h.renderer.Render(w, "dashboard_predict", data); err != nil {
+    if err := h.renderer.Render(w, "dashboard_fv_predict", data); err != nil {
         fmt.Println(err)
     }
 }

@@ -39,6 +39,7 @@ func (s *ServerChi) Setup() {
     compoundInterestServiceDecimal := app_investment_decimal.CompoundInterestDecimal{}
     futureValueOfASeriesServiceDecimal := app_investment_decimal.FutureValueOfASerieDecimal{}
     fvsResultService := app_investment_decimal.NewFVSResult(s.Conn)
+    fvsPredictResultService := app_investment_decimal.NewFVSPredictResult(s.Conn)
     rootDir, _ := os.Getwd()
     rndr, err := renderer.NewRenderer(rootDir+"/core/interfaces/web/components", rootDir+"/core/interfaces/web/pages")
     if err != nil {
@@ -47,7 +48,7 @@ func (s *ServerChi) Setup() {
     bcbService := infra_external.NewBcbService()
     investmentHandler := NewInvestmentHandler(bcbService, compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal)
     inMemorySessionService := memory.NewInMemorySession()
-    investmentHandlerWeb := NewInvestmentHandlerChiWeb(fvsResultService, bcbService, inMemorySessionService ,compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal, rndr)
+    investmentHandlerWeb := NewInvestmentHandlerChiWeb(fvsPredictResultService ,fvsResultService, bcbService, inMemorySessionService ,compoundInterestServiceDecimal, futureValueOfASeriesServiceDecimal, rndr)
     userRepo := pg_repository.NewUserRepository(s.Conn)
     createUserService := app_account_service.NewCreateUserService(userRepo)
     signInService := app_account_service.NewSigninService(userRepo)
