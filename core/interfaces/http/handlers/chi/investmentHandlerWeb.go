@@ -403,7 +403,7 @@ func (h *InvestmentHandlerChiWeb) FutureValueOfASeriesResultPage(w http.Response
             Periods: int(periodsF),
             PeriodsJSON: bBase,
             PeriodsRealJSON: bRealBase,
-            UserID: session.Usr.Id,
+            UserId: session.Usr.Id,
         }
         exists, err := h.FVSResultService.CheckIfAlreadyExists(&investmentResult)
         if err != nil {

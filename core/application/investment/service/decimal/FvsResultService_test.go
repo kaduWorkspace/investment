@@ -39,14 +39,14 @@ func TestInvestmentResultServicePg_Save(t *testing.T) {
 	// Garante limpeza dos dados com o mesmo user_id para não afetar outros testes
 	userID := 1218
 	cleanup := func() {
-		conn.Conn.Exec(ctx, "DELETE FROM fvs_results WHERE user_id = $1", userID)
+		conn.Conn.Exec(ctx, "DELETE FROM fvs_results WHERE user_id = $1 and roi = 1", userID)
 	}
 	cleanup() // Limpa antes
 	defer cleanup()
 
 	result := &investment.FutureValueOfASerieResult{
-		UserID:             userID,
-		ROI:                toSqlNullFloat(0.15),
+		UserId:             userID,
+		ROI:                toSqlNullFloat(1),
 		ROIReal:            toSqlNullFloat(0.12),
 		TotalInvested:      toSqlNullFloat(10000.0),
 		InitialValue:       toSqlNullFloat(8000.0),
@@ -74,7 +74,7 @@ func TestInvestmentResultServicePg_Save(t *testing.T) {
 	err = conn.Conn.QueryRow(ctx, `
 		SELECT COUNT(*) FROM fvs_results
 		WHERE user_id = $1 AND initial_value = $2 AND contribution = $3
-	`, result.UserID, result.InitialValue, result.Contribution).Scan(&count)
+	`, result.UserId, result.InitialValue, result.Contribution).Scan(&count)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, count)
 

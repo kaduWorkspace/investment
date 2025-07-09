@@ -37,8 +37,8 @@ type FutureValueOfASeries interface {
     PredictContributionRealValue(finalValue, taxDecimal, initialValue, taxInflation valueobjects.Money, contributionOnFirstDay bool, periods int) (valueobjects.Money)
 }
 type FutureValueOfASerieResult struct {
-	ID                   int             `json:"id"`
-	UserID               int             `json:"user_id"`
+	Id                   int             `json:"id"`
+	UserId               int             `json:"user_id"`
 	ROI                  sql.NullFloat64 `json:"roi"`
 	ROIReal              sql.NullFloat64 `json:"roi_real"`
 	TotalInvested        sql.NullFloat64 `json:"total_invested"`

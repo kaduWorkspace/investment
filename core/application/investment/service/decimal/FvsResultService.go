@@ -58,7 +58,7 @@ func (s *FVSResultService) Save(result *investment.FutureValueOfASerieResult) er
     _, err = tx.Exec(
         ctx,
 		query,
-		result.UserID,
+		result.UserId,
 		result.ROI,
 		result.ROIReal,
 		result.TotalInvested,
@@ -102,7 +102,7 @@ func (s *FVSResultService) CheckIfAlreadyExists(result *investment.FutureValueOf
     var exists bool
     err := s.connection.Conn.QueryRow(ctx, query,
         result.InitialValue,
-        result.UserID,
+        result.UserId,
         result.Contribution,
         result.Tax,
         result.TaxInflation,
