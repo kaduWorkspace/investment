@@ -18,6 +18,7 @@ type DashboardHandlerWeb struct {
     renderer *renderer.Renderer
     sessionService core_http.SessionService
     FutureValueOfASeriesService investment.FutureValueOfASeries
+    fvsListerRepository repository.RepositoryList[investment.FutureValueOfASerieResult]
 }
 func (h *DashboardHandlerWeb) initData(r *http.Request) (map[string]any, error) {
     session, err := h.getSession(r)
@@ -34,13 +35,14 @@ func (h *DashboardHandlerWeb) initData(r *http.Request) (map[string]any, error) 
         "csrf": csrf,
     }, nil
 }
-func NewDashboardHandlerWeb(futureValueOfASeriesService investment.FutureValueOfASeries ,bcb external.BcbI, userRepo repository.Repository[user.User], sessionService core_http.SessionService, renderer *renderer.Renderer) core_http.DashboardHandler {
+func NewDashboardHandlerWeb(fvsListerRepo repository.RepositoryList[investment.FutureValueOfASerieResult] ,futureValueOfASeriesService investment.FutureValueOfASeries ,bcb external.BcbI, userRepo repository.Repository[user.User], sessionService core_http.SessionService, renderer *renderer.Renderer) core_http.DashboardHandler {
     return &DashboardHandlerWeb{
         bcbService: bcb,
         FutureValueOfASeriesService: futureValueOfASeriesService,
         userRepo: userRepo,
         sessionService: sessionService,
         renderer: renderer,
+        fvsListerRepository: fvsListerRepo,
     }
 }
 func (h *DashboardHandlerWeb) FVSDashboard(w http.ResponseWriter, r *http.Request) {
@@ -49,6 +51,13 @@ func (h *DashboardHandlerWeb) FVSDashboard(w http.ResponseWriter, r *http.Reques
         fmt.Println(err)
         return
     }
+    session, _ := h.getSession(r)
+    results, err := h.fvsListerRepository.Get(investment.FutureValueOfASerieResult{UserId: session.Usr.Id})
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    data["fvs_simulations"] = results
     if err := h.renderer.Render(w, "dashboard_fv", data); err != nil {
         fmt.Println(err)
     }
@@ -59,6 +68,7 @@ func (h *DashboardHandlerWeb) PredictDashboard(w http.ResponseWriter, r *http.Re
         fmt.Println(err)
         return
     }
+
     if err := h.renderer.Render(w, "dashboard_fv_predict", data); err != nil {
         fmt.Println(err)
     }
