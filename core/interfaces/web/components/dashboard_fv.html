@@ -35,10 +35,10 @@
     <!-- Card de Relatórios e Histórico -->
     <div class="card p-6 rounded-xl bg-neutral-900 shadow-lg text-gray-200 mb-8">
         <h3 class="text-xl font-semibold text-orange-400 mb-6 border-b border-neutral-700 pb-3">
-            Relatórios e Histórico
+            Últimas Simulações
         </h3>
 
-        <!-- Grid de Opções de Relatórios (Expansível) -->
+        <!-- Grid de Simulações -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-4">
 
             <!-- Histórico de Simulações -->
@@ -63,40 +63,70 @@
                 </div>
             </div>
 
-            <!-- Espaço para futuras opções -->
-            <div class="bg-neutral-800 p-4 rounded-lg border-2 border-dashed border-neutral-600 opacity-50">
-                <div class="flex items-center justify-center h-full">
-                    <div class="text-center">
-                        <div class="w-10 h-10 bg-neutral-700 rounded-lg flex items-center justify-center mx-auto mb-2">
-                            <span class="text-2xl text-neutral-500">+</span>
-                        </div>
-                        <p class="text-xs text-gray-500">Mais opções em breve</p>
-                    </div>
-                </div>
-            </div>
+            <!-- Loop das Simulações -->
+            {{ range $index, $simulation := .fvs_simulations }}
+            {{ if lt $index 99 }}
+            <div class="bg-neutral-800 p-4 rounded-lg hover:bg-neutral-700 transition-all duration-300 cursor-pointer border border-neutral-700 hover:border-green-500"
+                 hx-get="/fv/simulacao/{{ $simulation.Id }}"
+                 hx-target="#table-content"
+                 hx-indicator="#table-loading">
 
-            <!-- Espaços reservados para expansão -->
-            <div class="bg-neutral-800 p-4 rounded-lg border-2 border-dashed border-neutral-600 opacity-50 hidden sm:block">
-                <div class="flex items-center justify-center h-full">
-                    <div class="text-center">
-                        <div class="w-10 h-10 bg-neutral-700 rounded-lg flex items-center justify-center mx-auto mb-2">
-                            <span class="text-2xl text-neutral-500">+</span>
-                        </div>
-                        <p class="text-xs text-gray-500">Futuro relatório</p>
+                <div class="flex items-center mb-3">
+                    <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center mr-3">
+                        <span class="text-white text-xs font-bold">#{{ $simulation.Id }}</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-white text-sm">Simulação {{ $simulation.Id }}</h4>
+                        <p class="text-xs text-gray-400">{{ $simulation.Periods }} períodos</p>
                     </div>
                 </div>
-            </div>
 
-            <div class="bg-neutral-800 p-4 rounded-lg border-2 border-dashed border-neutral-600 opacity-50 hidden lg:block">
-                <div class="flex items-center justify-center h-full">
-                    <div class="text-center">
-                        <div class="w-10 h-10 bg-neutral-700 rounded-lg flex items-center justify-center mx-auto mb-2">
-                            <span class="text-2xl text-neutral-500">+</span>
-                        </div>
-                        <p class="text-xs text-gray-500">Futuro relatório</p>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-400">Investido:</span>
+                        <span class="text-xs text-white font-medium">
+                            {{ if $simulation.TotalInvested.Valid }}
+                                R$ {{ printf "%.2f" $simulation.TotalInvested.Float64 }}
+                            {{ else }}
+                                R$ 0,00
+                            {{ end }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-400">Valor Final:</span>
+                        <span class="text-xs text-green-400 font-medium">
+                            {{ if $simulation.FinalValue.Valid }}
+                                R$ {{ printf "%.2f" $simulation.FinalValue.Float64 }}
+                            {{ else }}
+                                R$ 0,00
+                            {{ end }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-400">ROI:</span>
+                        <span class="text-xs {{ if and $simulation.ROIPorcentage.Valid (gt $simulation.ROIPorcentage.Float64 0) }}text-green-400{{ else }}text-red-400{{ end }} font-medium">
+                            {{ if $simulation.ROIPorcentage.Valid }}
+                                {{ printf "%.1f" $simulation.ROIPorcentage.Float64 }}%
+                            {{ else }}
+                                0,0%
+                            {{ end }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-3 pt-3 border-t border-neutral-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">{{ $simulation.CreatedAt.Format "02/01/2006" }}</span>
+                        <img class="w-4 h-4" src="/public/images/icons8-up-64.png" alt="Ver">
                     </div>
                 </div>
             </div>
+            {{ end }}
+            {{ end }}
+
+            <!-- Card para ver todas se houver mais de 3 -->
         </div>
     </div>
 
@@ -126,7 +156,7 @@
                 <p class="text-sm text-gray-500 mb-4">Selecione uma opção acima para visualizar os dados</p>
                 <div class="flex items-center justify-center">
                     <img class="w-5 h-5 mr-2" src="/public/images/icons8-up-64.png" alt="Seta">
-                    <span class="text-xs text-gray-500">Clique em "Histórico de Simulações" para começar</span>
+                    <span class="text-xs text-gray-500">Clique em uma simulação para ver os detalhes</span>
                 </div>
             </div>
         </div>
