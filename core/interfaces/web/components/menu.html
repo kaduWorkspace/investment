@@ -1,3 +1,123 @@
 {{ define "menu" }}
+<div class="h-full p-3 space-y-2 w-60 dark:bg-gray-50 dark:text-gray-800">
+    <div class="flex items-center p-2 space-x-4">
+        <img src="https://avatars.githubusercontent.com/u/68855956?v=4" alt="" class="w-12 h-12 rounded-full dark:bg-gray-500">
+        <div>
+            <h2 class="text-lg font-semibold">Leroy Jenkins</h2>
+            <span class="flex items-center space-x-1">
+                <a rel="noopener noreferrer" href="#" class="text-xs hover:underline dark:text-gray-600">View profile</a>
+            </span>
+        </div>
+    </div>
+    <div class="divide-y dark:divide-gray-300">
+        <ul class="pt-2 pb-4 space-y-1 text-sm">
+            <li class="dark:bg-gray-100 dark:text-gray-900">
+                <a rel="noopener noreferrer" href="#" class="flex items-center p-2 space-x-3 rounded-md">
 
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#000000"
+                        stroke-width="0.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-5 h-5"
+                        >
+                        <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
+                        <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+                        <path d="M10 12h4v4h-4z" />
+                    </svg>
+
+                        <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a rel="noopener noreferrer" href="#" class="flex items-center p-2 space-x-3 rounded-md">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#000000"
+                        stroke-width="0.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-5 h-5"
+                        >
+                        <path d="M9.5 3h5a1.5 1.5 0 0 1 1.5 1.5a3.5 3.5 0 0 1 -3.5 3.5h-1a3.5 3.5 0 0 1 -3.5 -3.5a1.5 1.5 0 0 1 1.5 -1.5z" />
+                        <path d="M4 17v-1a8 8 0 1 1 16 0v1a4 4 0 0 1 -4 4h-8a4 4 0 0 1 -4 -4z" />
+                    </svg>
+
+                        <span>Simular CDB</span>
+                </a>
+            </li>
+            <li>
+                <a rel="noopener noreferrer" href="#" class="flex items-center p-2 space-x-3 rounded-md">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#000000"
+                        stroke-width="0.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-5 h-5"
+                        >
+                        <path d="M15 11v.01" />
+                        <path d="M5.173 8.378a3 3 0 1 1 4.656 -1.377" />
+                        <path d="M16 4v3.803a6.019 6.019 0 0 1 2.658 3.197h1.341a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-1.342c-.336 .95 -.907 1.8 -1.658 2.473v2.027a1.5 1.5 0 0 1 -3 0v-.583a6.04 6.04 0 0 1 -1 .083h-4a6.04 6.04 0 0 1 -1 -.083v.583a1.5 1.5 0 0 1 -3 0v-2l0 -.027a6 6 0 0 1 4 -10.473h2.5l4.5 -3h0z" />
+                    </svg>
+
+                        <span>Simular Aporte</span>
+                </a>
+            </li>
+            <li>
+                <a rel="noopener noreferrer" href="#" class="flex items-center p-2 space-x-3 rounded-md">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#000000"
+                        stroke-width="0.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-5 h-5"
+                        >
+                        <path d="M12 8l0 4l2 2" />
+                        <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
+                    </svg>
+                        <span>Histórico De Simulações</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="pt-4 pb-2 space-y-1 text-sm">
+            <li>
+                <a rel="noopener noreferrer" href="#" class="flex items-center p-2 space-x-3 rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-5 h-5 fill-current dark:text-gray-600">
+                        <path d="M245.151,168a88,88,0,1,0,88,88A88.1,88.1,0,0,0,245.151,168Zm0,144a56,56,0,1,1,56-56A56.063,56.063,0,0,1,245.151,312Z"></path>
+                        <path d="M464.7,322.319l-31.77-26.153a193.081,193.081,0,0,0,0-80.332l31.77-26.153a19.941,19.941,0,0,0,4.606-25.439l-32.612-56.483a19.936,19.936,0,0,0-24.337-8.73l-38.561,14.447a192.038,192.038,0,0,0-69.54-40.192L297.49,32.713A19.936,19.936,0,0,0,277.762,16H212.54a19.937,19.937,0,0,0-19.728,16.712L186.05,73.284a192.03,192.03,0,0,0-69.54,40.192L77.945,99.027a19.937,19.937,0,0,0-24.334,8.731L21,164.245a19.94,19.94,0,0,0,4.61,25.438l31.767,26.151a193.081,193.081,0,0,0,0,80.332l-31.77,26.153A19.942,19.942,0,0,0,21,347.758l32.612,56.483a19.937,19.937,0,0,0,24.337,8.73l38.562-14.447a192.03,192.03,0,0,0,69.54,40.192l6.762,40.571A19.937,19.937,0,0,0,212.54,496h65.222a19.936,19.936,0,0,0,19.728-16.712l6.763-40.572a192.038,192.038,0,0,0,69.54-40.192l38.564,14.449a19.938,19.938,0,0,0,24.334-8.731L469.3,347.755A19.939,19.939,0,0,0,464.7,322.319Zm-50.636,57.12-48.109-18.024-7.285,7.334a159.955,159.955,0,0,1-72.625,41.973l-10,2.636L267.6,464h-44.89l-8.442-50.642-10-2.636a159.955,159.955,0,0,1-72.625-41.973l-7.285-7.334L76.241,379.439,53.8,340.562l39.629-32.624-2.7-9.973a160.9,160.9,0,0,1,0-83.93l2.7-9.972L53.8,171.439l22.446-38.878,48.109,18.024,7.285-7.334a159.955,159.955,0,0,1,72.625-41.973l10-2.636L222.706,48H267.6l8.442,50.642,10,2.636a159.955,159.955,0,0,1,72.625,41.973l7.285,7.334,48.109-18.024,22.447,38.877-39.629,32.625,2.7,9.972a160.9,160.9,0,0,1,0,83.93l-2.7,9.973,39.629,32.623Z"></path>
+                    </svg>
+                    <span>Configurações</span>
+                </a>
+            </li>
+            <li>
+                <a rel="noopener noreferrer" href="#" class="flex items-center p-2 space-x-3 rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-5 h-5 fill-current dark:text-gray-600">
+                        <path d="M440,424V88H352V13.005L88,58.522V424H16v32h86.9L352,490.358V120h56V456h88V424ZM320,453.642,120,426.056V85.478L320,51Z"></path>
+                        <rect width="32" height="64" x="256" y="232"></rect>
+                    </svg>
+                    <span>Sair</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
 {{ end }}

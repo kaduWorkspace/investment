@@ -95,7 +95,7 @@ func (h *DashboardHandlerWeb) Dashboard(w http.ResponseWriter, r *http.Request) 
         fmt.Println(err)
         return
     }
-    if err := h.renderer.Render(w, "dashboard_page", data); err != nil {
+    if err := h.renderer.Render(w, "base_new", data); err != nil {
         fmt.Println(err)
     }
 }
