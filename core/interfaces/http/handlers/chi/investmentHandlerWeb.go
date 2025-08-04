@@ -41,6 +41,28 @@ func NewInvestmentHandlerChiWeb(fvsPredictResultService investment.InvestmentRes
     }
 }
 func (h *InvestmentHandlerChiWeb) Index(w http.ResponseWriter, r *http.Request) {
+    values := r.URL.Query()
+    if values.Has("api") && values.Get("api") == "1" {
+        session, err := h.getSession(r)
+        if err != nil {
+            w.WriteHeader(http.StatusInternalServerError)
+            return
+        }
+        jsonReturn := struct {
+            Csrf string `json:"csrf"`
+        }{
+            Csrf: session.Csrf,
+        }
+        js, err := json.Marshal(jsonReturn)
+        if err != nil {
+            w.WriteHeader(http.StatusInternalServerError)
+            return
+        }
+        w.Header().Add("Content-Type", "application/json")
+        w.WriteHeader(200)
+        w.Write(js)
+        return
+    }
     if err := h.Renderer.Render(w, "base", nil); err != nil {
         w.WriteHeader(500)
     }

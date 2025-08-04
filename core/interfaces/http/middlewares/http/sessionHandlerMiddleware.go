@@ -86,6 +86,8 @@ func (m *SessionHandlerMiddleware) CheckSessionMiddleware(next http.Handler) htt
         var validSession bool
         if err == nil {
             validSession = m.validateSession(session)
+        } else {
+            fmt.Println(err)
         }
         if err != nil && (err.Error() != "Cookie is nil" && err.Error() != "Id not found"){
             w.WriteHeader(http.StatusInternalServerError)
@@ -104,6 +106,10 @@ func (m *SessionHandlerMiddleware) CheckSessionMiddleware(next http.Handler) htt
                 return
             }
             next.ServeHTTP(w, r)
+            return
+        }
+        if r.URL.Query().Has("api") && r.URL.Query().Get("api") == "1" {
+            http.Redirect(w, r, "/?api=1", http.StatusSeeOther)
             return
         }
         http.Redirect(w, r, "/", http.StatusSeeOther)
